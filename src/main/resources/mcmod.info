@@ -1,0 +1,16 @@
+[
+{
+  "modid": "justenoughbuttons",
+  "name": "Just Enough Buttons",
+  "description": "Utility buttons for your inventory screen.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["universal"],
+  "credits": "To everyone making their projects open-sauce",
+  "logoFile": "logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]
