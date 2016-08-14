@@ -170,10 +170,10 @@ public class DrawingHandler {
                 list.add(I18n.format("justenoughbuttons.switchto", I18n.format("gameMode.survival")));
                 break;
             case DAY:
-                list.add(I18n.format("commands.time.set", I18n.format("justenoughbuttons.timeday")));
+                list.add(I18n.format("justenoughbuttons.switchto", I18n.format("justenoughbuttons.timeday")));
                 break;
             case NIGHT:
-                list.add(I18n.format("commands.time.set", I18n.format("justenoughbuttons.timenight")));
+                list.add(I18n.format("justenoughbuttons.switchto", I18n.format("justenoughbuttons.timenight")));
                 break;
             case DELETE:
                 ItemStack draggedStack = ClientProxy.mc.thePlayer.inventory.getItemStack();

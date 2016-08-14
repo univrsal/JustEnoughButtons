@@ -10,11 +10,13 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
  */
 public class CommonProxy {
 
-    public void init(FMLInitializationEvent e) { }
+    public void init(FMLInitializationEvent e) {
+    }
 
     public int getMouseX() { return 0;}
 
     public int getMouseY() { return 0; }
 
     public void registerKeyBind() { }
+
 }
