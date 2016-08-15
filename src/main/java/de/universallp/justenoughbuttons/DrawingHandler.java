@@ -145,7 +145,7 @@ public class DrawingHandler {
     @SubscribeEvent
     public void onMouseEvent(GuiScreenEvent.MouseInputEvent event) {
          if (Mouse.getEventButton() == 0 && JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE) {
-            if (ClientProxy.mc.thePlayer.inventory.getItemStack() != null) {
+            if (ClientProxy.mc.thePlayer != null && ClientProxy.mc.thePlayer.inventory.getItemStack() != null) {
                 if (event.isCancelable())
                     event.setCanceled(true);
                 event.setResult(Event.Result.DENY);

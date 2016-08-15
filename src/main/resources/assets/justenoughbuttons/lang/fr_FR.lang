@@ -1,0 +1,15 @@
+justenoughbuttons.switchto=Basculer vers %s
+justenoughbuttons.timeday=Jour
+justenoughbuttons.timenight=Nuit
+justenoughbuttons.freezetime=Stopper le temps
+justenoughbuttons.unfreezetime=Reprendre le temps
+justenoughbuttons.nomobs=Tuer toutes les entitées
+justenoughbuttons.deleteall=Supprimer tout(e) les %s dans l'inventaire!
+justenoughbuttons.ignoringmeta=Ignorer les méta-données
+justenoughbuttons.dragitemshere=Faites glisser les items ici pour les supprimer
+justenoughbuttons.holdshift=Maintenez la touche Maj enfoncée pour ignorer les méta-données
+key.category.justenoughbuttons=Just Enough Buttons
+justenoughbuttons.key.makecopy=Faire une copie fantôme
+
+
+

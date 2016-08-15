@@ -5,10 +5,10 @@
   "description": "Utility buttons for your inventory screen.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
-  "updateUrl": "",
+  "url": "https://github.com/UniversalLP/JustEnoughButtons/",
+  "updateUrl": "https://minecraft.curseforge.com/projects/just-enough-buttons",
   "authorList": ["universal"],
-  "credits": "To everyone making their projects open-sauce",
+  "credits": "To everyone making their projects open-sauce.\nTranslators:\n xMrVizzy\n jules552",
   "logoFile": "logo.png",
   "screenshots": [],
   "dependencies": []
