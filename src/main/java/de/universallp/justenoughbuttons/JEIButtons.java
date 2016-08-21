@@ -1,6 +1,7 @@
 package de.universallp.justenoughbuttons;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -8,6 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -15,6 +17,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.File;
 
@@ -22,7 +25,7 @@ import java.io.File;
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
-    public static final String VERSION = "1.10.2-1.1";
+    public static final String VERSION = "1.10.2-1.3";
 
     @Mod.Instance
     public static JEIButtons instance;
@@ -38,6 +41,7 @@ public class JEIButtons {
     public static EnumButtonCommands btnNight    = EnumButtonCommands.NIGHT;
     public static EnumButtonCommands btnNoMobs   = EnumButtonCommands.NOMOBS;
     public static EnumButtonCommands btnFreeze   = EnumButtonCommands.FREEZETIME;
+    public static EnumButtonCommands btnCustom   = EnumButtonCommands.CUSTOM;
 
     public static boolean configHasChanged = false;
 
@@ -51,7 +55,11 @@ public class JEIButtons {
     public void init(FMLInitializationEvent event) { proxy.init(event); proxy.registerKeyBind(); }
 
     @EventHandler
-    public void postInit(FMLPostInitializationEvent event) { ConfigHandler.loadPostInit(); setUpPositions(); }
+    public void postInit(FMLPostInitializationEvent event) {
+        ConfigHandler.loadPostInit(); setUpPositions();
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+            DrawingHandler.txtField = new GuiTextField(0, ClientProxy.mc.fontRendererObj, 0, 0, 60, 20);
+    }
 
     public enum EnumButtonCommands {
         CREATIVE("gamemode 1", 5, 5),
@@ -64,7 +72,8 @@ public class JEIButtons {
         DAY("time set day", 5, 26),
         NIGHT("time set night", 25, 26),
         FREEZETIME("gamerule doDaylightCycle", 25, 47),
-        NOMOBS("kill @e[type=!Player]", 5, 47);
+        NOMOBS("kill @e[type=!Player]", 5, 47),
+        CUSTOM("", 5, 68);
 
 
         boolean isEnabled = true;
@@ -112,7 +121,7 @@ public class JEIButtons {
         }
 
         public void draw(GuiContainer parent) {
-            if (!isVisible)
+            if (!isVisible || getCommand().equals(""))
                 return;
             int mouseX = proxy.getMouseX();
             int mouseY = proxy.getMouseY();
@@ -147,11 +156,9 @@ public class JEIButtons {
         }
 
         public String getCommand() {
-            return command;
+            return this == CUSTOM ? ConfigHandler.customCommand : command;
         }
     }
-
-
 
     public enum EnumButtonState {
         DISABLED,
@@ -174,6 +181,10 @@ public class JEIButtons {
         static boolean enableWeather  = true;
         static boolean enableKillMobs = true;
         static boolean enableDayCycle = true;
+        static boolean enableCustom   = false;
+
+        static String customCommand = "";
+        static String customName    = "";
 
         private static final String CATEGORY = "buttons";
 
@@ -188,7 +199,11 @@ public class JEIButtons {
             enableWeather        = config.getBoolean("enableWeather",        CATEGORY, true, "When false the weather buttons will be disabled");
             enableTime           = config.getBoolean("enableTime",           CATEGORY, true, "When false the time buttons will be disabled");
             enableKillMobs       = config.getBoolean("enableKillMobs",       CATEGORY, true, "When false the kill entities button will be disabled");
-            enableDayCycle       = config.getBoolean("enableDayCycle",           CATEGORY, true, "When false the freeze time button will be disabled");
+            enableDayCycle       = config.getBoolean("enableDayCycle",       CATEGORY, true, "When false the freeze time button will be disabled");
+            enableCustom         = config.getBoolean("enableCustomButton",   CATEGORY, false, "When true you'll get a button, which executes a custom command");
+
+            customCommand        = config.getString("customCommand",         CATEGORY, "help",   "The command to be executed by the custom button");
+            customName           = config.getString("customName",            CATEGORY, "Print Help",   "The tooltip of the custom button");
 
             EnumButtonCommands.ADVENTURE.setEnabled(enableAdventureMode);
             EnumButtonCommands.SPECTATE.setEnabled(enableSpectatoreMode);
@@ -201,6 +216,7 @@ public class JEIButtons {
             btnFreeze.setVisible(enableDayCycle);
             btnRain.setVisible(enableWeather);
             btnSun.setVisible(enableWeather);
+            btnCustom.setVisible(enableCustom);
 
             if (config.hasChanged())
                 config.save();
@@ -226,7 +242,7 @@ public class JEIButtons {
     }
 
     public static void setUpPositions() {
-        EnumButtonCommands[] btns = new EnumButtonCommands[] { btnGameMode, btnRain, btnSun, btnTrash, btnDay, btnNight, btnNoMobs, btnFreeze };
+        EnumButtonCommands[] btns = new EnumButtonCommands[] { btnGameMode, btnRain, btnSun, btnTrash, btnDay, btnNight, btnNoMobs, btnFreeze, btnCustom };
         int x = 0, y = 0;
         for (EnumButtonCommands b : btns) {
             if (!b.isVisible)
@@ -238,7 +254,7 @@ public class JEIButtons {
             if (y == 0 && x == 4) {
                 y++;
                 x = 0;
-            } else if (x == 2 && y > 0) {
+            } else if (x % 2 == 0 && y > 0) {
                 x = 0;
                 y++;
             }

@@ -10,6 +10,4 @@ justenoughbuttons.dragitemshere=Zieh' items zum löschen hier hin
 justenoughbuttons.holdshift=Halte Shift um Metadata zu ignorieren
 key.category.justenoughbuttons=Just Enough Buttons
 justenoughbuttons.key.makecopy=Mache eine Scheinkopie
-
-
-
+justenoughbuttons.customcommand=Führe %s aus.
