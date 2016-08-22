@@ -71,6 +71,8 @@ public class DrawingHandler {
             btnFreeze.draw(g);
             btnCustom.draw(g);
 
+            adjustGamemode();
+
             if (JEIButtons.isAnyButtonHovered) {
                 List<String> tip = getTooltip(JEIButtons.hoveredButton);
                 if (tip != null) {
@@ -118,6 +120,14 @@ public class DrawingHandler {
                     isMouseDown = false;
                 }
             }
+        }
+    }
+
+    private void adjustGamemode() {
+        EntityPlayer p = ClientProxy.mc.thePlayer;
+
+        if (p.isCreative() && btnGameMode == EnumButtonCommands.CREATIVE || p.isSpectator() && btnGameMode == EnumButtonCommands.SPECTATE) {
+            btnGameMode = btnGameMode.cycle();
         }
     }
 
