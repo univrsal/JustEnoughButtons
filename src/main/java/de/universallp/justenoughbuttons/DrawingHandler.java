@@ -12,6 +12,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.GameType;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.config.GuiUtils;
@@ -124,11 +125,21 @@ public class DrawingHandler {
     }
 
     private void adjustGamemode() {
-        EntityPlayer p = ClientProxy.mc.thePlayer;
+        GameType t = ClientProxy.mc.playerController.getCurrentGameType();
+        boolean doSwitch = false;
 
-        if (p.isCreative() && btnGameMode == EnumButtonCommands.CREATIVE || p.isSpectator() && btnGameMode == EnumButtonCommands.SPECTATE) {
+        if (t == GameType.CREATIVE && btnGameMode == EnumButtonCommands.CREATIVE)
+            doSwitch = true;
+        else if (t == GameType.SURVIVAL && btnGameMode == EnumButtonCommands.SURVIVAL)
+            doSwitch = true;
+        else if (t == GameType.ADVENTURE && btnGameMode == EnumButtonCommands.ADVENTURE)
+            doSwitch = true;
+
+        else if (t == GameType.SPECTATOR && btnGameMode == EnumButtonCommands.SPECTATE)
+            doSwitch = true;
+
+        if (doSwitch)
             btnGameMode = btnGameMode.cycle();
-        }
     }
 
     @SubscribeEvent
