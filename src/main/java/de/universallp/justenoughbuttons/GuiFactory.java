@@ -8,9 +8,9 @@ import java.util.Set;
 
 /**
  * Created by universallp on 12.08.2016 15:02.
- * This file is part of VanillaAutomation which is licenced
- * under the MOZILLA PUBLIC LICENSE 1.1
- * github.com/UniversalLP/VanillaAutomation
+ * This file is part of JustEnoughButtons which is licenced
+ * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
+ * github.com/UniversalLP/JustEnoughButtons
  */
 public class GuiFactory implements IModGuiFactory {
     @Override
