@@ -1,6 +1,7 @@
 package de.universallp.justenoughbuttons;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,13 +20,18 @@ public class ClientProxy extends CommonProxy {
 
     private static final String KEY_CATEGORY = "key.category.justenoughbuttons";
     private static final String KEY_MAKECOPY = "justenoughbuttons.key.makecopy";
+    private static final String KEY_MOBOVERLAY = "justenoughbuttons.key.mobOverlay";
+
+
     public static KeyBinding makeCopyKey = new KeyBinding(KEY_MAKECOPY, Keyboard.KEY_C, KEY_CATEGORY);
+    public static KeyBinding mobOverlay = new KeyBinding(KEY_MOBOVERLAY, Keyboard.KEY_F7, KEY_CATEGORY);
 
     public static Minecraft mc;
+    public static EntityPlayerSP player;
 
     @Override
     public void init(FMLInitializationEvent e) {
-        MinecraftForge.EVENT_BUS.register(new DrawingHandler());
+        MinecraftForge.EVENT_BUS.register(new EventHandlers());
         mc = Minecraft.getMinecraft();
         super.init(e);
     }
@@ -47,5 +53,6 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerKeyBind() {
         ClientRegistry.registerKeyBinding(makeCopyKey);
+        ClientRegistry.registerKeyBinding(mobOverlay);
     }
 }

@@ -4,7 +4,6 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
@@ -12,14 +11,19 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameType;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -35,11 +39,13 @@ import static de.universallp.justenoughbuttons.JEIButtons.*;
  * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
  * github.com/UniversalLP/JustEnoughButtons
  */
-public class DrawingHandler {
+public class EventHandlers {
 
     private static boolean gameRuleDayCycle = false;
     private boolean isMouseDown = false;
-    public static GuiTextField txtField;
+    private static BlockPos lastPlayerPos = null;
+
+    private boolean drawOverlay = false;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiDraw(GuiScreenEvent.DrawScreenEvent e) {
@@ -50,7 +56,7 @@ public class DrawingHandler {
 
         if (e.getGui() != null && e.getGui() instanceof GuiContainer) {
             GuiContainer g = (GuiContainer) e.getGui();
-            EntityPlayerSP pl = ClientProxy.mc.thePlayer;
+            EntityPlayerSP pl = ClientProxy.player;
             if (pl.inventory.getItemStack() == null) {
                 JEIButtons.btnTrash.setEnabled(false);
             } else {
@@ -70,7 +76,9 @@ public class DrawingHandler {
             btnNight.draw(g);
             btnNoMobs.draw(g);
             btnFreeze.draw(g);
-            btnCustom.draw(g);
+
+            for (EnumButtonCommands btn : btnCustom)
+                btn.draw(g);
 
             adjustGamemode();
 
@@ -84,32 +92,28 @@ public class DrawingHandler {
 
                 if (Mouse.isButtonDown(0) && !isMouseDown && JEIButtons.hoveredButton.isEnabled) {
                     isMouseDown = true;
-                    String command = "";
-                    if (JEIButtons.hoveredButton == EnumButtonCommands.CUSTOM && JEIButtons.hoveredButton.getCommand().equals("")) {
-                        txtField.drawTextBox();
-                    } else {
-                        command = "/" + JEIButtons.hoveredButton.getCommand();
+                    String command = "/" + JEIButtons.hoveredButton.getCommand();
 
-                        if (JEIButtons.hoveredButton == EnumButtonCommands.FREEZETIME) {
-                            command += " " + (gameRuleDayCycle ? "false" : "true");
-                        }
-
-                        if (JEIButtons.hoveredButton == EnumButtonCommands.DELETE) {
-
-                            ItemStack draggedStack = pl.inventory.getItemStack();
-                            String name  = draggedStack.getItem().getRegistryName().toString();
-
-                            command += pl.getDisplayName().getUnformattedText() + " " + name;
-
-                            if (!GuiScreen.isShiftKeyDown()) {
-                                int data = draggedStack.getItemDamage();
-                                command += " " + data;
-                            }
-
-                            if (draggedStack.stackSize == 0)
-                                pl.inventory.setItemStack(null);
-                        }
+                    if (JEIButtons.hoveredButton == EnumButtonCommands.FREEZETIME) {
+                        command += " " + (gameRuleDayCycle ? "false" : "true");
                     }
+
+                    if (JEIButtons.hoveredButton == EnumButtonCommands.DELETE) {
+
+                        ItemStack draggedStack = pl.inventory.getItemStack();
+                        String name  = draggedStack.getItem().getRegistryName().toString();
+
+                        command += pl.getDisplayName().getUnformattedText() + " " + name;
+
+                        if (!GuiScreen.isShiftKeyDown()) {
+                            int data = draggedStack.getItemDamage();
+                            command += " " + data;
+                        }
+
+                        if (draggedStack.stackSize == 0)
+                            pl.inventory.setItemStack(null);
+                    }
+
 
 
                     pl.sendChatMessage(command);
@@ -146,6 +150,7 @@ public class DrawingHandler {
     public void onWorldJoin(EntityJoinWorldEvent e) {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
             if (e.getEntity() instanceof EntityPlayer) {
+                ClientProxy.player = FMLClientHandler.instance().getClientPlayerEntity();
                 if (((EntityPlayer) e.getEntity()).capabilities.isCreativeMode) {
                     JEIButtons.btnGameMode = btnGameMode.cycle();
                 } else {
@@ -161,28 +166,53 @@ public class DrawingHandler {
             if (gui != null && gui instanceof GuiContainer && Keyboard.isKeyDown(ClientProxy.makeCopyKey.getKeyCode())) {
                 Slot hovered = ((GuiContainer) gui).getSlotUnderMouse();
 
-                if (ClientProxy.mc.thePlayer.inventory.getItemStack() == null && hovered != null && hovered.getHasStack()) {
+                if (ClientProxy.player.inventory.getItemStack() == null && hovered != null && hovered.getHasStack()) {
                     ItemStack stack = hovered.getStack().copy();
-                    if (ClientProxy.mc.thePlayer.capabilities.isCreativeMode)
+                    if (ClientProxy.player.capabilities.isCreativeMode)
                         stack.stackSize = 0;
                     else
                         stack.stackSize = 1;
-                    ClientProxy.mc.thePlayer.inventory.setItemStack(stack);
+                    ClientProxy.player.inventory.setItemStack(stack);
                 }
             }
     }
 
-
-
     @SubscribeEvent
     public void onMouseEvent(GuiScreenEvent.MouseInputEvent event) {
          if (Mouse.getEventButton() == 0 && JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE) {
-            if (ClientProxy.mc.thePlayer != null && ClientProxy.mc.thePlayer.inventory.getItemStack() != null) {
+            if (ClientProxy.player != null && ClientProxy.player.inventory.getItemStack() != null) {
                 if (event.isCancelable())
                     event.setCanceled(true);
                 event.setResult(Event.Result.DENY);
             }
         }
+    }
+
+    @SubscribeEvent
+    public void onKeyPressed(InputEvent.KeyInputEvent event) {
+        if (ClientProxy.mobOverlay.isKeyDown()) {
+            drawOverlay = !drawOverlay;
+        }
+
+        if (!drawOverlay)
+            MobOverlayRenderer.clearCache();
+    }
+
+    @SubscribeEvent
+    public void onClientTick(TickEvent.ClientTickEvent event) {
+        if (drawOverlay && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+            if (lastPlayerPos == null || !lastPlayerPos.equals(ClientProxy.player.getPosition())) {
+                MobOverlayRenderer.cacheMobSpawns(ClientProxy.player);
+                lastPlayerPos = ClientProxy.player.getPosition();
+            }
+        }
+
+    }
+
+    @SubscribeEvent
+    public void onWorldDraw(RenderWorldLastEvent event) {
+        if (drawOverlay)
+            MobOverlayRenderer.renderMobSpawnOverlay();
     }
 
     public List<String> getTooltip(EnumButtonCommands btn) {
@@ -208,7 +238,7 @@ public class DrawingHandler {
                 list.add(I18n.format("justenoughbuttons.switchto", I18n.format("justenoughbuttons.timenight")));
                 break;
             case DELETE:
-                ItemStack draggedStack = ClientProxy.mc.thePlayer.inventory.getItemStack();
+                ItemStack draggedStack = ClientProxy.player.inventory.getItemStack();
                 if (draggedStack != null) {
                     list.add(I18n.format("justenoughbuttons.deleteall", I18n.format(draggedStack.getUnlocalizedName() + ".name")));
                     if (GuiScreen.isShiftKeyDown())
@@ -237,7 +267,7 @@ public class DrawingHandler {
                 if (ConfigHandler.customName.equals(""))
                     list.add(I18n.format("justenoughbuttons.customcommand", "/" + ConfigHandler.customCommand));
                 else
-                    list.add(ConfigHandler.customName);
+                    list.add(ConfigHandler.customName[btn.id]);
                 break;
         }
 

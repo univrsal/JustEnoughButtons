@@ -1,7 +1,5 @@
 package de.universallp.justenoughbuttons;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -9,7 +7,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -17,7 +14,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.File;
 
@@ -41,7 +37,9 @@ public class JEIButtons {
     public static EnumButtonCommands btnNight    = EnumButtonCommands.NIGHT;
     public static EnumButtonCommands btnNoMobs   = EnumButtonCommands.NOMOBS;
     public static EnumButtonCommands btnFreeze   = EnumButtonCommands.FREEZETIME;
-    public static EnumButtonCommands btnCustom   = EnumButtonCommands.CUSTOM;
+
+    public static EnumButtonCommands[] btnCustom   = new EnumButtonCommands[] { EnumButtonCommands.CUSTOM.setID(0), EnumButtonCommands.CUSTOM.setID(1),
+                                                                                EnumButtonCommands.CUSTOM.setID(2), EnumButtonCommands.CUSTOM.setID(3) };
 
     public static boolean configHasChanged = false;
 
@@ -56,9 +54,8 @@ public class JEIButtons {
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        ConfigHandler.loadPostInit(); setUpPositions();
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-            DrawingHandler.txtField = new GuiTextField(0, ClientProxy.mc.fontRendererObj, 0, 0, 60, 20);
+        ConfigHandler.loadPostInit();
+        setUpPositions();
     }
 
     public enum EnumButtonCommands {
@@ -87,11 +84,17 @@ public class JEIButtons {
         static final int height = 19;
         int xPos;
         int yPos;
+        byte id;
 
         EnumButtonCommands(String commandToExecute, int x, int y) {
             this.command = commandToExecute;
             this.xPos = x;
             this.yPos = y;
+        }
+
+        EnumButtonCommands setID(int id) {
+            this.id = (byte) id;
+            return this;
         }
 
         static final ResourceLocation icons = new ResourceLocation(MODID, "textures/icons.png");
@@ -156,7 +159,7 @@ public class JEIButtons {
         }
 
         public String getCommand() {
-            return this == CUSTOM ? ConfigHandler.customCommand : command;
+            return this == CUSTOM ? ConfigHandler.customCommand[id] : command;
         }
     }
 
@@ -167,7 +170,7 @@ public class JEIButtons {
     }
 
     private static boolean canExecuteCommand(String c) {
-        return Minecraft.getMinecraft().thePlayer.canCommandSenderUseCommand(1, c);
+        return ClientProxy.player.canCommandSenderUseCommand(1, c);
     }
 
 
@@ -181,12 +184,13 @@ public class JEIButtons {
         static boolean enableWeather  = true;
         static boolean enableKillMobs = true;
         static boolean enableDayCycle = true;
-        static boolean enableCustom   = false;
+        static boolean[] enableCustom   = new boolean[] { false, false, false, false };
 
-        static String customCommand = "";
-        static String customName    = "";
+        static String[] customCommand = new String[] { "help", "help", "help", "help" }; // Halp halp halp
+        static String[] customName    = new String[] { "Print Help", "Print Help", "Print Help", "Print Help" };
 
-        private static final String CATEGORY = "buttons";
+        public static final String CATEGORY = "buttons";
+        public static final String CATEGORY_CUSTOM = "custombuttons";
 
         static Configuration config;
 
@@ -200,10 +204,16 @@ public class JEIButtons {
             enableTime           = config.getBoolean("enableTime",           CATEGORY, true, "When false the time buttons will be disabled");
             enableKillMobs       = config.getBoolean("enableKillMobs",       CATEGORY, true, "When false the kill entities button will be disabled");
             enableDayCycle       = config.getBoolean("enableDayCycle",       CATEGORY, true, "When false the freeze time button will be disabled");
-            enableCustom         = config.getBoolean("enableCustomButton",   CATEGORY, false, "When true you'll get a button, which executes a custom command");
 
-            customCommand        = config.getString("customCommand",         CATEGORY, "help",   "The command to be executed by the custom button");
-            customName           = config.getString("customName",            CATEGORY, "Print Help",   "The tooltip of the custom button");
+            // Custom Buttons
+
+            for (int i = 0; i < enableCustom.length; i++) {
+                enableCustom[i]  = config.getBoolean("enableCustomButton." + i, CATEGORY_CUSTOM, false, "When true you'll get a button, which executes a custom command");
+                customCommand[i] = config.getString("customCommand." + i,       CATEGORY_CUSTOM, "help",   "The command to be executed by the custom button");
+                customName[i]    = config.getString("customName." + i,          CATEGORY_CUSTOM, "Print Help",   "The tooltip of the custom button");
+            }
+
+
 
             EnumButtonCommands.ADVENTURE.setEnabled(enableAdventureMode);
             EnumButtonCommands.SPECTATE.setEnabled(enableSpectatoreMode);
@@ -216,7 +226,9 @@ public class JEIButtons {
             btnFreeze.setVisible(enableDayCycle);
             btnRain.setVisible(enableWeather);
             btnSun.setVisible(enableWeather);
-            btnCustom.setVisible(enableCustom);
+
+            for (int i = 0; i < btnCustom.length; i++)
+                btnCustom[i].setVisible(enableCustom[i]);
 
             if (config.hasChanged())
                 config.save();
@@ -242,7 +254,9 @@ public class JEIButtons {
     }
 
     public static void setUpPositions() {
-        EnumButtonCommands[] btns = new EnumButtonCommands[] { btnGameMode, btnRain, btnSun, btnTrash, btnDay, btnNight, btnNoMobs, btnFreeze, btnCustom };
+        EnumButtonCommands[] btns = new EnumButtonCommands[] { btnGameMode, btnRain, btnSun, btnTrash, btnDay, btnNight,
+                                                               btnNoMobs, btnFreeze, btnCustom[0], btnCustom[1], btnCustom[2], btnCustom[3],};
+
         int x = 0, y = 0;
         for (EnumButtonCommands b : btns) {
             if (!b.isVisible)

@@ -16,16 +16,29 @@ import java.util.List;
  */
 public class GuiJEBConfig extends GuiConfig {
 
+    private static final List buttonorder = new ArrayList();
+
     public GuiJEBConfig(GuiScreen parentScreen) {
         super(parentScreen, getElements(), JEIButtons.MODID, false, false, GuiConfig.getAbridgedConfigPath(JEIButtons.ConfigHandler.config.toString()));
     }
 
     public static List<IConfigElement> getElements() {
-        List<IConfigElement> sliders = new ArrayList<IConfigElement>();
+        buttonorder.clear();
+        for (int i = 0; i < JEIButtons.btnCustom.length; i++) {
+            buttonorder.add("enableCustomButton." + i);
+            buttonorder.add("customName." + i);
+            buttonorder.add("customCommand." + i);
+        }
+
+        List<IConfigElement> entries = new ArrayList<IConfigElement>();
 
         for (String name : JEIButtons.ConfigHandler.config.getCategoryNames())
-                sliders.add(new ConfigElement(JEIButtons.ConfigHandler.config.getCategory(name)));
+            if (name.equals(JEIButtons.ConfigHandler.CATEGORY_CUSTOM))
+                entries.add(new ConfigElement(JEIButtons.ConfigHandler.config.getCategory(name).setPropertyOrder(buttonorder)));
+            else
+                entries.add(new ConfigElement(JEIButtons.ConfigHandler.config.getCategory(name)));
 
-        return sliders;
+
+        return entries;
     }
 }
