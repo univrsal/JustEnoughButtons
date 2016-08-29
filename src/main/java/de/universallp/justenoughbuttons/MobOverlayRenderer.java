@@ -1,10 +1,8 @@
 package de.universallp.justenoughbuttons;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -30,7 +28,6 @@ import java.util.Map;
  */
 public class MobOverlayRenderer {
 
-    private static RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
     private static Map<BlockPos, SpawnType> cache = new HashMap<BlockPos, SpawnType>();
 
     public static void renderMobSpawnOverlay() {
@@ -38,7 +35,7 @@ public class MobOverlayRenderer {
         {
             GlStateManager.disableLighting();
             GlStateManager.disableTexture2D();
-            GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ);
+            GlStateManager.translate(-ClientProxy.renderManager.viewerPosX, -ClientProxy.renderManager.viewerPosY, -ClientProxy.renderManager.viewerPosZ);
 
             GL11.glLineWidth(1.5F);
             GlStateManager.color(1, 0, 0);
@@ -58,6 +55,14 @@ public class MobOverlayRenderer {
         GlStateManager.popMatrix();
     }
 
+    /**
+     * Blatantly copied
+     * @author feldim2425
+     * @param pos
+     * @param r
+     * @param g
+     * @param b
+     */
     private static void renderCross(BlockPos pos, float r, float g, float b) {
         double y = pos.getY() + 0.005D;
 

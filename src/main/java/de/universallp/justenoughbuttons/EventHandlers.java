@@ -45,7 +45,8 @@ public class EventHandlers {
     private boolean isMouseDown = false;
     private static BlockPos lastPlayerPos = null;
 
-    private boolean drawOverlay = false;
+    private boolean drawMobOverlay   = false;
+    private boolean drawChunkOverlay = false;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiDraw(GuiScreenEvent.DrawScreenEvent e) {
@@ -190,19 +191,23 @@ public class EventHandlers {
 
     @SubscribeEvent
     public void onKeyPressed(InputEvent.KeyInputEvent event) {
-        if (ClientProxy.mobOverlay.isKeyDown()) {
-            drawOverlay = !drawOverlay;
-        }
+        if (enableOverlays) {
+            if (ClientProxy.mobOverlay.isKeyDown())
+                drawMobOverlay = !drawMobOverlay;
 
-        if (!drawOverlay) {
-            MobOverlayRenderer.clearCache();
-            lastPlayerPos = null;
+            if (ClientProxy.chunkOverlay.isKeyDown())
+                ClientProxy.mc.debugRenderer.func_190075_b();
+
+            if (!drawMobOverlay) {
+                MobOverlayRenderer.clearCache();
+                lastPlayerPos = null;
+            }
         }
     }
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (drawOverlay && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+        if (drawMobOverlay && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
             if (lastPlayerPos == null || !lastPlayerPos.equals(ClientProxy.player.getPosition())) {
                 MobOverlayRenderer.cacheMobSpawns(ClientProxy.player);
                 lastPlayerPos = ClientProxy.player.getPosition();
@@ -212,7 +217,7 @@ public class EventHandlers {
 
     @SubscribeEvent
     public void onWorldDraw(RenderWorldLastEvent event) {
-        if (drawOverlay)
+        if (drawMobOverlay)
             MobOverlayRenderer.renderMobSpawnOverlay();
     }
 

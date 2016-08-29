@@ -3,10 +3,14 @@ package de.universallp.justenoughbuttons;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import org.apache.logging.log4j.Level;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -21,18 +25,21 @@ public class ClientProxy extends CommonProxy {
     private static final String KEY_CATEGORY = "key.category.justenoughbuttons";
     private static final String KEY_MAKECOPY = "justenoughbuttons.key.makecopy";
     private static final String KEY_MOBOVERLAY = "justenoughbuttons.key.mobOverlay";
+    private static final String KEY_CHUNKOVERLAY = "justenoughbuttons.key.chunkOverlay";
 
+    static KeyBinding makeCopyKey = new KeyBinding(KEY_MAKECOPY, Keyboard.KEY_C, KEY_CATEGORY);
+    static KeyBinding mobOverlay;
+    static KeyBinding chunkOverlay;
 
-    public static KeyBinding makeCopyKey = new KeyBinding(KEY_MAKECOPY, Keyboard.KEY_C, KEY_CATEGORY);
-    public static KeyBinding mobOverlay = new KeyBinding(KEY_MOBOVERLAY, Keyboard.KEY_F7, KEY_CATEGORY);
-
-    public static Minecraft mc;
-    public static EntityPlayerSP player;
+    static Minecraft mc;
+    static EntityPlayerSP player;
+    static RenderManager renderManager;
 
     @Override
     public void init(FMLInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(new EventHandlers());
         mc = Minecraft.getMinecraft();
+        renderManager = mc.getRenderManager();
         super.init(e);
     }
 
@@ -53,6 +60,15 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerKeyBind() {
         ClientRegistry.registerKeyBinding(makeCopyKey);
-        ClientRegistry.registerKeyBinding(mobOverlay);
+        if (!Loader.isModLoaded(JEIButtons.MOD_MOREOVERLAYS)) {
+            mobOverlay = new KeyBinding(KEY_MOBOVERLAY, Keyboard.KEY_F7, KEY_CATEGORY);
+            chunkOverlay = new KeyBinding(KEY_CHUNKOVERLAY, Keyboard.KEY_F4, KEY_CATEGORY);
+
+            ClientRegistry.registerKeyBinding(chunkOverlay);
+            ClientRegistry.registerKeyBinding(mobOverlay);
+        } else {
+            JEIButtons.enableOverlays = false;
+            FMLLog.log(JEIButtons.MODID, Level.INFO, "MoreOverlays is loaded. Disabling Lightlevel and Chunk Overlay!");
+        }
     }
 }

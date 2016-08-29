@@ -12,5 +12,4 @@ key.category.justenoughbuttons=Just Enough Buttons
 justenoughbuttons.key.makecopy=Make ghost Copy
 justenoughbuttons.customcommand=Execute %s
 justenoughbuttons.key.mobOverlay=Show/Hide Light Overlay
-
-
+justenoughbuttons.key.chunkOverlay=Show/Hide Chunkboundaries
