@@ -96,6 +96,8 @@ public class MobOverlayRenderer {
                     continue;
 
                 for (int y = entY - 16; y < entY + 16; y++) {
+                    if (!world.isAirBlock(new BlockPos(x, y, z)))
+                        continue;
                     SpawnType spawnType = getSpawnType(chunk, x, y, z);
                     if (spawnType != SpawnType.NEVER)
                         cache.put(new BlockPos(x, y, z), spawnType);
@@ -107,11 +109,13 @@ public class MobOverlayRenderer {
     private static SpawnType getSpawnType(Chunk chunk, int x, int y, int z) {
         World world = chunk.getWorld();
         BlockPos pos = new BlockPos(x, y, z);
+
         if (!WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType.ON_GROUND, world, pos) || chunk.getLightFor(EnumSkyBlock.BLOCK, pos) >= 8)
             return SpawnType.NEVER;
 
         BlockPos p = new BlockPos(x, y , z);
         AxisAlignedBB aabb = new AxisAlignedBB(p);
+
         if (!world.checkNoEntityCollision(aabb) || !world.getEntitiesWithinAABBExcludingEntity(null, aabb).isEmpty() || world.containsAnyLiquid(aabb))
             return SpawnType.NEVER;
 

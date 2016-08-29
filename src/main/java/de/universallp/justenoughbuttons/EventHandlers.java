@@ -194,8 +194,10 @@ public class EventHandlers {
             drawOverlay = !drawOverlay;
         }
 
-        if (!drawOverlay)
+        if (!drawOverlay) {
             MobOverlayRenderer.clearCache();
+            lastPlayerPos = null;
+        }
     }
 
     @SubscribeEvent
@@ -206,7 +208,6 @@ public class EventHandlers {
                 lastPlayerPos = ClientProxy.player.getPosition();
             }
         }
-
     }
 
     @SubscribeEvent
@@ -263,9 +264,12 @@ public class EventHandlers {
             case SUN:
                 list.add(I18n.format("commands.weather.clear"));
                 break;
-            case CUSTOM:
-                if (ConfigHandler.customName.equals(""))
-                    list.add(I18n.format("justenoughbuttons.customcommand", "/" + ConfigHandler.customCommand));
+            case CUSTOM1:
+            case CUSTOM2:
+            case CUSTOM3:
+            case CUSTOM4:
+                if (ConfigHandler.customName[btn.id].equals(""))
+                    list.add(I18n.format("justenoughbuttons.customcommand", "/" + ConfigHandler.customCommand[btn.id]));
                 else
                     list.add(ConfigHandler.customName[btn.id]);
                 break;

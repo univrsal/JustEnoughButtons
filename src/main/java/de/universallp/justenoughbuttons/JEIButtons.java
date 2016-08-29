@@ -38,8 +38,8 @@ public class JEIButtons {
     public static EnumButtonCommands btnNoMobs   = EnumButtonCommands.NOMOBS;
     public static EnumButtonCommands btnFreeze   = EnumButtonCommands.FREEZETIME;
 
-    public static EnumButtonCommands[] btnCustom   = new EnumButtonCommands[] { EnumButtonCommands.CUSTOM.setID(0), EnumButtonCommands.CUSTOM.setID(1),
-                                                                                EnumButtonCommands.CUSTOM.setID(2), EnumButtonCommands.CUSTOM.setID(3) };
+    public static EnumButtonCommands[] btnCustom   = new EnumButtonCommands[] { EnumButtonCommands.CUSTOM1, EnumButtonCommands.CUSTOM2,
+                                                                                EnumButtonCommands.CUSTOM3, EnumButtonCommands.CUSTOM4 };
 
     public static boolean configHasChanged = false;
 
@@ -70,7 +70,11 @@ public class JEIButtons {
         NIGHT("time set night", 25, 26),
         FREEZETIME("gamerule doDaylightCycle", 25, 47),
         NOMOBS("kill @e[type=!Player]", 5, 47),
-        CUSTOM("", 5, 68);
+        CUSTOM1("", 5, 68, 0),
+        CUSTOM2("", 25, 68, 1),
+        CUSTOM3("", 5, 89, 2),
+        CUSTOM4("", 25, 89, 3);
+
 
 
         boolean isEnabled = true;
@@ -92,9 +96,11 @@ public class JEIButtons {
             this.yPos = y;
         }
 
-        EnumButtonCommands setID(int id) {
+        EnumButtonCommands (String commandToExecute, int x, int y, int id) {
             this.id = (byte) id;
-            return this;
+            this.command = commandToExecute;
+            this.xPos = x;
+            this.yPos = y;
         }
 
         static final ResourceLocation icons = new ResourceLocation(MODID, "textures/icons.png");
@@ -153,13 +159,17 @@ public class JEIButtons {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            parent.drawTexturedModalRect(xPos, yPos, width * ordinal(), height * state.ordinal(), width, height);
+            parent.drawTexturedModalRect(xPos, yPos, width * iconID(), height * state.ordinal(), width, height);
             RenderHelper.disableStandardItemLighting();
 
         }
 
         public String getCommand() {
-            return this == CUSTOM ? ConfigHandler.customCommand[id] : command;
+            return this.ordinal() > NOMOBS.ordinal() ? ConfigHandler.customCommand[id] : command;
+        }
+
+        public int iconID() {
+            return this.ordinal() > NOMOBS.ordinal() ? CUSTOM1.ordinal() : this.ordinal();
         }
     }
 
