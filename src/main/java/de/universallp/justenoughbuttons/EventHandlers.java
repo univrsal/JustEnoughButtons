@@ -55,7 +55,7 @@ public class EventHandlers {
             setUpPositions();
         }
 
-        if (e.getGui() != null && e.getGui() instanceof GuiContainer) {
+        if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
             GuiContainer g = (GuiContainer) e.getGui();
             EntityPlayerSP pl = ClientProxy.player;
             if (pl.inventory.getItemStack() == null) {
@@ -163,7 +163,7 @@ public class EventHandlers {
     @SubscribeEvent
     public void handleKeyInputEvent(GuiScreenEvent.KeyboardInputEvent e) {
         GuiScreen gui = ClientProxy.mc.currentScreen;
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+        if (ConfigHandler.showButtons && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
             if (gui != null && gui instanceof GuiContainer && Keyboard.isKeyDown(ClientProxy.makeCopyKey.getKeyCode())) {
                 Slot hovered = ((GuiContainer) gui).getSlotUnderMouse();
 

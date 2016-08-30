@@ -21,7 +21,7 @@ import java.io.File;
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
-    public static final String VERSION = "1.10.2-1.5";
+    public static final String VERSION = "1.10.2-1.5.1";
     public static final String MOD_MOREOVERLAYS = "moreoverlays";
     public static boolean enableOverlays = true;
 
@@ -79,8 +79,6 @@ public class JEIButtons {
         CUSTOM2("", 25, 68, 1),
         CUSTOM3("", 5, 89, 2),
         CUSTOM4("", 25, 89, 3);
-
-
 
         boolean isEnabled = true;
         boolean isVisible = true;
@@ -204,12 +202,16 @@ public class JEIButtons {
         static String[] customCommand = new String[] { "help", "help", "help", "help" }; // Halp halp halp
         static String[] customName    = new String[] { "Print Help", "Print Help", "Print Help", "Print Help" };
 
-        public static final String CATEGORY = "buttons";
-        public static final String CATEGORY_CUSTOM = "custombuttons";
+        static final String CATEGORY = "buttons";
+        static final String CATEGORY_CUSTOM = "custombuttons";
+
+        static boolean showButtons = true;
 
         static Configuration config;
 
         static void load() {
+            showButtons = config.getBoolean("showButtons",          CATEGORY, true, "When false no buttons will be shown");
+
             enableAdventureMode  = config.getBoolean("enableAdventureMode",  CATEGORY, true, "When false the gamemode button won't allow you to switch to adventure mode");
             enableSpectatoreMode = config.getBoolean("enableSpectatoreMode", CATEGORY, true, "When false the gamemode button won't allow you to switch to spectator mode");
 
