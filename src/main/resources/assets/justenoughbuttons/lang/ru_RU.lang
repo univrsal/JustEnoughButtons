@@ -11,5 +11,5 @@ justenoughbuttons.holdshift=Удерживайте Shift для игнориро
 key.category.justenoughbuttons=Just Enough Buttons
 justenoughbuttons.key.makecopy=Сделать теневую копию
 justenoughbuttons.customcommand=Выполнить %s
-
-
+justenoughbuttons.key.mobOverlay=Показать/спрятать оверлей света
+justenoughbuttons.key.chunkOverlay=Показать/спрятать границы чанков
