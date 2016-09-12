@@ -40,6 +40,7 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(new EventHandlers());
         mc = Minecraft.getMinecraft();
         renderManager = mc.getRenderManager();
+        InventorySaveHandler.init();
         super.init(e);
     }
 

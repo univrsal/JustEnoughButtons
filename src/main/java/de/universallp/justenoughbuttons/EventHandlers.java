@@ -56,6 +56,9 @@ public class EventHandlers {
         }
 
         if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
+            int mouseY = JEIButtons.proxy.getMouseY();
+            int mouseX = JEIButtons.proxy.getMouseX();
+
             GuiContainer g = (GuiContainer) e.getGui();
             EntityPlayerSP pl = ClientProxy.player;
             if (pl.inventory.getItemStack() == null) {
@@ -77,6 +80,7 @@ public class EventHandlers {
             btnNight.draw(g);
             btnNoMobs.draw(g);
             btnFreeze.draw(g);
+            InventorySaveHandler.drawButtons(mouseX, mouseY);
 
             for (EnumButtonCommands btn : btnCustom)
                 btn.draw(g);
@@ -86,8 +90,7 @@ public class EventHandlers {
             if (JEIButtons.isAnyButtonHovered) {
                 List<String> tip = getTooltip(JEIButtons.hoveredButton);
                 if (tip != null) {
-                    int mouseY = JEIButtons.proxy.getMouseY();
-                    GuiUtils.drawHoveringText(tip, JEIButtons.proxy.getMouseX(), mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
+                    GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
                     RenderHelper.disableStandardItemLighting();
                 }
 
@@ -158,6 +161,7 @@ public class EventHandlers {
                     JEIButtons.btnGameMode = EnumButtonCommands.CREATIVE;
                 }
             }
+        InventorySaveHandler.init();
     }
 
     @SubscribeEvent
