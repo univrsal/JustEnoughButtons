@@ -1,10 +1,12 @@
 package de.universallp.justenoughbuttons;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.init.SoundEvents;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLLog;
@@ -71,5 +73,10 @@ public class ClientProxy extends CommonProxy {
             JEIButtons.enableOverlays = false;
             FMLLog.log(JEIButtons.MODID, Level.INFO, "MoreOverlays is loaded. Disabling Lightlevel and Chunk Overlay!");
         }
+    }
+
+    @Override
+    public void playClick() {
+        mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 }

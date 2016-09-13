@@ -19,4 +19,5 @@ public class CommonProxy {
 
     public void registerKeyBind() { }
 
+    public void playClick() { }
 }

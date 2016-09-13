@@ -1,14 +1,12 @@
 package de.universallp.justenoughbuttons;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -93,9 +91,12 @@ public class EventHandlers {
                     GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
                     RenderHelper.disableStandardItemLighting();
                 }
+            }
 
-                if (Mouse.isButtonDown(0) && !isMouseDown && JEIButtons.hoveredButton.isEnabled) {
-                    isMouseDown = true;
+            if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1) && !isMouseDown) {
+                isMouseDown = true;
+
+                if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton.isEnabled) {
                     String command = "/" + JEIButtons.hoveredButton.getCommand();
 
                     if (JEIButtons.hoveredButton == EnumButtonCommands.FREEZETIME) {
@@ -121,14 +122,15 @@ public class EventHandlers {
 
 
                     pl.sendChatMessage(command);
-                    ClientProxy.mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-
+                    JEIButtons.proxy.playClick();
                     if (JEIButtons.hoveredButton.ordinal() < 4) // Game mode buttons
                         JEIButtons.btnGameMode = hoveredButton.cycle();
-                } else if (!Mouse.isButtonDown(0) && isMouseDown) {
-                    isMouseDown = false;
+                    InventorySaveHandler.click(mouseX, mouseY, Mouse.isButtonDown(1));
                 }
+            } else if (!Mouse.isButtonDown(0) && !Mouse.isButtonDown(1) && isMouseDown) {
+                isMouseDown = false;
             }
+
         }
     }
 
@@ -184,8 +186,8 @@ public class EventHandlers {
 
     @SubscribeEvent
     public void onMouseEvent(GuiScreenEvent.MouseInputEvent event) {
-         if (Mouse.getEventButton() == 0 && JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE) {
-            if (ClientProxy.player != null && ClientProxy.player.inventory.getItemStack() != null) {
+        if (Mouse.getEventButton() == 0) {
+            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE && ClientProxy.player != null && ClientProxy.player.inventory.getItemStack() != null) {
                 if (event.isCancelable())
                     event.setCanceled(true);
                 event.setResult(Event.Result.DENY);
