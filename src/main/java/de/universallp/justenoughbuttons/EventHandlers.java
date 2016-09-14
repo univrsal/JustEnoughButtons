@@ -40,7 +40,8 @@ import static de.universallp.justenoughbuttons.JEIButtons.*;
 public class EventHandlers {
 
     private static boolean gameRuleDayCycle = false;
-    private boolean isMouseDown = false;
+    private boolean isLMBDown = false;
+    private boolean isRMBDown = false;
     private static BlockPos lastPlayerPos = null;
 
     private boolean drawMobOverlay   = false;
@@ -56,9 +57,9 @@ public class EventHandlers {
         if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
             int mouseY = JEIButtons.proxy.getMouseY();
             int mouseX = JEIButtons.proxy.getMouseX();
-
             GuiContainer g = (GuiContainer) e.getGui();
             EntityPlayerSP pl = ClientProxy.player;
+
             if (pl.inventory.getItemStack() == null) {
                 JEIButtons.btnTrash.setEnabled(false);
             } else {
@@ -93,8 +94,8 @@ public class EventHandlers {
                 }
             }
 
-            if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1) && !isMouseDown) {
-                isMouseDown = true;
+            if (Mouse.isButtonDown(0) && !isLMBDown) {
+                isLMBDown = true;
 
                 if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton.isEnabled) {
                     String command = "/" + JEIButtons.hoveredButton.getCommand();
@@ -125,12 +126,21 @@ public class EventHandlers {
                     JEIButtons.proxy.playClick();
                     if (JEIButtons.hoveredButton.ordinal() < 4) // Game mode buttons
                         JEIButtons.btnGameMode = hoveredButton.cycle();
-                    InventorySaveHandler.click(mouseX, mouseY, Mouse.isButtonDown(1));
+
+                } else {
+                    if (InventorySaveHandler.click(mouseX, mouseY, false))
+                        JEIButtons.proxy.playClick();
                 }
-            } else if (!Mouse.isButtonDown(0) && !Mouse.isButtonDown(1) && isMouseDown) {
-                isMouseDown = false;
+            } else if (!Mouse.isButtonDown(0)) {
+                isLMBDown = false;
             }
 
+            if (Mouse.isButtonDown(1) && !isRMBDown) {
+                isRMBDown = true;
+                if (InventorySaveHandler.click(mouseX, mouseY, true))
+                    JEIButtons.proxy.playClick();
+            } else if (!Mouse.isButtonDown(1))
+                isRMBDown = false;
         }
     }
 

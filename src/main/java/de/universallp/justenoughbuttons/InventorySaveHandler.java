@@ -19,7 +19,8 @@ public class InventorySaveHandler {
         }
     }
 
-    public static void click(int mouseX, int mouseY, boolean rightMouse) {
+    public static boolean click(int mouseX, int mouseY, boolean rightMouse) {
+        boolean flag = false;
         if (!rightMouse) {
             for (int i = 0; i < saveButtons.length; i++)
                 if (saveButtons[i].mousePressed(ClientProxy.mc, mouseX, mouseY)) {
@@ -29,6 +30,7 @@ public class InventorySaveHandler {
                         saveButtons[i].displayString = "Load " + (i + 1);
                     } else
                         saves[i].giveToPlayer();
+                    flag = true;
                     break;
                 }
         } else {
@@ -37,9 +39,12 @@ public class InventorySaveHandler {
                     JEIButtons.proxy.playClick();
                     saves[i] = null;
                     saveButtons[i].displayString = "Save " + (i + 1);
+                    flag = true;
                     break;
                 }
         }
+
+        return flag;
     }
 
     public static void drawButtons(int mouseX, int mouseY) {
