@@ -1,5 +1,6 @@
-package de.universallp.justenoughbuttons;
+package de.universallp.justenoughbuttons.client;
 
+import de.universallp.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;

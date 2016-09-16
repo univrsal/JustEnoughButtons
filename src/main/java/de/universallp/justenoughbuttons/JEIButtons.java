@@ -1,5 +1,7 @@
 package de.universallp.justenoughbuttons;
 
+import de.universallp.justenoughbuttons.client.ClientProxy;
+import de.universallp.justenoughbuttons.core.CommonProxy;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -17,18 +19,25 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
 
-@Mod(modid = JEIButtons.MODID, version = JEIButtons.VERSION, clientSideOnly = true, guiFactory = "de.universallp.justenoughbuttons.GuiFactory")
+/**
+ * Created by universallp on 09.08.2016 16:07.
+ * This file is part of JustEnoughButtons which is licenced
+ * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
+ * github.com/UniversalLP/JustEnoughButtons
+ */
+@Mod(modid = JEIButtons.MODID, version = JEIButtons.VERSION, clientSideOnly = true, guiFactory = "de.universallp.justenoughbuttons.client.GuiFactory")
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
     public static final String VERSION = "1.10.2-1.5.1";
     public static final String MOD_MOREOVERLAYS = "moreoverlays";
+    public static boolean isServerSidePresent = false;
     public static boolean enableOverlays = true;
 
     @Mod.Instance
     public static JEIButtons instance;
 
-    @SidedProxy(clientSide = "de.universallp.justenoughbuttons.ClientProxy", serverSide = "de.universallp.justenoughbuttons.CommonProxy")
+    @SidedProxy(clientSide = "de.universallp.justenoughbuttons.client.ClientProxy", serverSide = "de.universallp.justenoughbuttons.core.CommonProxy")
     public static CommonProxy proxy;
 
     public static EnumButtonCommands btnGameMode = EnumButtonCommands.SURVIVAL;
@@ -80,7 +89,7 @@ public class JEIButtons {
         CUSTOM3("", 5, 89, 2),
         CUSTOM4("", 25, 89, 3);
 
-        boolean isEnabled = true;
+        public boolean isEnabled = true;
         boolean isVisible = true;
 
         String command;
@@ -91,7 +100,7 @@ public class JEIButtons {
         static final int height = 19;
         int xPos;
         int yPos;
-        byte id;
+        public byte id;
 
         EnumButtonCommands(String commandToExecute, int x, int y) {
             this.command = commandToExecute;
@@ -187,9 +196,9 @@ public class JEIButtons {
     }
 
 
-    static class ConfigHandler {
-        static boolean enableAdventureMode  = true;
-        static boolean enableSpectatoreMode = true;
+    public static class ConfigHandler {
+        public static boolean enableAdventureMode  = true;
+        public static boolean enableSpectatoreMode = true;
 
         static boolean enableGamemode = true;
         static boolean enableDelete   = true;
@@ -199,15 +208,15 @@ public class JEIButtons {
         static boolean enableDayCycle = true;
         static boolean[] enableCustom   = new boolean[] { false, false, false, false };
 
-        static String[] customCommand = new String[] { "help", "help", "help", "help" }; // Halp halp halp
-        static String[] customName    = new String[] { "Print Help", "Print Help", "Print Help", "Print Help" };
+        public static String[] customCommand = new String[] { "help", "help", "help", "help" }; // Halp halp halp
+        public static String[] customName    = new String[] { "Print Help", "Print Help", "Print Help", "Print Help" };
 
         static final String CATEGORY = "buttons";
-        static final String CATEGORY_CUSTOM = "custombuttons";
+        public static final String CATEGORY_CUSTOM = "custombuttons";
 
-        static boolean showButtons = true;
+        public static boolean showButtons = true;
 
-        static Configuration config;
+        public static Configuration config;
 
         static void load() {
             showButtons = config.getBoolean("showButtons",          CATEGORY, true, "When false no buttons will be shown");

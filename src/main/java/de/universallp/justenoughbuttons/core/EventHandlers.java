@@ -1,12 +1,17 @@
-package de.universallp.justenoughbuttons;
+package de.universallp.justenoughbuttons.core;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
+import de.universallp.justenoughbuttons.JEIButtons;
+import de.universallp.justenoughbuttons.client.MobOverlayRenderer;
+import de.universallp.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -43,9 +48,7 @@ public class EventHandlers {
     private boolean isLMBDown = false;
     private boolean isRMBDown = false;
     private static BlockPos lastPlayerPos = null;
-
     private boolean drawMobOverlay   = false;
-    private boolean drawChunkOverlay = false;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiDraw(GuiScreenEvent.DrawScreenEvent e) {
@@ -59,12 +62,6 @@ public class EventHandlers {
             int mouseX = JEIButtons.proxy.getMouseX();
             GuiContainer g = (GuiContainer) e.getGui();
             EntityPlayerSP pl = ClientProxy.player;
-
-            if (pl.inventory.getItemStack() == null) {
-                JEIButtons.btnTrash.setEnabled(false);
-            } else {
-                JEIButtons.btnTrash.setEnabled(true);
-            }
 
             if (btnGameMode == EnumButtonCommands.SPECTATE && !ConfigHandler.enableSpectatoreMode || btnGameMode == EnumButtonCommands.ADVENTURE && !ConfigHandler.enableAdventureMode)
                 btnGameMode = btnGameMode.cycle();
@@ -107,20 +104,22 @@ public class EventHandlers {
                     if (JEIButtons.hoveredButton == EnumButtonCommands.DELETE) {
 
                         ItemStack draggedStack = pl.inventory.getItemStack();
-                        String name  = draggedStack.getItem().getRegistryName().toString();
+                        if (draggedStack == null)
+                            command = "/clear";
+                        else {
+                            String name  = draggedStack.getItem().getRegistryName().toString();
 
-                        command += pl.getDisplayName().getUnformattedText() + " " + name;
+                            command += pl.getDisplayName().getUnformattedText() + " " + name;
 
-                        if (!GuiScreen.isShiftKeyDown()) {
-                            int data = draggedStack.getItemDamage();
-                            command += " " + data;
+                            if (!GuiScreen.isShiftKeyDown()) {
+                                int data = draggedStack.getItemDamage();
+                                command += " " + data;
+                            }
+
+                            if (draggedStack.stackSize == 0)
+                                pl.inventory.setItemStack(null);
                         }
-
-                        if (draggedStack.stackSize == 0)
-                            pl.inventory.setItemStack(null);
                     }
-
-
 
                     pl.sendChatMessage(command);
                     JEIButtons.proxy.playClick();
@@ -164,7 +163,7 @@ public class EventHandlers {
 
     @SubscribeEvent
     public void onWorldJoin(EntityJoinWorldEvent e) {
-        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
             if (e.getEntity() instanceof EntityPlayer) {
                 ClientProxy.player = FMLClientHandler.instance().getClientPlayerEntity();
                 if (((EntityPlayer) e.getEntity()).capabilities.isCreativeMode) {
@@ -173,6 +172,11 @@ public class EventHandlers {
                     JEIButtons.btnGameMode = EnumButtonCommands.CREATIVE;
                 }
             }
+        } else {
+            if (e.getEntity() != null && e.getEntity() instanceof EntityPlayerMP)
+                CommonProxy.INSTANCE.sendTo(new MessageNotifyClient(), (EntityPlayerMP) e.getEntity());
+        }
+
         InventorySaveHandler.init();
     }
 
@@ -197,10 +201,9 @@ public class EventHandlers {
     @SubscribeEvent
     public void onMouseEvent(GuiScreenEvent.MouseInputEvent event) {
         if (Mouse.getEventButton() == 0) {
-            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE && ClientProxy.player != null && ClientProxy.player.inventory.getItemStack() != null) {
-                if (event.isCancelable())
-                    event.setCanceled(true);
+            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE && ClientProxy.player.inventory.getItemStack() != null || InventorySaveHandler.skipClick) {
                 event.setResult(Event.Result.DENY);
+                InventorySaveHandler.skipClick = false;
             }
         }
     }
@@ -240,7 +243,6 @@ public class EventHandlers {
     public List<String> getTooltip(EnumButtonCommands btn) {
         ArrayList<String> list = new ArrayList<String>();
         switch (btn) {
-
             case ADVENTURE:
                 list.add(I18n.format("justenoughbuttons.switchto", I18n.format("gameMode.adventure")));
                 break;
@@ -268,6 +270,7 @@ public class EventHandlers {
                 } else {
                     list.add(I18n.format("justenoughbuttons.dragitemshere"));
                     list.add(ChatFormatting.GRAY + I18n.format("justenoughbuttons.holdshift"));
+                    list.add(ChatFormatting.GRAY + I18n.format("justenoughbuttons.clearinventory"));
                 }
                 break;
             case FREEZETIME:

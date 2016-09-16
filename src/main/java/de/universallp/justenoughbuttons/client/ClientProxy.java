@@ -1,5 +1,9 @@
-package de.universallp.justenoughbuttons;
+package de.universallp.justenoughbuttons.client;
 
+import de.universallp.justenoughbuttons.core.CommonProxy;
+import de.universallp.justenoughbuttons.core.EventHandlers;
+import de.universallp.justenoughbuttons.core.InventorySaveHandler;
+import de.universallp.justenoughbuttons.JEIButtons;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -29,13 +33,13 @@ public class ClientProxy extends CommonProxy {
     private static final String KEY_MOBOVERLAY = "justenoughbuttons.key.mobOverlay";
     private static final String KEY_CHUNKOVERLAY = "justenoughbuttons.key.chunkOverlay";
 
-    static KeyBinding makeCopyKey = new KeyBinding(KEY_MAKECOPY, Keyboard.KEY_C, KEY_CATEGORY);
-    static KeyBinding mobOverlay;
-    static KeyBinding chunkOverlay;
+    public static KeyBinding makeCopyKey = new KeyBinding(KEY_MAKECOPY, Keyboard.KEY_C, KEY_CATEGORY);
+    public static KeyBinding mobOverlay;
+    public static KeyBinding chunkOverlay;
 
-    static Minecraft mc;
-    static EntityPlayerSP player;
-    static RenderManager renderManager;
+    public static Minecraft mc;
+    public static EntityPlayerSP player;
+    public static RenderManager renderManager;
 
     @Override
     public void init(FMLInitializationEvent e) {

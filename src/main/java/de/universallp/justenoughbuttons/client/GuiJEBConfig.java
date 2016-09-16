@@ -1,5 +1,6 @@
-package de.universallp.justenoughbuttons;
+package de.universallp.justenoughbuttons.client;
 
+import de.universallp.justenoughbuttons.JEIButtons;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.fml.client.config.GuiConfig;
