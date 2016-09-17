@@ -1,6 +1,8 @@
 package de.universallp.justenoughbuttons.core;
 
 import de.universallp.justenoughbuttons.JEIButtons;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -19,6 +21,9 @@ public class CommonProxy {
     public void init(FMLInitializationEvent e) {
         INSTANCE.registerMessage(MessageNotifyClient.class, MessageNotifyClient.class, 0, Side.CLIENT);
         INSTANCE.registerMessage(MessageRequestStacks.class, MessageRequestStacks.class, 1, Side.SERVER);
+
+        if (FMLCommonHandler.instance().getSide() == Side.SERVER)
+            MinecraftForge.EVENT_BUS.register(new ClientNotifyHandler());
     }
 
     public void postInit(FMLPostInitializationEvent e) { }
