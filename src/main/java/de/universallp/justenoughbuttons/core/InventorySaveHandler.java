@@ -3,11 +3,13 @@ package de.universallp.justenoughbuttons.core;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextComponentString;
 
 
 /**
@@ -73,6 +75,11 @@ public class InventorySaveHandler {
         boolean anyButtonHovered = false;
 
         for (GuiButton s : saveButtons) {
+            if (!ClientProxy.player.canCommandSenderUseCommand(1, ""))
+                s.enabled = false;
+            else
+                s.enabled = true;
+
             s.drawButton(ClientProxy.mc, mouseX, mouseY);
 
             if (s.isMouseOver()) {
@@ -135,26 +142,40 @@ public class InventorySaveHandler {
         void giveToPlayer() {
             if (!JEIButtons.isServerSidePresent) {
                 ClientProxy.player.sendChatMessage("/clear");
+                String nbt = "";
+                String cmd = "";
 
                 for (int i = 0; i < mainInventory.length; i++) {
                     if (mainInventory[i] == null)
                         continue;
                     ItemStack s = ItemStack.loadItemStackFromNBT(mainInventory[i]);
-                    String nbt = s.hasTagCompound() ? s.getTagCompound().toString() : "";
-                    ClientProxy.player.sendChatMessage(String.format(replaceCommand, "slot.inventory." + i,  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt));
+                    nbt = s.getTagCompound() != null  ? s.getTagCompound().toString() : "";
+                    if (i < 9)
+                        cmd = String.format(replaceCommand, "slot.hotbar." + i,  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt);
+                    else
+                        cmd = String.format(replaceCommand, "slot.inventory." + (i - 9),  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt);
+                    if (checkCommandLength(cmd))
+                        ClientProxy.player.sendChatMessage(cmd);
                 }
 
                 for (int i = 0; i < armorInventory.length; i++) {
                     if (armorInventory[i] == null)
                         continue;
                     ItemStack s = ItemStack.loadItemStackFromNBT(armorInventory[i]);
-                    String nbt = s.hasTagCompound() ? s.getTagCompound().toString() : "";
-                    ClientProxy.player.sendChatMessage(String.format(replaceCommand, "slot.armor." + idToSlot(i),  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt));
+                    nbt = s.getTagCompound() != null ? s.getTagCompound().toString() : "";
+                    cmd = String.format(replaceCommand, "slot.armor." + idToSlot(i),  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt);
+                    if (checkCommandLength(cmd))
+                        ClientProxy.player.sendChatMessage(cmd);
                 }
+
                 if (offHandInventory != null) {
                     ItemStack s = ItemStack.loadItemStackFromNBT(offHandInventory);
-                    String nbt = s.hasTagCompound() ? s.getTagCompound().toString() : "";
-                    ClientProxy.player.sendChatMessage(String.format(replaceCommand, "slot.weapon.offhand",  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt));
+                    if (s != null) {
+                        nbt = s.getTagCompound() != null ? s.getTagCompound().toString() : "";
+                        cmd = String.format(replaceCommand, "slot.weapon.offhand",  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt);
+                        if (checkCommandLength(cmd))
+                            ClientProxy.player.sendChatMessage(cmd);
+                    }
                 }
             } else {
                 CommonProxy.INSTANCE.sendToServer(new MessageRequestStacks(mainInventory, armorInventory, offHandInventory));
@@ -163,16 +184,24 @@ public class InventorySaveHandler {
             ClientProxy.player.inventory.markDirty();
         }
 
+        boolean checkCommandLength(String cmd) {
+            if (cmd.length() > 100) {
+                ClientProxy.player.addChatMessage(new TextComponentString(I18n.format("justenoughbuttons.nbttoolong")));
+                return false;
+            }
+            return true;
+        }
+
         String idToSlot(int i) {
             switch (i) {
                 case 0:
-                    return "head";
-                case 1:
-                    return "chest";
-                case 2:
-                    return "legs";
-                case 3:
                     return "feet";
+                case 1:
+                    return "legs";
+                case 2:
+                    return "chest";
+                case 3:
+                    return "head";
             }
             return "head";
         }

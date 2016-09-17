@@ -16,3 +16,4 @@ justenoughbuttons.key.mobOverlay=Show/Hide Light Overlay
 justenoughbuttons.key.chunkOverlay=Show/Hide Chunkboundaries
 justenoughbuttons.save=Save
 justenoughbuttons.load=Load
+justenoughbuttons.nbttoolong=This command is too long to be sent!

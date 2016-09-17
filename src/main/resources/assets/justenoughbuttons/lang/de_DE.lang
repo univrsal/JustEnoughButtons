@@ -14,3 +14,6 @@ justenoughbuttons.customcommand=Führe %s aus.
 justenoughbuttons.key.mobOverlay=Blende Lichtlevel ein/aus
 justenoughbuttons.key.chunkOverlay=Blende Chunkecken ein/aus
 justenoughbuttons.clearinventory=Oder klicke um das Inventar zu leeren
+justenoughbuttons.save=Speicher
+justenoughbuttons.load=Lade
+justenoughbuttons.nbttoolong=Dieser Befehl ist zu lang!

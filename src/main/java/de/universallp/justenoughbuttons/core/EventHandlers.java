@@ -5,6 +5,7 @@ import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.MobOverlayRenderer;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
@@ -59,7 +60,9 @@ public class EventHandlers {
             setUpPositions();
         }
 
-        if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
+        if (JEIButtons.isServerSidePresent && e.getGui() instanceof GuiMainMenu) {
+            JEIButtons.isServerSidePresent = false;
+        } else if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
             int mouseY = JEIButtons.proxy.getMouseY();
             int mouseX = JEIButtons.proxy.getMouseX();
             GuiContainer g = (GuiContainer) e.getGui();
@@ -260,6 +263,9 @@ public class EventHandlers {
     public void onWorldDraw(RenderWorldLastEvent event) {
         if (drawMobOverlay)
             MobOverlayRenderer.renderMobSpawnOverlay();
+
+        if (ClientProxy.mc.currentScreen == null)
+            InventorySaveHandler.skipClick = false;
     }
 
     public List<String> getTooltip(EnumButtonCommands btn) {
