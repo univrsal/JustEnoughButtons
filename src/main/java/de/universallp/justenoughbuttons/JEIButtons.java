@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 /**
  * Created by universallp on 09.08.2016 16:07.
@@ -70,6 +71,7 @@ public class JEIButtons {
     public void postInit(FMLPostInitializationEvent event) {
         ConfigHandler.loadPostInit();
         setUpPositions();
+        proxy.postInit(event);
     }
 
     public enum EnumButtonCommands {
@@ -200,6 +202,8 @@ public class JEIButtons {
         public static boolean enableAdventureMode  = true;
         public static boolean enableSpectatoreMode = true;
 
+        public static boolean enableSaves    = true;
+
         static boolean enableGamemode = true;
         static boolean enableDelete   = true;
         static boolean enableTime     = true;
@@ -230,6 +234,8 @@ public class JEIButtons {
             enableTime           = config.getBoolean("enableTime",           CATEGORY, true, "When false the time buttons will be disabled");
             enableKillMobs       = config.getBoolean("enableKillMobs",       CATEGORY, true, "When false the kill entities button will be disabled");
             enableDayCycle       = config.getBoolean("enableDayCycle",       CATEGORY, true, "When false the freeze time button will be disabled");
+
+            enableSaves          = config.getBoolean("enableSaves",         CATEGORY, true, "When false the four save slots will be disabled");
 
             // Custom Buttons
 

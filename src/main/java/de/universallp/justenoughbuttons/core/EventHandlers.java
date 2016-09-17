@@ -7,7 +7,6 @@ import de.universallp.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,10 +26,13 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +78,8 @@ public class EventHandlers {
             btnNight.draw(g);
             btnNoMobs.draw(g);
             btnFreeze.draw(g);
-            InventorySaveHandler.drawButtons(mouseX, mouseY);
+            if (JEIButtons.ConfigHandler.enableSaves)
+                InventorySaveHandler.drawButtons(mouseX, mouseY);
 
             for (EnumButtonCommands btn : btnCustom)
                 btn.draw(g);
@@ -123,11 +126,12 @@ public class EventHandlers {
 
                     pl.sendChatMessage(command);
                     JEIButtons.proxy.playClick();
+
                     if (JEIButtons.hoveredButton.ordinal() < 4) // Game mode buttons
                         JEIButtons.btnGameMode = hoveredButton.cycle();
 
                 } else {
-                    if (InventorySaveHandler.click(mouseX, mouseY, false))
+                    if (JEIButtons.ConfigHandler.enableSaves && InventorySaveHandler.click(mouseX, mouseY, false))
                         JEIButtons.proxy.playClick();
                 }
             } else if (!Mouse.isButtonDown(0)) {
@@ -164,6 +168,7 @@ public class EventHandlers {
     @SubscribeEvent
     public void onWorldJoin(EntityJoinWorldEvent e) {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+            InventorySaveHandler.init();
             if (e.getEntity() instanceof EntityPlayer) {
                 ClientProxy.player = FMLClientHandler.instance().getClientPlayerEntity();
                 if (((EntityPlayer) e.getEntity()).capabilities.isCreativeMode) {
@@ -176,8 +181,18 @@ public class EventHandlers {
             if (e.getEntity() != null && e.getEntity() instanceof EntityPlayerMP)
                 CommonProxy.INSTANCE.sendTo(new MessageNotifyClient(), (EntityPlayerMP) e.getEntity());
         }
+    }
 
-        InventorySaveHandler.init();
+    @SubscribeEvent
+    public void onWorldLeave(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        if (SaveFileHandler.SAVE_SNAPSHOTS)
+            try {
+                ClientProxy.saveHandler.saveForPlayer();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
     }
 
     @SubscribeEvent
@@ -201,9 +216,16 @@ public class EventHandlers {
     @SubscribeEvent
     public void onMouseEvent(GuiScreenEvent.MouseInputEvent event) {
         if (Mouse.getEventButton() == 0) {
-            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE && ClientProxy.player.inventory.getItemStack() != null || InventorySaveHandler.skipClick) {
+            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE && ClientProxy.player.inventory.getItemStack() != null) {
                 event.setResult(Event.Result.DENY);
-                InventorySaveHandler.skipClick = false;
+                if (event.isCancelable())
+                    event.setCanceled(true);
+            }
+
+            if (InventorySaveHandler.skipClick) {
+                if (event.isCancelable())
+                    event.setCanceled(true);
+                event.setResult(Event.Result.DENY);
             }
         }
     }

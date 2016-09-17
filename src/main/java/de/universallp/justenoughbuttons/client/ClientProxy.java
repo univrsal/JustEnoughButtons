@@ -4,6 +4,7 @@ import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.core.EventHandlers;
 import de.universallp.justenoughbuttons.core.InventorySaveHandler;
 import de.universallp.justenoughbuttons.JEIButtons;
+import de.universallp.justenoughbuttons.core.SaveFileHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -16,9 +17,12 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+
+import java.io.FileNotFoundException;
 
 /**
  * Created by universallp on 11.08.2016 16:02.
@@ -40,6 +44,7 @@ public class ClientProxy extends CommonProxy {
     public static Minecraft mc;
     public static EntityPlayerSP player;
     public static RenderManager renderManager;
+    public static SaveFileHandler saveHandler;
 
     @Override
     public void init(FMLInitializationEvent e) {
@@ -47,7 +52,18 @@ public class ClientProxy extends CommonProxy {
         mc = Minecraft.getMinecraft();
         renderManager = mc.getRenderManager();
         InventorySaveHandler.init();
+        saveHandler = new SaveFileHandler().init();
+
         super.init(e);
+    }
+
+    @Override
+    public void postInit(FMLPostInitializationEvent e) {
+        try {
+            ClientProxy.saveHandler.loadForPlayer();
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
     }
 
     @Override

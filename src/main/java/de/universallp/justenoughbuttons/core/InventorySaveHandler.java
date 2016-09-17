@@ -3,7 +3,6 @@ package de.universallp.justenoughbuttons.core;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -20,7 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 public class InventorySaveHandler {
 
     private static GuiButton[] saveButtons = new GuiButton[4];
-    private static InventorySnapshot[] saves = new InventorySnapshot[4];
+    public static InventorySnapshot[] saves = new InventorySnapshot[4];
     private static final String replaceCommand = "/replaceitem entity @p %s %s %s %s %s";
     public static boolean skipClick = false;
 
@@ -48,7 +47,6 @@ public class InventorySaveHandler {
                     } else {
                         if (ClientProxy.player.inventory.getItemStack() != null) {
                             saves[i].icon = ClientProxy.player.inventory.getItemStack();
-                            skipClick = true;
                         } else
                             saves[i].giveToPlayer();
                     }
@@ -72,8 +70,16 @@ public class InventorySaveHandler {
     }
 
     static void drawButtons(int mouseX, int mouseY) {
+        boolean anyButtonHovered = false;
+
         for (GuiButton s : saveButtons) {
             s.drawButton(ClientProxy.mc, mouseX, mouseY);
+
+            if (s.isMouseOver()) {
+                skipClick = true;
+                anyButtonHovered = true;
+            }
+
             if (saves[s.id] != null) {
                 RenderHelper.enableStandardItemLighting();
                 RenderHelper.enableGUIStandardItemLighting();
@@ -82,16 +88,28 @@ public class InventorySaveHandler {
 
             }
         }
+
+        if (!anyButtonHovered)
+            skipClick = false;
     }
 
-    private static class InventorySnapshot {
+    public static class InventorySnapshot {
         public ItemStack icon;
         NBTTagCompound[] mainInventory;
-        public ItemStack[] armorInventory;
-        public ItemStack[] offHandInventory;
+        NBTTagCompound[] armorInventory;
+        NBTTagCompound offHandInventory;
+
+        public InventorySnapshot(NBTTagCompound icon, NBTTagCompound[] mainInventory, NBTTagCompound[] armorInventory, NBTTagCompound offHandInventory) {
+            this.icon = ItemStack.loadItemStackFromNBT(icon);
+            this.mainInventory = mainInventory;
+            this.armorInventory = armorInventory;
+            this.offHandInventory = offHandInventory;
+        }
 
         InventorySnapshot(InventoryPlayer inv) {
             this.mainInventory = new NBTTagCompound[inv.mainInventory.length];
+            this.armorInventory = new NBTTagCompound[inv.armorInventory.length];
+            this.offHandInventory = new NBTTagCompound();
 
             for (int i = 0; i < inv.mainInventory.length; i++)
                 if (inv.mainInventory[i] != null) {
@@ -99,8 +117,20 @@ public class InventorySaveHandler {
                     inv.mainInventory[i].writeToNBT(nbt);
                     this.mainInventory[i] = nbt;
                 }
-        }
 
+            for (int i = 0; i < inv.armorInventory.length; i++)
+                if (inv.armorInventory[i] != null) {
+                    NBTTagCompound nbt = new NBTTagCompound();
+                    inv.armorInventory[i].writeToNBT(nbt);
+                    this.armorInventory[i] = nbt;
+                }
+
+            if (inv.offHandInventory[0] != null) {
+                NBTTagCompound nbt = new NBTTagCompound();
+                inv.offHandInventory[0].writeToNBT(nbt);
+                this.offHandInventory = nbt;
+            }
+        }
 
         void giveToPlayer() {
             if (!JEIButtons.isServerSidePresent) {
@@ -113,32 +143,38 @@ public class InventorySaveHandler {
                     String nbt = s.hasTagCompound() ? s.getTagCompound().toString() : "";
                     ClientProxy.player.sendChatMessage(String.format(replaceCommand, "slot.inventory." + i,  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt));
                 }
-            } else {
-                byte[] b = new byte[mainInventory.length];
-                for (byte i = 0; i < b.length; i++) b[i] = i;
 
-                CommonProxy.INSTANCE.sendToServer(new MessageRequestStacks(mainInventory, b));
+                for (int i = 0; i < armorInventory.length; i++) {
+                    if (armorInventory[i] == null)
+                        continue;
+                    ItemStack s = ItemStack.loadItemStackFromNBT(armorInventory[i]);
+                    String nbt = s.hasTagCompound() ? s.getTagCompound().toString() : "";
+                    ClientProxy.player.sendChatMessage(String.format(replaceCommand, "slot.armor." + idToSlot(i),  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt));
+                }
+                if (offHandInventory != null) {
+                    ItemStack s = ItemStack.loadItemStackFromNBT(offHandInventory);
+                    String nbt = s.hasTagCompound() ? s.getTagCompound().toString() : "";
+                    ClientProxy.player.sendChatMessage(String.format(replaceCommand, "slot.weapon.offhand",  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt));
+                }
+            } else {
+                CommonProxy.INSTANCE.sendToServer(new MessageRequestStacks(mainInventory, armorInventory, offHandInventory));
             }
 
             ClientProxy.player.inventory.markDirty();
         }
-    }
 
-    private static class ItemReference {
-        String itemName;
-        int itemDamage;
-        byte stackSize;
-        NBTTagCompound nbt;
-
-        public ItemReference(ItemStack s) {
-            this.itemName = s.getItem().getRegistryName().getResourcePath();
-            this.stackSize = (byte) s.stackSize;
-            this.itemDamage = s.getItemDamage();
-            if (s.hasTagCompound())
-                this.nbt = s.getTagCompound();
-            else
-                nbt = null;
+        String idToSlot(int i) {
+            switch (i) {
+                case 0:
+                    return "head";
+                case 1:
+                    return "chest";
+                case 2:
+                    return "legs";
+                case 3:
+                    return "feet";
+            }
+            return "head";
         }
     }
-
 }

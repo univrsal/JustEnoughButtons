@@ -2,6 +2,7 @@ package de.universallp.justenoughbuttons.core;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -19,6 +20,8 @@ public class CommonProxy {
         INSTANCE.registerMessage(MessageNotifyClient.class, MessageNotifyClient.class, 0, Side.CLIENT);
         INSTANCE.registerMessage(MessageRequestStacks.class, MessageRequestStacks.class, 1, Side.SERVER);
     }
+
+    public void postInit(FMLPostInitializationEvent e) { }
 
     public int getMouseX() { return 0;}
 
