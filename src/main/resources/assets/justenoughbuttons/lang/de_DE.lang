@@ -17,3 +17,6 @@ justenoughbuttons.clearinventory=Oder klicke um das Inventar zu leeren
 justenoughbuttons.save=Speicher
 justenoughbuttons.load=Lade
 justenoughbuttons.nbttoolong=Dieser Befehl ist zu lang!
+justenoughbuttons.magnet.off=Schalte Magnetmodus aus
+justenoughbuttons.magnet.on=Schalte Magnetmodus an
+justenoughbuttons.magnetitems=Ziehe Items an

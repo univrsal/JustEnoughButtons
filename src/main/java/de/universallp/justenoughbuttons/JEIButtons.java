@@ -49,6 +49,7 @@ public class JEIButtons {
     public static EnumButtonCommands btnNight    = EnumButtonCommands.NIGHT;
     public static EnumButtonCommands btnNoMobs   = EnumButtonCommands.NOMOBS;
     public static EnumButtonCommands btnFreeze   = EnumButtonCommands.FREEZETIME;
+    public static EnumButtonCommands btnMagnet   = EnumButtonCommands.MAGNET;
 
     public static EnumButtonCommands[] btnCustom   = new EnumButtonCommands[] { EnumButtonCommands.CUSTOM1, EnumButtonCommands.CUSTOM2,
                                                                                 EnumButtonCommands.CUSTOM3, EnumButtonCommands.CUSTOM4 };
@@ -86,6 +87,7 @@ public class JEIButtons {
         NIGHT("time set night", 25, 26),
         FREEZETIME("gamerule doDaylightCycle", 25, 47),
         NOMOBS("kill @e[type=!Player]", 5, 47),
+        MAGNET("tp", 5, 47),
         CUSTOM1("", 5, 68, 0),
         CUSTOM2("", 25, 68, 1),
         CUSTOM3("", 5, 89, 2),
@@ -203,6 +205,7 @@ public class JEIButtons {
         public static boolean enableSpectatoreMode = true;
 
         public static boolean enableSaves    = true;
+        public static int magnetRadius = 8;
 
         static boolean enableGamemode = true;
         static boolean enableDelete   = true;
@@ -210,6 +213,7 @@ public class JEIButtons {
         static boolean enableWeather  = true;
         static boolean enableKillMobs = true;
         static boolean enableDayCycle = true;
+        static boolean enableMagnet   = true;
         static boolean[] enableCustom   = new boolean[] { false, false, false, false };
 
         public static String[] customCommand = new String[] { "help", "help", "help", "help" }; // Halp halp halp
@@ -234,8 +238,11 @@ public class JEIButtons {
             enableTime           = config.getBoolean("enableTime",           CATEGORY, true, "When false the time buttons will be disabled");
             enableKillMobs       = config.getBoolean("enableKillMobs",       CATEGORY, true, "When false the kill entities button will be disabled");
             enableDayCycle       = config.getBoolean("enableDayCycle",       CATEGORY, true, "When false the freeze time button will be disabled");
+            enableMagnet         = config.getBoolean("enableMagnet",         CATEGORY, true, "When false the magnet mode button will be disabled");
 
             enableSaves          = config.getBoolean("enableSaves",         CATEGORY, true, "When false the four save slots will be disabled");
+
+            magnetRadius         = config.getInt("magnetRadius", CATEGORY, 12, 1, 32, "The radius in which the magnet mode attracts items");
 
             // Custom Buttons
 

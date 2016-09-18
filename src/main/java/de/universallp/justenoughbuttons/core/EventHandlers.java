@@ -51,7 +51,9 @@ public class EventHandlers {
     private boolean isLMBDown = false;
     private boolean isRMBDown = false;
     private static BlockPos lastPlayerPos = null;
+
     private boolean drawMobOverlay   = false;
+    private boolean magnetMode       = false;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiDraw(GuiScreenEvent.DrawScreenEvent e) {
@@ -73,14 +75,19 @@ public class EventHandlers {
 
             JEIButtons.isAnyButtonHovered = false;
             gameRuleDayCycle = ClientProxy.mc.theWorld.getGameRules().getBoolean("doDaylightCycle");
-            btnGameMode.draw(g);
-            btnTrash.draw(g);
-            btnSun.draw(g);
-            btnRain.draw(g);
-            btnDay.draw(g);
-            btnNight.draw(g);
-            btnNoMobs.draw(g);
-            btnFreeze.draw(g);
+
+            {
+                btnGameMode.draw(g);
+                btnTrash.draw(g);
+                btnSun.draw(g);
+                btnRain.draw(g);
+                btnDay.draw(g);
+                btnNight.draw(g);
+                btnNoMobs.draw(g);
+                btnFreeze.draw(g);
+                btnMagnet.draw(g);
+            }
+
             if (JEIButtons.ConfigHandler.enableSaves)
                 InventorySaveHandler.drawButtons(mouseX, mouseY);
 
@@ -127,7 +134,17 @@ public class EventHandlers {
                         }
                     }
 
-                    pl.sendChatMessage(command);
+                    if (JEIButtons.hoveredButton == EnumButtonCommands.MAGNET) {
+                        if (JEIButtons.isServerSidePresent) {
+                            command = null;
+                            magnetMode = !magnetMode;
+                        } else
+                            command = "/tp @e[type=Item,r=" + ConfigHandler.magnetRadius + "] @p";
+                    }
+
+                    if (command != null)
+                        pl.sendChatMessage(command);
+
                     JEIButtons.proxy.playClick();
 
                     if (JEIButtons.hoveredButton.ordinal() < 4) // Game mode buttons
@@ -251,12 +268,22 @@ public class EventHandlers {
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
-        if (drawMobOverlay && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
             if (lastPlayerPos == null || !lastPlayerPos.equals(ClientProxy.player.getPosition())) {
-                MobOverlayRenderer.cacheMobSpawns(ClientProxy.player);
-                lastPlayerPos = ClientProxy.player.getPosition();
+                if (drawMobOverlay)
+                    MobOverlayRenderer.cacheMobSpawns(ClientProxy.player);
+
+                if (magnetMode)
+                    magnetItems();
+
+                if (magnetMode || drawMobOverlay)
+                    lastPlayerPos = ClientProxy.player.getPosition();
             }
         }
+    }
+
+    public void magnetItems() {
+        ClientProxy.player.sendChatMessage("/tp @e[type=Item,r=" + ConfigHandler.magnetRadius + "] @p");
     }
 
     @SubscribeEvent
@@ -315,6 +342,16 @@ public class EventHandlers {
                 break;
             case SUN:
                 list.add(I18n.format("commands.weather.clear"));
+                break;
+            case MAGNET:
+                if (JEIButtons.isServerSidePresent) {
+                    if (magnetMode)
+                        list.add(I18n.format("justenoughbuttons.magnet.off"));
+                    else
+                        list.add(I18n.format("justenoughbuttons.magnet.on"));
+                } else
+                    list.add(I18n.format("justenoughbuttons.magnetitems"));
+
                 break;
             case CUSTOM1:
             case CUSTOM2:

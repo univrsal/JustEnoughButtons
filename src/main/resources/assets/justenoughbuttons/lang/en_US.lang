@@ -17,3 +17,6 @@ justenoughbuttons.key.chunkOverlay=Show/Hide Chunkboundaries
 justenoughbuttons.save=Save
 justenoughbuttons.load=Load
 justenoughbuttons.nbttoolong=This command is too long to be sent!
+justenoughbuttons.magnet.off=Turn magnet mode off
+justenoughbuttons.magnet.on=Turn magnet mode on
+justenoughbuttons.magnetitems=Magnet items
