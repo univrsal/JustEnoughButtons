@@ -18,7 +18,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 /**
  * Created by universallp on 09.08.2016 16:07.
@@ -87,7 +86,7 @@ public class JEIButtons {
         NIGHT("time set night", 25, 26),
         FREEZETIME("gamerule doDaylightCycle", 25, 47),
         NOMOBS("kill @e[type=!Player]", 5, 47),
-        MAGNET("tp", 5, 47),
+        MAGNET("tp", 25, 47),
         CUSTOM1("", 5, 68, 0),
         CUSTOM2("", 25, 68, 1),
         CUSTOM3("", 5, 89, 2),
@@ -181,11 +180,13 @@ public class JEIButtons {
         }
 
         public String getCommand() {
-            return this.ordinal() > NOMOBS.ordinal() ? ConfigHandler.customCommand[id] : command;
+            return this.ordinal() > MAGNET.ordinal() ? ConfigHandler.customCommand[id] : command;
         }
 
         public int iconID() {
-            return this.ordinal() > NOMOBS.ordinal() ? CUSTOM1.ordinal() : this.ordinal();
+            if (this == MAGNET)
+                return 12;
+            return this.ordinal() > MAGNET.ordinal() ? 11 : this.ordinal();
         }
     }
 
@@ -265,6 +266,7 @@ public class JEIButtons {
             btnFreeze.setVisible(enableDayCycle);
             btnRain.setVisible(enableWeather);
             btnSun.setVisible(enableWeather);
+            btnMagnet.setVisible(enableMagnet);
 
             for (int i = 0; i < btnCustom.length; i++)
                 btnCustom[i].setVisible(enableCustom[i]);
@@ -294,7 +296,7 @@ public class JEIButtons {
 
     public static void setUpPositions() {
         EnumButtonCommands[] btns = new EnumButtonCommands[] { btnGameMode, btnRain, btnSun, btnTrash, btnDay, btnNight,
-                                                               btnNoMobs, btnFreeze, btnCustom[0], btnCustom[1], btnCustom[2], btnCustom[3],};
+                                                               btnNoMobs, btnFreeze, btnMagnet, btnCustom[0], btnCustom[1], btnCustom[2], btnCustom[3],};
 
         int x = 0, y = 0;
         for (EnumButtonCommands b : btns) {
@@ -307,7 +309,10 @@ public class JEIButtons {
             if (y == 0 && x == 4) {
                 y++;
                 x = 0;
-            } else if (x % 2 == 0 && y > 0) {
+            } else if (y == 1 && x == 3) {
+                y++;
+                x = 0;
+            } else if (x % 2 == 0 && y > 1) {
                 x = 0;
                 y++;
             }
