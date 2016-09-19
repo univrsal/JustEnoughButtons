@@ -16,3 +16,7 @@ justenoughbuttons.key.mobOverlay=Показать/спрятать оверле�
 justenoughbuttons.key.chunkOverlay=Показать/спрятать границы чанков
 justenoughbuttons.save=Сохранить
 justenoughbuttons.load=Загрузить
+justenoughbuttons.nbttoolong=Эта команда слишком большая!
+justenoughbuttons.magnet.off=Выключить режим магнита
+justenoughbuttons.magnet.on=Включить режим магнита
+justenoughbuttons.magnetitems=Притягивает предметы
