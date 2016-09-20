@@ -17,13 +17,18 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public class CommonProxy {
     public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(JEIButtons.MODID);
+    public static final MagnetModeHandler MAGNET_MODE_HANDLER = new MagnetModeHandler();
 
     public void init(FMLInitializationEvent e) {
         INSTANCE.registerMessage(MessageNotifyClient.class, MessageNotifyClient.class, 0, Side.CLIENT);
         INSTANCE.registerMessage(MessageRequestStacks.class, MessageRequestStacks.class, 1, Side.SERVER);
+        INSTANCE.registerMessage(MessageMagnetMode.class, MessageMagnetMode.class, 2, Side.SERVER);
 
-        if (FMLCommonHandler.instance().getSide() == Side.SERVER)
+        MinecraftForge.EVENT_BUS.register(MAGNET_MODE_HANDLER);
+        if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
             MinecraftForge.EVENT_BUS.register(new ClientNotifyHandler());
+
+        }
     }
 
     public void postInit(FMLPostInitializationEvent e) { }

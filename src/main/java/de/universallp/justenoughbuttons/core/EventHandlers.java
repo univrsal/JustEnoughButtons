@@ -117,9 +117,12 @@ public class EventHandlers {
                     if (JEIButtons.hoveredButton == EnumButtonCommands.DELETE) {
 
                         ItemStack draggedStack = pl.inventory.getItemStack();
-                        if (draggedStack == null)
-                            command = "/clear";
-                        else {
+                        if (draggedStack == null) {
+                            if (GuiScreen.isShiftKeyDown())
+                                command = "/clear";
+                            else
+                                command = null;
+                        } else {
                             String name  = draggedStack.getItem().getRegistryName().toString();
 
                             command += pl.getDisplayName().getUnformattedText() + " " + name;
@@ -137,6 +140,7 @@ public class EventHandlers {
                     if (JEIButtons.hoveredButton == EnumButtonCommands.MAGNET) {
                         if (JEIButtons.isServerSidePresent) {
                             command = null;
+                            CommonProxy.INSTANCE.sendToServer(new MessageMagnetMode(magnetMode));
                             magnetMode = !magnetMode;
                         } else
                             command = "/tp @e[type=Item,r=" + ConfigHandler.magnetRadius + "] @p";
@@ -273,17 +277,10 @@ public class EventHandlers {
                 if (drawMobOverlay)
                     MobOverlayRenderer.cacheMobSpawns(ClientProxy.player);
 
-                if (magnetMode)
-                    magnetItems();
-
-                if (magnetMode || drawMobOverlay)
+                if (drawMobOverlay)
                     lastPlayerPos = ClientProxy.player.getPosition();
             }
         }
-    }
-
-    public void magnetItems() {
-        ClientProxy.player.sendChatMessage("/tp @e[type=Item,r=" + ConfigHandler.magnetRadius + "] @p");
     }
 
     @SubscribeEvent
