@@ -29,7 +29,7 @@ import java.io.File;
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
-    public static final String VERSION = "1.10.2-1.6.1";
+    public static final String VERSION = "1.10.2-1.6.2";
     public static final String MOD_MOREOVERLAYS = "moreoverlays";
     public static boolean isServerSidePresent = false;
     public static boolean enableOverlays = true;
@@ -59,7 +59,10 @@ public class JEIButtons {
     public static boolean isAnyButtonHovered;
 
     @EventHandler
-    public void preInit(FMLPreInitializationEvent event) { ConfigHandler.loadConfig(event.getSuggestedConfigurationFile()); }
+    public void preInit(FMLPreInitializationEvent event) {
+        ConfigHandler.loadConfig(event.getSuggestedConfigurationFile());
+        proxy.preInit(event);
+    }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
@@ -208,6 +211,8 @@ public class JEIButtons {
         public static boolean enableSaves    = true;
         public static int magnetRadius = 8;
 
+        public static boolean enableClearInventory = false;
+
         static boolean enableGamemode = true;
         static boolean enableDelete   = true;
         static boolean enableTime     = true;
@@ -244,6 +249,8 @@ public class JEIButtons {
             enableSaves          = config.getBoolean("enableSaves",         CATEGORY, true, "When false the four save slots will be disabled");
 
             magnetRadius         = config.getInt("magnetRadius", CATEGORY, 12, 1, 32, "The radius in which the magnet mode attracts items");
+
+            enableClearInventory = config.getBoolean("enableClearInventory", CATEGORY, false, "When true shift clicking the delete buttonwill clear your inventory");
 
             // Custom Buttons
 

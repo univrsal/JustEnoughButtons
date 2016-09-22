@@ -12,12 +12,16 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -45,6 +49,20 @@ public class ClientProxy extends CommonProxy {
     public static EntityPlayerSP player;
     public static RenderManager renderManager;
     public static SaveFileHandler saveHandler;
+
+
+    private static void versionCheck() {
+        final NBTTagCompound compound = new NBTTagCompound();
+        compound.setString("curseProjectName", "just-enough-buttons");
+        compound.setString("curseFilenameParser", "justenoughbuttons-" + ForgeVersion.mcVersion + "-[].jar");
+        FMLInterModComms.sendRuntimeMessage(JEIButtons.MODID, "VersionChecker", "addCurseCheck", compound);
+    }
+
+    @Override
+    public void preInit(FMLPreInitializationEvent e) {
+        versionCheck();
+        super.preInit(e);
+    }
 
     @Override
     public void init(FMLInitializationEvent e) {

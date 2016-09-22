@@ -8,6 +8,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -55,8 +56,10 @@ public class EventHandlers {
     private boolean drawMobOverlay   = false;
     private boolean magnetMode       = false;
 
+    private int mouseX = 0;
+    private int mouseY = 0;
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onGuiDraw(GuiScreenEvent.DrawScreenEvent e) {
+    public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent e) {
         if (JEIButtons.configHasChanged) {
             JEIButtons.configHasChanged = false;
             setUpPositions();
@@ -65,8 +68,8 @@ public class EventHandlers {
         if (JEIButtons.isServerSidePresent && e.getGui() instanceof GuiMainMenu) {
             JEIButtons.isServerSidePresent = false;
         } else if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
-            int mouseY = JEIButtons.proxy.getMouseY();
-            int mouseX = JEIButtons.proxy.getMouseX();
+            mouseY = JEIButtons.proxy.getMouseY();
+            mouseX = JEIButtons.proxy.getMouseX();
             GuiContainer g = (GuiContainer) e.getGui();
             EntityPlayerSP pl = ClientProxy.player;
 
@@ -75,6 +78,10 @@ public class EventHandlers {
 
             JEIButtons.isAnyButtonHovered = false;
             gameRuleDayCycle = ClientProxy.mc.theWorld.getGameRules().getBoolean("doDaylightCycle");
+
+            GlStateManager.disableBlend();
+
+            GlStateManager.disableLighting();
 
             {
                 btnGameMode.draw(g);
@@ -96,14 +103,6 @@ public class EventHandlers {
 
             adjustGamemode();
 
-            if (JEIButtons.isAnyButtonHovered) {
-                List<String> tip = getTooltip(JEIButtons.hoveredButton);
-                if (tip != null) {
-                    GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
-                    RenderHelper.disableStandardItemLighting();
-                }
-            }
-
             if (Mouse.isButtonDown(0) && !isLMBDown) {
                 isLMBDown = true;
 
@@ -118,7 +117,7 @@ public class EventHandlers {
 
                         ItemStack draggedStack = pl.inventory.getItemStack();
                         if (draggedStack == null) {
-                            if (GuiScreen.isShiftKeyDown())
+                            if (GuiScreen.isShiftKeyDown() && ConfigHandler.enableClearInventory)
                                 command = "/clear";
                             else
                                 command = null;
@@ -168,6 +167,17 @@ public class EventHandlers {
                     JEIButtons.proxy.playClick();
             } else if (!Mouse.isButtonDown(1))
                 isRMBDown = false;
+        }
+    }
+
+    @SubscribeEvent
+    public void onDrawScreenPost(GuiScreenEvent.DrawScreenEvent.Post e) {
+        if (JEIButtons.isAnyButtonHovered) {
+            List<String> tip = getTooltip(JEIButtons.hoveredButton);
+            if (tip != null) {
+                GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
+                RenderHelper.disableStandardItemLighting();
+            }
         }
     }
 
@@ -322,7 +332,8 @@ public class EventHandlers {
                 } else {
                     list.add(I18n.format("justenoughbuttons.dragitemshere"));
                     list.add(ChatFormatting.GRAY + I18n.format("justenoughbuttons.holdshift"));
-                    list.add(ChatFormatting.GRAY + I18n.format("justenoughbuttons.clearinventory"));
+                    if (ConfigHandler.enableClearInventory)
+                        list.add(ChatFormatting.GRAY + I18n.format("justenoughbuttons.clearinventory"));
                 }
                 break;
             case FREEZETIME:
