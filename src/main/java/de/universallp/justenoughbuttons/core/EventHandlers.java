@@ -1,6 +1,7 @@
 package de.universallp.justenoughbuttons.core;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
+import com.sun.security.ntlm.Client;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.MobOverlayRenderer;
 import de.universallp.justenoughbuttons.client.ClientProxy;
@@ -8,6 +9,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
@@ -53,11 +55,13 @@ public class EventHandlers {
     private boolean isRMBDown = false;
     private static BlockPos lastPlayerPos = null;
 
-    private boolean drawMobOverlay   = false;
-    private boolean magnetMode       = false;
+    private boolean drawMobOverlay = false;
+    private boolean magnetMode     = false;
 
     private int mouseX = 0;
     private int mouseY = 0;
+    private static boolean skipNext = false;
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent e) {
         if (JEIButtons.configHasChanged) {
@@ -167,6 +171,9 @@ public class EventHandlers {
                     JEIButtons.proxy.playClick();
             } else if (!Mouse.isButtonDown(1))
                 isRMBDown = false;
+        } else {
+            JEIButtons.isAnyButtonHovered = false;
+            JEIButtons.hoveredButton = null;
         }
     }
 
@@ -230,21 +237,33 @@ public class EventHandlers {
     }
 
     @SubscribeEvent
-    public void handleKeyInputEvent(GuiScreenEvent.KeyboardInputEvent e) {
+    public void handleKeyInputEvent(GuiScreenEvent.KeyboardInputEvent.Pre e) {
         GuiScreen gui = ClientProxy.mc.currentScreen;
-        if (ConfigHandler.showButtons && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-            if (gui != null && gui instanceof GuiContainer && Keyboard.isKeyDown(ClientProxy.makeCopyKey.getKeyCode())) {
+
+        if (gui != null && gui instanceof GuiContainer) {
+            int eventKey = Keyboard.getEventKey();
+            if (ClientProxy.makeCopyKey.isActiveAndMatches(eventKey)) {
                 Slot hovered = ((GuiContainer) gui).getSlotUnderMouse();
 
-                if (ClientProxy.player.inventory.getItemStack() == null && hovered != null && hovered.getHasStack()) {
-                    ItemStack stack = hovered.getStack().copy();
-                    if (ClientProxy.player.capabilities.isCreativeMode)
-                        stack.stackSize = 0;
-                    else
-                        stack.stackSize = 1;
-                    ClientProxy.player.inventory.setItemStack(stack);
-                }
+                if (hovered != null)
+                    if (FMLClientHandler.instance().getClientPlayerEntity().inventory.getItemStack() == null && hovered.getHasStack()) {
+                        ItemStack stack = hovered.getStack().copy();
+                        if (ClientProxy.player.capabilities.isCreativeMode)
+                            stack.stackSize = 0;
+                        else
+                            stack.stackSize = 1;
+                        ClientProxy.player.inventory.setItemStack(stack);
+                        e.setCanceled(true);
+                    }
+            } else if (ClientProxy.hideall.isActiveAndMatches(eventKey)) {
+                if (!skipNext) {
+                    ConfigHandler.showButtons = !ConfigHandler.showButtons;
+                    e.setCanceled(true);
+                    skipNext = true;
+                } else
+                    skipNext = false;
             }
+        }
     }
 
     @SubscribeEvent
@@ -298,8 +317,9 @@ public class EventHandlers {
         if (drawMobOverlay)
             MobOverlayRenderer.renderMobSpawnOverlay();
 
-        if (ClientProxy.mc.currentScreen == null)
+        if (ClientProxy.mc.currentScreen == null) {
             InventorySaveHandler.skipClick = false;
+        }
     }
 
     public List<String> getTooltip(EnumButtonCommands btn) {

@@ -42,6 +42,8 @@ public class CommonProxy {
 
     public int getMouseY() { return 0; }
 
+    public int getScreenWidth() { return 0; };
+
     public void registerKeyBind() { }
 
     public void playClick() { }

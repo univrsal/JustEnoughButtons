@@ -13,6 +13,8 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -40,16 +42,16 @@ public class ClientProxy extends CommonProxy {
     private static final String KEY_MAKECOPY = "justenoughbuttons.key.makecopy";
     private static final String KEY_MOBOVERLAY = "justenoughbuttons.key.mobOverlay";
     private static final String KEY_CHUNKOVERLAY = "justenoughbuttons.key.chunkOverlay";
+    private static final String KEY_HIDE_OVERLAY = "justenoughbuttons.key.hideall";
 
     public static KeyBinding makeCopyKey = new KeyBinding(KEY_MAKECOPY, Keyboard.KEY_C, KEY_CATEGORY);
+    public static KeyBinding hideall = new KeyBinding(KEY_HIDE_OVERLAY, KeyConflictContext.GUI, KeyModifier.CONTROL, Keyboard.KEY_H, KEY_CATEGORY);
     public static KeyBinding mobOverlay;
     public static KeyBinding chunkOverlay;
-
     public static Minecraft mc;
     public static EntityPlayerSP player;
     public static RenderManager renderManager;
     public static SaveFileHandler saveHandler;
-
 
     private static void versionCheck() {
         final NBTTagCompound compound = new NBTTagCompound();
@@ -99,8 +101,16 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
+    public int getScreenWidth() {
+        ScaledResolution resolution = new ScaledResolution(ClientProxy.mc);
+        return resolution.getScaledWidth();
+    }
+
+    @Override
     public void registerKeyBind() {
         ClientRegistry.registerKeyBinding(makeCopyKey);
+        ClientRegistry.registerKeyBinding(hideall);
+
         if (!Loader.isModLoaded(JEIButtons.MOD_MOREOVERLAYS)) {
             mobOverlay = new KeyBinding(KEY_MOBOVERLAY, Keyboard.KEY_F7, KEY_CATEGORY);
             chunkOverlay = new KeyBinding(KEY_CHUNKOVERLAY, Keyboard.KEY_F4, KEY_CATEGORY);
