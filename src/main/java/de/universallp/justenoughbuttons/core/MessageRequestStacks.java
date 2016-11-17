@@ -84,19 +84,19 @@ public class MessageRequestStacks implements IMessage, IMessageHandler<MessageRe
             if (message.mainInventory != null)
                 for (int i = 0; i < message.mainInventory.length; i++) {
                     if (message.mainInventory[i] != null) {
-                        p.inventory.mainInventory[i] = ItemStack.loadItemStackFromNBT(message.mainInventory[i]);
+                        p.inventory.mainInventory.set(i, new ItemStack(message.mainInventory[i]));
                     }
                 }
 
             if (message.armorInventory != null)
                 for (int i = 0; i < message.armorInventory.length; i++) {
                     if (message.armorInventory[i] != null) {
-                        p.inventory.armorInventory[i] = ItemStack.loadItemStackFromNBT(message.armorInventory[i]);
+                        p.inventory.armorInventory.set(i, new ItemStack(message.armorInventory[i]));
                     }
                 }
 
             if (message.offHand != null) {
-                p.inventory.offHandInventory[0] = ItemStack.loadItemStackFromNBT(message.offHand);
+                p.inventory.offHandInventory.set(0, new ItemStack(message.offHand));
             }
         }
 

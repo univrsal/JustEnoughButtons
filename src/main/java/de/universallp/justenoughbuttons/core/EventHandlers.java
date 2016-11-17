@@ -2,8 +2,8 @@ package de.universallp.justenoughbuttons.core;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import de.universallp.justenoughbuttons.JEIButtons;
-import de.universallp.justenoughbuttons.client.MobOverlayRenderer;
 import de.universallp.justenoughbuttons.client.ClientProxy;
+import de.universallp.justenoughbuttons.client.MobOverlayRenderer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -117,7 +117,7 @@ public class EventHandlers {
                     if (JEIButtons.hoveredButton == EnumButtonCommands.DELETE) {
 
                         ItemStack draggedStack = pl.inventory.getItemStack();
-                        if (draggedStack == null) {
+                        if (draggedStack.equals(ItemStack.field_190927_a)) {
                             if (GuiScreen.isShiftKeyDown())
                                 command = "/clear";
                             else
@@ -132,8 +132,8 @@ public class EventHandlers {
                                 command += " " + data;
                             }
 
-                            if (draggedStack.stackSize == 0)
-                                pl.inventory.setItemStack(null);
+                            if (draggedStack.func_190916_E() == 0)
+                                pl.inventory.setItemStack(ItemStack.field_190927_a);
                         }
                     }
 
@@ -226,12 +226,12 @@ public class EventHandlers {
             if (gui != null && gui instanceof GuiContainer && Keyboard.isKeyDown(ClientProxy.makeCopyKey.getKeyCode())) {
                 Slot hovered = ((GuiContainer) gui).getSlotUnderMouse();
 
-                if (ClientProxy.player.inventory.getItemStack() == null && hovered != null && hovered.getHasStack()) {
+                if (ClientProxy.player.inventory.getItemStack().equals(ItemStack.field_190927_a) && !hovered.getStack().equals(ItemStack.field_190927_a) && hovered.getHasStack()) {
                     ItemStack stack = hovered.getStack().copy();
                     if (ClientProxy.player.capabilities.isCreativeMode)
-                        stack.stackSize = 0;
+                        stack.func_190920_e(0);
                     else
-                        stack.stackSize = 1;
+                        stack.func_190920_e(1);
                     ClientProxy.player.inventory.setItemStack(stack);
                 }
             }
@@ -240,7 +240,7 @@ public class EventHandlers {
     @SubscribeEvent
     public void onMouseEvent(GuiScreenEvent.MouseInputEvent event) {
         if (Mouse.getEventButton() == 0) {
-            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE && ClientProxy.player.inventory.getItemStack() != null) {
+            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE && !ClientProxy.player.inventory.getItemStack().equals(ItemStack.field_190927_a)) {
                 event.setResult(Event.Result.DENY);
                 if (event.isCancelable())
                     event.setCanceled(true);
@@ -260,8 +260,8 @@ public class EventHandlers {
             if (ClientProxy.mobOverlay.isKeyDown())
                 drawMobOverlay = !drawMobOverlay;
 
-            if (ClientProxy.chunkOverlay.isKeyDown())
-                ClientProxy.mc.debugRenderer.func_190075_b();
+//            if (ClientProxy.chunkOverlay.isKeyDown())
+//                ClientProxy.mc.debugRenderer.;
 
             if (!drawMobOverlay) {
                 MobOverlayRenderer.clearCache();

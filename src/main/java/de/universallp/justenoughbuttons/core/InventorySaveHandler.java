@@ -3,7 +3,6 @@ package de.universallp.justenoughbuttons.core;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -47,10 +46,12 @@ public class InventorySaveHandler {
                         String load = I18n.format("justenoughbuttons.load") + " ";
                         saveButtons[i].displayString = load + (i + 1);
                     } else {
-                        if (ClientProxy.player.inventory.getItemStack() != null) {
+                        if (!ClientProxy.player.inventory.getItemStack().func_190926_b()) {
                             saves[i].icon = ClientProxy.player.inventory.getItemStack();
-                        } else
+                        } else {
                             saves[i].giveToPlayer();
+                            System.out.println("Giev!");
+                        }
                     }
 
                     flag = true;
@@ -74,6 +75,9 @@ public class InventorySaveHandler {
     static void drawButtons(int mouseX, int mouseY) {
         boolean anyButtonHovered = false;
 
+        if (saves == null || saves.length <= 0)
+            return;
+
         for (GuiButton s : saveButtons) {
             if (!ClientProxy.player.canCommandSenderUseCommand(1, ""))
                 s.enabled = false;
@@ -87,7 +91,7 @@ public class InventorySaveHandler {
                 anyButtonHovered = true;
             }
 
-            if (saves[s.id] != null) {
+            if (saves[s.id] != null && saves[s.id].icon != null) {
                 RenderHelper.enableStandardItemLighting();
                 RenderHelper.enableGUIStandardItemLighting();
                 ClientProxy.mc.getRenderItem().renderItemAndEffectIntoGUI(saves[s.id].icon, s.xPosition + s.width + 2, s.yPosition + 2);
@@ -107,36 +111,34 @@ public class InventorySaveHandler {
         NBTTagCompound offHandInventory;
 
         public InventorySnapshot(NBTTagCompound icon, NBTTagCompound[] mainInventory, NBTTagCompound[] armorInventory, NBTTagCompound offHandInventory) {
-            this.icon = ItemStack.loadItemStackFromNBT(icon);
+            this.icon = new ItemStack(icon);
             this.mainInventory = mainInventory;
             this.armorInventory = armorInventory;
             this.offHandInventory = offHandInventory;
         }
 
         InventorySnapshot(InventoryPlayer inv) {
-            this.mainInventory = new NBTTagCompound[inv.mainInventory.length];
-            this.armorInventory = new NBTTagCompound[inv.armorInventory.length];
+            this.mainInventory = new NBTTagCompound[inv.mainInventory.size()];
+            this.armorInventory = new NBTTagCompound[inv.armorInventory.size()];
             this.offHandInventory = new NBTTagCompound();
 
-            for (int i = 0; i < inv.mainInventory.length; i++)
-                if (inv.mainInventory[i] != null) {
-                    NBTTagCompound nbt = new NBTTagCompound();
-                    inv.mainInventory[i].writeToNBT(nbt);
-                    this.mainInventory[i] = nbt;
-                }
-
-            for (int i = 0; i < inv.armorInventory.length; i++)
-                if (inv.armorInventory[i] != null) {
-                    NBTTagCompound nbt = new NBTTagCompound();
-                    inv.armorInventory[i].writeToNBT(nbt);
-                    this.armorInventory[i] = nbt;
-                }
-
-            if (inv.offHandInventory[0] != null) {
+            for (int i = 0; i < inv.mainInventory.size(); i++) {
                 NBTTagCompound nbt = new NBTTagCompound();
-                inv.offHandInventory[0].writeToNBT(nbt);
-                this.offHandInventory = nbt;
+                inv.mainInventory.get(i).writeToNBT(nbt);
+                this.mainInventory[i] = nbt;
             }
+
+            for (int i = 0; i < inv.armorInventory.size(); i++){
+                    NBTTagCompound nbt = new NBTTagCompound();
+                    inv.armorInventory.get(i).writeToNBT(nbt);
+                    this.armorInventory[i] = nbt;
+            }
+
+
+            NBTTagCompound nbt = new NBTTagCompound();
+            inv.offHandInventory.get(0).writeToNBT(nbt);
+            this.offHandInventory = nbt;
+
         }
 
         void giveToPlayer() {
@@ -148,12 +150,12 @@ public class InventorySaveHandler {
                 for (int i = 0; i < mainInventory.length; i++) {
                     if (mainInventory[i] == null)
                         continue;
-                    ItemStack s = ItemStack.loadItemStackFromNBT(mainInventory[i]);
+                    ItemStack s = new ItemStack(mainInventory[i]);
                     nbt = s.getTagCompound() != null  ? s.getTagCompound().toString() : "";
                     if (i < 9)
-                        cmd = String.format(replaceCommand, "slot.hotbar." + i,  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt);
+                        cmd = String.format(replaceCommand, "slot.hotbar." + i,  s.getItem().getRegistryName(), s.func_190916_E(), s.getItemDamage(), nbt);
                     else
-                        cmd = String.format(replaceCommand, "slot.inventory." + (i - 9),  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt);
+                        cmd = String.format(replaceCommand, "slot.inventory." + (i - 9),  s.getItem().getRegistryName(), s.func_190916_E(), s.getItemDamage(), nbt);
                     if (checkCommandLength(cmd))
                         ClientProxy.player.sendChatMessage(cmd);
                 }
@@ -161,21 +163,20 @@ public class InventorySaveHandler {
                 for (int i = 0; i < armorInventory.length; i++) {
                     if (armorInventory[i] == null)
                         continue;
-                    ItemStack s = ItemStack.loadItemStackFromNBT(armorInventory[i]);
+                    ItemStack s = new ItemStack(armorInventory[i]);
                     nbt = s.getTagCompound() != null ? s.getTagCompound().toString() : "";
-                    cmd = String.format(replaceCommand, "slot.armor." + idToSlot(i),  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt);
+                    cmd = String.format(replaceCommand, "slot.armor." + idToSlot(i),  s.getItem().getRegistryName(), s.func_190916_E(), s.getItemDamage(), nbt);
                     if (checkCommandLength(cmd))
                         ClientProxy.player.sendChatMessage(cmd);
                 }
 
                 if (offHandInventory != null) {
-                    ItemStack s = ItemStack.loadItemStackFromNBT(offHandInventory);
-                    if (s != null) {
-                        nbt = s.getTagCompound() != null ? s.getTagCompound().toString() : "";
-                        cmd = String.format(replaceCommand, "slot.weapon.offhand",  s.getItem().getRegistryName(), s.stackSize, s.getItemDamage(), nbt);
-                        if (checkCommandLength(cmd))
-                            ClientProxy.player.sendChatMessage(cmd);
-                    }
+                    ItemStack s = new ItemStack(offHandInventory);
+                    nbt = s.getTagCompound() != null ? s.getTagCompound().toString() : "";
+                    cmd = String.format(replaceCommand, "slot.weapon.offhand",  s.getItem().getRegistryName(), s.func_190916_E(), s.getItemDamage(), nbt);
+                    if (checkCommandLength(cmd))
+                        ClientProxy.player.sendChatMessage(cmd);
+
                 }
             } else {
                 CommonProxy.INSTANCE.sendToServer(new MessageRequestStacks(mainInventory, armorInventory, offHandInventory));

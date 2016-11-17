@@ -1,6 +1,5 @@
 package de.universallp.justenoughbuttons.client;
 
-import de.universallp.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -96,7 +95,7 @@ public class MobOverlayRenderer {
             for (int z = entZ - 16; z <= entZ + 16; z++) {
                 BlockPos pos = new BlockPos(x, entY, z);
                 Chunk chunk = world.getChunkFromBlockCoords(pos);
-                Biome biome = world.getBiomeGenForCoords(pos);
+                Biome biome = world.getBiome(pos);
 
                 if (biome.getSpawnableList(EnumCreatureType.MONSTER).isEmpty() || biome.getSpawningChance() <= 0)
                     continue;
