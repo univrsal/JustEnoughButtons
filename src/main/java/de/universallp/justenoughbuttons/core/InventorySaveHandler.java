@@ -47,10 +47,9 @@ public class InventorySaveHandler {
                         saveButtons[i].displayString = load + (i + 1);
                     } else {
                         if (!ClientProxy.player.inventory.getItemStack().func_190926_b()) {
-                            saves[i].icon = ClientProxy.player.inventory.getItemStack();
+                            saves[i].icon = ClientProxy.player.inventory.getItemStack().copy();
                         } else {
                             saves[i].giveToPlayer();
-                            System.out.println("Giev!");
                         }
                     }
 

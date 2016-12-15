@@ -29,7 +29,7 @@ import java.io.File;
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
-    public static final String VERSION = "1.11-1.0";
+    public static final String VERSION = "1.11-1.1";
     public static final String MOD_MOREOVERLAYS = "moreoverlays";
     public static boolean isServerSidePresent = false;
     public static boolean enableOverlays = true;
@@ -172,11 +172,7 @@ public class JEIButtons {
             }
 
             parent.mc.renderEngine.bindTexture(icons);
-
-            RenderHelper.enableGUIStandardItemLighting();
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            GlStateManager.color(1.0F, 1.0F, 1.0F);
             parent.drawTexturedModalRect(xPos, yPos, width * iconID(), height * state.ordinal(), width, height);
             RenderHelper.disableStandardItemLighting();
 
@@ -233,7 +229,7 @@ public class JEIButtons {
         public static Configuration config;
 
         static void load() {
-            showButtons = config.getBoolean("showButtons",          CATEGORY, true, "When false no buttons will be shown");
+            showButtons = config.getBoolean("showButtons",          CATEGORY, true, "When false no button will be shown");
 
             enableAdventureMode  = config.getBoolean("enableAdventureMode",  CATEGORY, true, "When false the gamemode button won't allow you to switch to adventure mode");
             enableSpectatoreMode = config.getBoolean("enableSpectatoreMode", CATEGORY, true, "When false the gamemode button won't allow you to switch to spectator mode");

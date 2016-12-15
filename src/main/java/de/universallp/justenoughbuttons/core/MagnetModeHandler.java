@@ -33,7 +33,7 @@ public class MagnetModeHandler {
         int r = JEIButtons.ConfigHandler.magnetRadius;
         for (EntityPlayerMP p : players) {
             double x = p.posX;
-            double y = p.posY;
+            double y = p.posY + 1.5;
             double z = p.posZ;
 
             List<EntityItem> items = p.worldObj.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(x - r, y - r, z - r, x + r, y + r, z + r));

@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameType;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -56,7 +57,20 @@ public class EventHandlers {
     private boolean magnetMode       = false;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onGuiDraw(GuiScreenEvent.DrawScreenEvent e) {
+    public void onDrawScreen(GuiScreenEvent.DrawScreenEvent e) {
+        if (JEIButtons.isAnyButtonHovered) {
+            int mouseY = JEIButtons.proxy.getMouseY();
+            int mouseX = JEIButtons.proxy.getMouseX();
+            List<String> tip = getTooltip(JEIButtons.hoveredButton);
+            if (tip != null) {
+                GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
+                RenderHelper.disableStandardItemLighting();
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent e) {
         if (JEIButtons.configHasChanged) {
             JEIButtons.configHasChanged = false;
             setUpPositions();
@@ -75,7 +89,6 @@ public class EventHandlers {
 
             JEIButtons.isAnyButtonHovered = false;
             gameRuleDayCycle = ClientProxy.mc.theWorld.getGameRules().getBoolean("doDaylightCycle");
-
             {
                 btnGameMode.draw(g);
                 btnTrash.draw(g);
@@ -96,14 +109,6 @@ public class EventHandlers {
 
             adjustGamemode();
 
-            if (JEIButtons.isAnyButtonHovered) {
-                List<String> tip = getTooltip(JEIButtons.hoveredButton);
-                if (tip != null) {
-                    GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
-                    RenderHelper.disableStandardItemLighting();
-                }
-            }
-
             if (Mouse.isButtonDown(0) && !isLMBDown) {
                 isLMBDown = true;
 
@@ -117,7 +122,7 @@ public class EventHandlers {
                     if (JEIButtons.hoveredButton == EnumButtonCommands.DELETE) {
 
                         ItemStack draggedStack = pl.inventory.getItemStack();
-                        if (draggedStack.equals(ItemStack.field_190927_a)) {
+                        if (draggedStack.func_190926_b()) {
                             if (GuiScreen.isShiftKeyDown())
                                 command = "/clear";
                             else
@@ -131,8 +136,8 @@ public class EventHandlers {
                                 int data = draggedStack.getItemDamage();
                                 command += " " + data;
                             }
-
-                            if (draggedStack.func_190916_E() == 0)
+                            boolean ghost = draggedStack.hasTagCompound() && draggedStack.getTagCompound().getBoolean("JEI_Ghost");
+                            if (ghost)
                                 pl.inventory.setItemStack(ItemStack.field_190927_a);
                         }
                     }
@@ -220,21 +225,30 @@ public class EventHandlers {
     }
 
     @SubscribeEvent
-    public void handleKeyInputEvent(GuiScreenEvent.KeyboardInputEvent e) {
+    public void handleKeyInputEvent(GuiScreenEvent.KeyboardInputEvent.Post e) {
         GuiScreen gui = ClientProxy.mc.currentScreen;
-        if (ConfigHandler.showButtons && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-            if (gui != null && gui instanceof GuiContainer && Keyboard.isKeyDown(ClientProxy.makeCopyKey.getKeyCode())) {
+
+
+        if (gui != null && gui instanceof GuiContainer) {
+            int keyCode = Keyboard.getEventKey();
+
+            if (ClientProxy.makeCopyKey.isActiveAndMatches(keyCode)) {
                 Slot hovered = ((GuiContainer) gui).getSlotUnderMouse();
 
-                if (ClientProxy.player.inventory.getItemStack().equals(ItemStack.field_190927_a) && !hovered.getStack().equals(ItemStack.field_190927_a) && hovered.getHasStack()) {
+                if (hovered != null && ClientProxy.player.inventory.getItemStack().func_190926_b() && !hovered.getStack().func_190926_b() && hovered.getHasStack()) {
+
                     ItemStack stack = hovered.getStack().copy();
-                    if (ClientProxy.player.capabilities.isCreativeMode)
-                        stack.func_190920_e(0);
-                    else
-                        stack.func_190920_e(1);
+                    stack.func_190920_e(1);
+                    NBTTagCompound t = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+                    t.setBoolean("JEI_Ghost", true);
+                    stack.setTagCompound(t);
                     ClientProxy.player.inventory.setItemStack(stack);
                 }
+            } else if (Keyboard.isKeyDown(ClientProxy.hideall.getKeyCode()) && !Keyboard.isRepeatEvent()) {
+                ConfigHandler.showButtons = !ConfigHandler.showButtons;
             }
+        }
+
     }
 
     @SubscribeEvent
@@ -260,8 +274,6 @@ public class EventHandlers {
             if (ClientProxy.mobOverlay.isKeyDown())
                 drawMobOverlay = !drawMobOverlay;
 
-//            if (ClientProxy.chunkOverlay.isKeyDown())
-//                ClientProxy.mc.debugRenderer.;
 
             if (!drawMobOverlay) {
                 MobOverlayRenderer.clearCache();
