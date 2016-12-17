@@ -59,12 +59,14 @@ public class EventHandlers {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawScreen(GuiScreenEvent.DrawScreenEvent e) {
         if (JEIButtons.isAnyButtonHovered) {
-            int mouseY = JEIButtons.proxy.getMouseY();
-            int mouseX = JEIButtons.proxy.getMouseX();
-            List<String> tip = getTooltip(JEIButtons.hoveredButton);
-            if (tip != null) {
-                GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
-                RenderHelper.disableStandardItemLighting();
+            if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
+                int mouseY = JEIButtons.proxy.getMouseY();
+                int mouseX = JEIButtons.proxy.getMouseX();
+                List<String> tip = getTooltip(JEIButtons.hoveredButton);
+                if (tip != null) {
+                    GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
+                    RenderHelper.disableStandardItemLighting();
+                }
             }
         }
     }

@@ -18,7 +18,14 @@ import java.util.List;
  * github.com/UniversalLP/JEI Buttons
  */
 public class MagnetModeHandler {
+
     private List<EntityPlayerMP> players = new ArrayList<EntityPlayerMP>();
+
+    private int r;
+
+    public MagnetModeHandler() {
+        r = JEIButtons.ConfigHandler.magnetRadius;
+    }
 
     public void addPlayer(EntityPlayerMP p) {
         players.add(p);
@@ -30,7 +37,6 @@ public class MagnetModeHandler {
 
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent e) {
-        int r = JEIButtons.ConfigHandler.magnetRadius;
         for (EntityPlayerMP p : players) {
             double x = p.posX;
             double y = p.posY + 1.5;
