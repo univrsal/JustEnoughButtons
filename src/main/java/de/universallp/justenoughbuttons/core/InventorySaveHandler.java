@@ -29,7 +29,7 @@ public class InventorySaveHandler {
         String save = I18n.format("justenoughbuttons.save") + " ";
 
         for (int i = 0; i < saveButtons.length; i++) {
-            saveButtons[i] = new GuiButton(i, 5, 110 + 22 * i, 50, 20, (saves[i] == null ? save : load) + (i + 1));
+            saveButtons[i] = new GuiButton(i, JEIButtons.ConfigHandler.xOffset, 110 + JEIButtons.ConfigHandler.yOffset + 22 * i, 50, 20, (saves[i] == null ? save : load) + (i + 1));
         }
     }
 

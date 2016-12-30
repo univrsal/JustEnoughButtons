@@ -2,6 +2,7 @@ package de.universallp.justenoughbuttons;
 
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.core.CommonProxy;
+import de.universallp.justenoughbuttons.core.InventorySaveHandler;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -29,7 +30,7 @@ import java.io.File;
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
-    public static final String VERSION = "1.11-1.2";
+    public static final String VERSION = "1.11-1.3";
     public static final String MOD_MOREOVERLAYS = "moreoverlays";
     public static boolean isServerSidePresent = false;
     public static boolean enableOverlays = true;
@@ -223,6 +224,10 @@ public class JEIButtons {
 
         static final String CATEGORY = "buttons";
         public static final String CATEGORY_CUSTOM = "custombuttons";
+        public static final String CATEGORY_POSITION = "position";
+
+        public static int yOffset;
+        public static int xOffset;
 
         public static boolean showButtons = true;
 
@@ -241,6 +246,9 @@ public class JEIButtons {
             enableKillMobs       = config.getBoolean("enableKillMobs",       CATEGORY, true, "When false the kill entities button will be disabled");
             enableDayCycle       = config.getBoolean("enableDayCycle",       CATEGORY, true, "When false the freeze time button will be disabled");
             enableMagnet         = config.getBoolean("enableMagnet",         CATEGORY, true, "When false the magnet mode button will be disabled");
+
+            yOffset = config.getInt("yOffset", CATEGORY_POSITION,  5, 0, 1024, "Y offset of the buttons");
+            xOffset = config.getInt("xOffset", CATEGORY_POSITION,  5, 0, 1024, "X offset of the buttons");
 
             enableSaves          = config.getBoolean("enableSaves",         CATEGORY, true, "When false the four save slots will be disabled");
 
@@ -306,7 +314,7 @@ public class JEIButtons {
             if (!b.isVisible)
                 continue;
 
-            b.setPosition((EnumButtonCommands.width + 2) * x + 5, (EnumButtonCommands.height + 2) * y + 5);
+            b.setPosition((EnumButtonCommands.width + 2) * x + ConfigHandler.xOffset, (EnumButtonCommands.height + 2) * y + ConfigHandler.yOffset);
             x++;
 
             if (y == 0 && x == 4) {
@@ -320,5 +328,9 @@ public class JEIButtons {
                 y++;
             }
         }
+        EnumButtonCommands.CREATIVE.setPosition(btnGameMode.xPos, btnGameMode.yPos);
+        EnumButtonCommands.SPECTATE.setPosition(btnGameMode.xPos, btnGameMode.yPos);
+        EnumButtonCommands.ADVENTURE.setPosition(btnGameMode.xPos, btnGameMode.yPos);
+        InventorySaveHandler.init();
     }
 }

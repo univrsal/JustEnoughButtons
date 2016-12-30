@@ -21,6 +21,8 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.config.GuiConfig;
+import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -69,6 +71,23 @@ public class EventHandlers {
                 }
             }
         }
+        if (e.getGui() instanceof GuiConfig) {
+            GuiConfigEntries eL = ((GuiConfig) e.getGui()).entryList;
+            GuiConfig cfg = (GuiConfig) e.getGui();
+            if (cfg.titleLine2 != null && cfg.titleLine2.equals(ConfigHandler.CATEGORY_POSITION)) {
+                int y = getInt(1, eL);
+                int x = getInt(0, eL);
+                GuiUtils.drawGradientRect(10, x, y, x + 75, y + 75, 0x77888888, 0x77888888);
+                ClientProxy.mc.fontRendererObj.drawString("[Buttons]", x + 14, y + 10, 0xFFFFFF);
+            }
+        }
+    }
+
+    private static int getInt(int i, GuiConfigEntries eL) {
+        if (i < eL.getSize() && eL.getListEntry(i) != null && String.valueOf(eL.getListEntry(i).getCurrentValue()).length() > 0 && String.valueOf(eL.getListEntry(i).getCurrentValue()).length() < 5
+                && !String.valueOf(eL.getListEntry(i).getCurrentValue()).equals("-"))
+            return Integer.valueOf(String.valueOf(eL.getListEntry(i).getCurrentValue()));
+        return -1;
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -125,7 +144,7 @@ public class EventHandlers {
 
                         ItemStack draggedStack = pl.inventory.getItemStack();
                         if (draggedStack.func_190926_b()) {
-                            if (GuiScreen.isShiftKeyDown())
+                            if (GuiScreen.isShiftKeyDown() && ConfigHandler.enableClearInventory)
                                 command = "/clear";
                             else
                                 command = null;
@@ -336,7 +355,8 @@ public class EventHandlers {
                 } else {
                     list.add(I18n.format("justenoughbuttons.dragitemshere"));
                     list.add(ChatFormatting.GRAY + I18n.format("justenoughbuttons.holdshift"));
-                    list.add(ChatFormatting.GRAY + I18n.format("justenoughbuttons.clearinventory"));
+                    if (ConfigHandler.enableClearInventory)
+                        list.add(ChatFormatting.GRAY + I18n.format("justenoughbuttons.clearinventory"));
                 }
                 break;
             case FREEZETIME:
