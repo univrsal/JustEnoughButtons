@@ -3,6 +3,7 @@ package de.universallp.justenoughbuttons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.core.InventorySaveHandler;
+import de.universallp.justenoughbuttons.core.ModSubsetButtonHandler;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -19,6 +20,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by universallp on 09.08.2016 16:07.
@@ -26,13 +29,14 @@ import java.io.File;
  * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
  * github.com/UniversalLP/JustEnoughButtons
  */
-@Mod(modid = JEIButtons.MODID, version = JEIButtons.VERSION, clientSideOnly = true, guiFactory = "de.universallp.justenoughbuttons.client.GuiFactory")
+@Mod(modid = JEIButtons.MODID, version = JEIButtons.VERSION, guiFactory = "de.universallp.justenoughbuttons.client.GuiFactory")
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
     public static final String VERSION = "1.11-1.3";
     public static final String MOD_MOREOVERLAYS = "moreoverlays";
     public static boolean isServerSidePresent = false;
+    public static boolean isSpongePresent = false;
     public static boolean enableOverlays = true;
 
     @Mod.Instance
@@ -76,6 +80,7 @@ public class JEIButtons {
         ConfigHandler.loadPostInit();
         setUpPositions();
         proxy.postInit(event);
+        ModSubsetButtonHandler.setupModList();
     }
 
     public enum EnumButtonCommands {
@@ -197,7 +202,7 @@ public class JEIButtons {
     }
 
     private static boolean canExecuteCommand(String c) {
-        return ClientProxy.player.canCommandSenderUseCommand(1, c);
+        return ClientProxy.player.canUseCommand(1, c);
     }
 
 
@@ -209,6 +214,8 @@ public class JEIButtons {
         public static int magnetRadius = 8;
 
         public static boolean enableClearInventory = false;
+
+        public static boolean enableSubsets = true;
 
         static boolean enableGamemode = true;
         static boolean enableDelete   = true;
@@ -222,9 +229,12 @@ public class JEIButtons {
         public static String[] customCommand = new String[] { "help", "help", "help", "help" }; // Halp halp halp
         public static String[] customName    = new String[] { "Print Help", "Print Help", "Print Help", "Print Help" };
 
+        public static String[] spongeServers;
+
         static final String CATEGORY = "buttons";
         public static final String CATEGORY_CUSTOM = "custombuttons";
         public static final String CATEGORY_POSITION = "position";
+        public static final String CATEGORY_COMPAT = "compat";
 
         public static int yOffset;
         public static int xOffset;
@@ -234,6 +244,8 @@ public class JEIButtons {
         public static Configuration config;
 
         static void load() {
+            spongeServers = config.getStringList("spongeServers", CATEGORY_COMPAT, new String[] { "" }, "Server adresses with servers that use spongeforge, to adjust the commands so the fit the sponge syntax");
+
             showButtons = config.getBoolean("showButtons",          CATEGORY, true, "When false no button will be shown");
 
             enableAdventureMode  = config.getBoolean("enableAdventureMode",  CATEGORY, true, "When false the gamemode button won't allow you to switch to adventure mode");
@@ -246,6 +258,8 @@ public class JEIButtons {
             enableKillMobs       = config.getBoolean("enableKillMobs",       CATEGORY, true, "When false the kill entities button will be disabled");
             enableDayCycle       = config.getBoolean("enableDayCycle",       CATEGORY, true, "When false the freeze time button will be disabled");
             enableMagnet         = config.getBoolean("enableMagnet",         CATEGORY, true, "When false the magnet mode button will be disabled");
+
+            enableSubsets        = config.getBoolean("enableSubsets",              CATEGORY, true, "When true the subsets button will be shown to get quick access to all items from all mods");
 
             yOffset = config.getInt("yOffset", CATEGORY_POSITION,  5, 0, 1024, "Y offset of the buttons");
             xOffset = config.getInt("xOffset", CATEGORY_POSITION,  5, 0, 1024, "X offset of the buttons");
@@ -332,5 +346,12 @@ public class JEIButtons {
         EnumButtonCommands.SPECTATE.setPosition(btnGameMode.xPos, btnGameMode.yPos);
         EnumButtonCommands.ADVENTURE.setPosition(btnGameMode.xPos, btnGameMode.yPos);
         InventorySaveHandler.init();
+    }
+
+    public static void sendCommand(String cmd) {
+        if (!isSpongePresent)
+            ClientProxy.player.sendChatMessage("/" + cmd);
+        else
+            ClientProxy.player.sendChatMessage("/minecraft:" + cmd);
     }
 }

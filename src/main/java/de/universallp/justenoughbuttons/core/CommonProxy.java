@@ -1,6 +1,7 @@
 package de.universallp.justenoughbuttons.core;
 
 import de.universallp.justenoughbuttons.JEIButtons;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -42,7 +43,10 @@ public class CommonProxy {
 
     public int getMouseY() { return 0; }
 
-    public int getScreenWidth() { return 0; };
+    public int getScreenWidth() { return 0; }
+
+    public int getScreenHeight() { return 0; }
+
 
     public void registerKeyBind() { }
 

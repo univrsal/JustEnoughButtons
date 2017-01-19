@@ -86,9 +86,9 @@ public class MobOverlayRenderer {
     public static void cacheMobSpawns(Entity entity) {
         cache.clear();
 
-        World world = entity.worldObj;
+        World world = entity.world;
         int entX = (int) entity.posX;
-        int entY = MathHelper.clamp_int((int) entity.posY, 16, world.getHeight() - 16);
+        int entY = MathHelper.clamp((int) entity.posY, 16, world.getHeight() - 16);
         int entZ = (int) entity.posZ;
 
         for (int x = entX - 16; x <= entX + 16; x++) {

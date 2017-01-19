@@ -4,6 +4,7 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.client.MobOverlayRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
@@ -18,6 +19,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameType;
 import net.minecraftforge.client.event.GuiScreenEvent;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
@@ -25,6 +27,7 @@ import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -32,6 +35,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.logging.log4j.Level;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -58,19 +62,29 @@ public class EventHandlers {
     private boolean drawMobOverlay   = false;
     private boolean magnetMode       = false;
 
+    public static int skipSaveClickCount = 0;
+    public static int skipModClickCount = 0;
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawScreen(GuiScreenEvent.DrawScreenEvent e) {
-        if (JEIButtons.isAnyButtonHovered) {
-            if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
-                int mouseY = JEIButtons.proxy.getMouseY();
-                int mouseX = JEIButtons.proxy.getMouseX();
-                List<String> tip = getTooltip(JEIButtons.hoveredButton);
+        if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
+            int mouseY = JEIButtons.proxy.getMouseY();
+            int mouseX = JEIButtons.proxy.getMouseX();
+
+            if (JEIButtons.isAnyButtonHovered) {
+               List<String> tip = getTooltip(JEIButtons.hoveredButton);
                 if (tip != null) {
                     GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
                     RenderHelper.disableStandardItemLighting();
                 }
             }
+
+
+            if (ConfigHandler.enableSubsets)
+                ModSubsetButtonHandler.drawSubsetList(mouseX, mouseY);
         }
+
+
         if (e.getGui() instanceof GuiConfig) {
             GuiConfigEntries eL = ((GuiConfig) e.getGui()).entryList;
             GuiConfig cfg = (GuiConfig) e.getGui();
@@ -99,6 +113,7 @@ public class EventHandlers {
 
         if (JEIButtons.isServerSidePresent && e.getGui() instanceof GuiMainMenu) {
             JEIButtons.isServerSidePresent = false;
+            JEIButtons.isSpongePresent = false;
         } else if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
             int mouseY = JEIButtons.proxy.getMouseY();
             int mouseX = JEIButtons.proxy.getMouseX();
@@ -109,7 +124,7 @@ public class EventHandlers {
                 btnGameMode = btnGameMode.cycle();
 
             JEIButtons.isAnyButtonHovered = false;
-            gameRuleDayCycle = ClientProxy.mc.theWorld.getGameRules().getBoolean("doDaylightCycle");
+            gameRuleDayCycle = ClientProxy.mc.world.getGameRules().getBoolean("doDaylightCycle");
             {
                 btnGameMode.draw(g);
                 btnTrash.draw(g);
@@ -125,6 +140,9 @@ public class EventHandlers {
             if (JEIButtons.ConfigHandler.enableSaves)
                 InventorySaveHandler.drawButtons(mouseX, mouseY);
 
+            if (ConfigHandler.enableSubsets)
+                ModSubsetButtonHandler.drawButtons(mouseX, mouseY, ClientProxy.getGuiTop((GuiContainer) e.getGui()));
+
             for (EnumButtonCommands btn : btnCustom)
                 btn.draw(g);
 
@@ -133,56 +151,60 @@ public class EventHandlers {
             if (Mouse.isButtonDown(0) && !isLMBDown) {
                 isLMBDown = true;
 
-                if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton.isEnabled) {
-                    String command = "/" + JEIButtons.hoveredButton.getCommand();
+                if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton.isEnabled) { // Utility Buttons
+                    String command = JEIButtons.hoveredButton.getCommand();
 
-                    if (JEIButtons.hoveredButton == EnumButtonCommands.FREEZETIME) {
-                        command += " " + (gameRuleDayCycle ? "false" : "true");
-                    }
+                    switch (JEIButtons.hoveredButton) {
+                        case FREEZETIME:
+                            command += " " + (gameRuleDayCycle ? "false" : "true");
+                            break;
+                        case DELETE:
+                            ItemStack draggedStack = pl.inventory.getItemStack();
+                            if (draggedStack.isEmpty()) {
+                                if (GuiScreen.isShiftKeyDown() && ConfigHandler.enableClearInventory)
+                                    command = "clear";
+                                else
+                                    command = null;
+                            } else {
+                                String name  = draggedStack.getItem().getRegistryName().toString();
 
-                    if (JEIButtons.hoveredButton == EnumButtonCommands.DELETE) {
+                                command += pl.getDisplayName().getUnformattedText() + " " + name;
 
-                        ItemStack draggedStack = pl.inventory.getItemStack();
-                        if (draggedStack.func_190926_b()) {
-                            if (GuiScreen.isShiftKeyDown() && ConfigHandler.enableClearInventory)
-                                command = "/clear";
-                            else
-                                command = null;
-                        } else {
-                            String name  = draggedStack.getItem().getRegistryName().toString();
-
-                            command += pl.getDisplayName().getUnformattedText() + " " + name;
-
-                            if (!GuiScreen.isShiftKeyDown()) {
-                                int data = draggedStack.getItemDamage();
-                                command += " " + data;
+                                if (!GuiScreen.isShiftKeyDown()) {
+                                    int data = draggedStack.getItemDamage();
+                                    command += " " + data;
+                                }
+                                boolean ghost = draggedStack.hasTagCompound() && draggedStack.getTagCompound().getBoolean("JEI_Ghost");
+                                if (ghost)
+                                    pl.inventory.setItemStack(ItemStack.EMPTY);
                             }
-                            boolean ghost = draggedStack.hasTagCompound() && draggedStack.getTagCompound().getBoolean("JEI_Ghost");
-                            if (ghost)
-                                pl.inventory.setItemStack(ItemStack.field_190927_a);
-                        }
-                    }
+                            break;
 
-                    if (JEIButtons.hoveredButton == EnumButtonCommands.MAGNET) {
-                        if (JEIButtons.isServerSidePresent) {
-                            command = null;
-                            CommonProxy.INSTANCE.sendToServer(new MessageMagnetMode(magnetMode));
-                            magnetMode = !magnetMode;
-                        } else
-                            command = "/tp @e[type=Item,r=" + ConfigHandler.magnetRadius + "] @p";
+                        case MAGNET:
+                            if (JEIButtons.isServerSidePresent) {
+                                command = null;
+                                CommonProxy.INSTANCE.sendToServer(new MessageMagnetMode(magnetMode));
+                                magnetMode = !magnetMode;
+                            } else
+                                command = "tp @e[type=Item,r=" + ConfigHandler.magnetRadius + "] @p";
+                            break;
+                        case ADVENTURE:
+                        case CREATIVE:
+                        case SPECTATE:
+                        case SURVIVAL:
+                            JEIButtons.btnGameMode = hoveredButton.cycle();
+                            break;
                     }
 
                     if (command != null)
-                        pl.sendChatMessage(command);
+                        JEIButtons.sendCommand(command);
 
                     JEIButtons.proxy.playClick();
+                } else { // Save buttons & Mod subsets
+                    if (JEIButtons.ConfigHandler.enableSaves)
+                        InventorySaveHandler.click(mouseX, mouseY, false);
 
-                    if (JEIButtons.hoveredButton.ordinal() < 4) // Game mode buttons
-                        JEIButtons.btnGameMode = hoveredButton.cycle();
-
-                } else {
-                    if (JEIButtons.ConfigHandler.enableSaves && InventorySaveHandler.click(mouseX, mouseY, false))
-                        JEIButtons.proxy.playClick();
+                    ModSubsetButtonHandler.click(mouseX, mouseY);
                 }
             } else if (!Mouse.isButtonDown(0)) {
                 isLMBDown = false;
@@ -190,8 +212,7 @@ public class EventHandlers {
 
             if (Mouse.isButtonDown(1) && !isRMBDown) {
                 isRMBDown = true;
-                if (InventorySaveHandler.click(mouseX, mouseY, true))
-                    JEIButtons.proxy.playClick();
+                InventorySaveHandler.click(mouseX, mouseY, true);
             } else if (!Mouse.isButtonDown(1))
                 isRMBDown = false;
         }
@@ -256,10 +277,10 @@ public class EventHandlers {
             if (ClientProxy.makeCopyKey.isActiveAndMatches(keyCode)) {
                 Slot hovered = ((GuiContainer) gui).getSlotUnderMouse();
 
-                if (hovered != null && ClientProxy.player.inventory.getItemStack().func_190926_b() && !hovered.getStack().func_190926_b() && hovered.getHasStack()) {
+                if (hovered != null && ClientProxy.player.inventory.getItemStack().isEmpty() && !hovered.getStack().isEmpty() && hovered.getHasStack()) {
 
                     ItemStack stack = hovered.getStack().copy();
-                    stack.func_190920_e(1);
+                    stack.setCount(1);
                     NBTTagCompound t = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
                     t.setBoolean("JEI_Ghost", true);
                     stack.setTagCompound(t);
@@ -275,17 +296,29 @@ public class EventHandlers {
     @SubscribeEvent
     public void onMouseEvent(GuiScreenEvent.MouseInputEvent event) {
         if (Mouse.getEventButton() == 0) {
-            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE && !ClientProxy.player.inventory.getItemStack().equals(ItemStack.field_190927_a)) {
+            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE && !ClientProxy.player.inventory.getItemStack().isEmpty()) {
                 event.setResult(Event.Result.DENY);
                 if (event.isCancelable())
                     event.setCanceled(true);
             }
 
-            if (InventorySaveHandler.skipClick) {
+            if (skipSaveClickCount > 0) {
                 if (event.isCancelable())
                     event.setCanceled(true);
                 event.setResult(Event.Result.DENY);
+                skipSaveClickCount--;
             }
+
+            if (skipModClickCount > 0) {
+                if (event.isCancelable())
+                    event.setCanceled(true);
+                event.setResult(Event.Result.DENY);
+                skipModClickCount--;
+            }
+        }
+
+        if (Mouse.getDWheel() != 0 && ModSubsetButtonHandler.isListShown) {
+            ModSubsetButtonHandler.scroll(Mouse.getEventDWheel());
         }
     }
 
@@ -321,12 +354,30 @@ public class EventHandlers {
         if (drawMobOverlay)
             MobOverlayRenderer.renderMobSpawnOverlay();
 
-        if (ClientProxy.mc.currentScreen == null)
-            InventorySaveHandler.skipClick = false;
+        if (ClientProxy.mc.currentScreen == null) {
+            skipSaveClickCount = 0;
+            ModSubsetButtonHandler.isListShown = false;
+        }
+    }
+
+    @SubscribeEvent
+    public void onJoinServer(FMLNetworkEvent.ClientConnectedToServerEvent e) {
+        for (String ip : ConfigHandler.spongeServers) {
+            if (Minecraft.getMinecraft().getCurrentServerData().serverIP.contains(ip)) {
+                JEIButtons.isSpongePresent = true;
+                FMLLog.log(Level.INFO, "Sponge support is enabled for this server!");
+                break;
+            }
+        }
+        FMLLog.log(Level.INFO, "Sponge support is disabled for this server!");
+
     }
 
     public List<String> getTooltip(EnumButtonCommands btn) {
         ArrayList<String> list = new ArrayList<String>();
+        if (btn == null)
+            return null;
+
         switch (btn) {
             case ADVENTURE:
                 list.add(I18n.format("justenoughbuttons.switchto", I18n.format("gameMode.adventure")));

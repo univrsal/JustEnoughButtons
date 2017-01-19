@@ -1,14 +1,16 @@
 package de.universallp.justenoughbuttons.client;
 
+import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.core.EventHandlers;
 import de.universallp.justenoughbuttons.core.InventorySaveHandler;
-import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.core.SaveFileHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.SoundEvents;
@@ -24,6 +26,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -52,6 +55,8 @@ public class ClientProxy extends CommonProxy {
     public static EntityPlayerSP player;
     public static RenderManager renderManager;
     public static SaveFileHandler saveHandler;
+
+    public static final String[] GUI_TOP = new String[] { "r", "field_147009_r", "guiTop" };
 
     private static void versionCheck() {
         final NBTTagCompound compound = new NBTTagCompound();
@@ -100,10 +105,20 @@ public class ClientProxy extends CommonProxy {
         return mY;
     }
 
+    public static int getGuiTop(GuiContainer g) {
+        return ReflectionHelper.getPrivateValue(GuiContainer.class, g, GUI_TOP);
+    }
+
     @Override
     public int getScreenWidth() {
         ScaledResolution resolution = new ScaledResolution(ClientProxy.mc);
         return resolution.getScaledWidth();
+    }
+
+    @Override
+    public int getScreenHeight() {
+        ScaledResolution resolution = new ScaledResolution(ClientProxy.mc);
+        return resolution.getScaledHeight();
     }
 
     @Override
@@ -127,4 +142,5 @@ public class ClientProxy extends CommonProxy {
     public void playClick() {
         mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
+
 }
