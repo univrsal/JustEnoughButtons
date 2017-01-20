@@ -255,7 +255,7 @@ public class JEIButtons {
             enableDayCycle       = config.getBoolean("enableDayCycle",       CATEGORY, true, "When false the freeze time button will be disabled");
             enableMagnet         = config.getBoolean("enableMagnet",         CATEGORY, true, "When false the magnet mode button will be disabled");
 
-            enableSubsets        = config.getBoolean("enableSubsets",              CATEGORY, true, "When true the subsets button will be shown to get quick access to all items from all mods");
+            enableSubsets        = config.getBoolean("enableSubsets",              CATEGORY, true, "When true the subsets button will be shown to get quick access to all items from all mods (Requires JEI)");
 
             yOffset = config.getInt("yOffset", CATEGORY_POSITION,  5, 0, 1024, "Y offset of the buttons");
             xOffset = config.getInt("xOffset", CATEGORY_POSITION,  5, 0, 1024, "X offset of the buttons");

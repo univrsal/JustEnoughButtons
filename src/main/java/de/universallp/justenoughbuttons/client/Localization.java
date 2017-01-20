@@ -84,7 +84,7 @@ public class Localization {
                     list.add(I18n.format(Localization.DRAG_ITEMS_HERE));
                     list.add(ChatFormatting.GRAY + I18n.format(Localization.HOLD_SHIFT));
                     if (JEIButtons.ConfigHandler.enableClearInventory)
-                        list.add(ChatFormatting.GRAY + I18n.format(Localization.DELETE_ALL));
+                        list.add(ChatFormatting.GRAY + I18n.format(Localization.CLEAR_INVENTORY));
                 }
                 break;
             case FREEZETIME:

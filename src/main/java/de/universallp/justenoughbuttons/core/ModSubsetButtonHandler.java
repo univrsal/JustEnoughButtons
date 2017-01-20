@@ -9,6 +9,7 @@ import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.Loader;
@@ -65,14 +66,13 @@ public class ModSubsetButtonHandler {
             if (scrollOffset + 1 <= mod_names.size() - maxItems)
                 scrollOffset++;
         } else if (i > 0) {
-
             if (scrollOffset - 1 >= 0)
                 scrollOffset--;
         }
     }
 
     static void drawButtons(int mouseX, int mouseY, int guiTop) {
-        if (guiTop < 72 && ClientProxy.mc.currentScreen instanceof GuiContainerCreative) {
+        if (CreativeTabs.CREATIVE_TAB_ARRAY.length > 12 && guiTop < 72 && ClientProxy.mc.currentScreen instanceof GuiContainerCreative) {
             subsetButton.setWidth(45);
             subsetButton.yPosition = guiTop - 50;
             subsetButton.xPosition = JEIButtons.proxy.getScreenWidth() / 2 - 74;
