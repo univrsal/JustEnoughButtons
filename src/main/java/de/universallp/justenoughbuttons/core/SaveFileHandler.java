@@ -3,6 +3,7 @@ package de.universallp.justenoughbuttons.core;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreenServerList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -35,12 +36,13 @@ public class SaveFileHandler {
         File saveFolder = new File(savePath);
 
         if (!saveFolder.exists()) {
-            FMLLog.log(JEIButtons.MODID, Level.INFO, "No save folder for inventory snapshots found. Creating it under %s", savePath);
+            JEIButtons.logInfo( "No save folder for inventory snapshots found. Creating it under %s", savePath);
             if (!saveFolder.mkdir()) {
-                FMLLog.log(JEIButtons.MODID, Level.ERROR, "Couldn't create folder. Saving of inventory snapshots is disabled!");
+                JEIButtons.logInfo( "Couldn't create folder. Saving of inventory snapshots is disabled!");
                 SAVE_SNAPSHOTS = false;
             }
         }
+
         return this;
     }
 
@@ -63,7 +65,7 @@ public class SaveFileHandler {
         }
 
         if (saveFile != null) {
-            FMLLog.log(JEIButtons.MODID, Level.INFO, "Found savefile for user!");
+            JEIButtons.logInfo("Found savefile for user!");
             try {
                 BufferedReader br = new BufferedReader(new FileReader(saveFile));
                 NBTTagCompound[] mainInventory = new NBTTagCompound[36];
@@ -116,7 +118,7 @@ public class SaveFileHandler {
                 e.printStackTrace();
             }
         } else {
-            FMLLog.log(JEIButtons.MODID, Level.INFO, "No save file available.");
+            JEIButtons.logInfo( "No save file available.");
         }
     }
 
@@ -125,7 +127,7 @@ public class SaveFileHandler {
         File oldFile = new File(savePath + "/" + uuid + ".jebs");
 
         if (oldFile.exists() && !oldFile.delete()) {
-            FMLLog.log(JEIButtons.MODID, Level.ERROR, "Error deleting old snapshot save. Saving of inventory snapshots will not be available!");
+            JEIButtons.logInfo("Error deleting old snapshot save. Saving of inventory snapshots will not be available!");
             SaveFileHandler.SAVE_SNAPSHOTS = false;
         }
 
@@ -140,7 +142,6 @@ public class SaveFileHandler {
             InventorySaveHandler.InventorySnapshot snapshot = InventorySaveHandler.saves[i];
 
             if (snapshot != null) {
-
                 for (NBTTagCompound nbt : snapshot.mainInventory) {
                     if (nbt != null)
                         writer.println("MainInv:" + nbt.toString());

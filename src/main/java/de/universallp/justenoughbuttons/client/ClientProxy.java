@@ -1,10 +1,7 @@
 package de.universallp.justenoughbuttons.client;
 
 import de.universallp.justenoughbuttons.JEIButtons;
-import de.universallp.justenoughbuttons.core.CommonProxy;
-import de.universallp.justenoughbuttons.core.EventHandlers;
-import de.universallp.justenoughbuttons.core.InventorySaveHandler;
-import de.universallp.justenoughbuttons.core.SaveFileHandler;
+import de.universallp.justenoughbuttons.core.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -57,6 +54,7 @@ public class ClientProxy extends CommonProxy {
     public static SaveFileHandler saveHandler;
 
     public static final String[] GUI_TOP = new String[] { "r", "field_147009_r", "guiTop" };
+    public static final String[] SERVER_LIST_DATA = new String[] {};
 
     private static void versionCheck() {
         final NBTTagCompound compound = new NBTTagCompound();
@@ -88,6 +86,11 @@ public class ClientProxy extends CommonProxy {
             ClientProxy.saveHandler.loadForPlayer();
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
+        }
+
+        if (Loader.isModLoaded("jei")) {
+            JEIButtons.logInfo("JEI is installed Mod subsets are enabled!");
+            ModSubsetButtonHandler.ENABLE_SUBSETS = true;
         }
     }
 
@@ -134,7 +137,7 @@ public class ClientProxy extends CommonProxy {
             ClientRegistry.registerKeyBinding(mobOverlay);
         } else {
             JEIButtons.enableOverlays = false;
-            FMLLog.log(JEIButtons.MODID, Level.INFO, "MoreOverlays is loaded. Disabling Lightlevel and Chunk Overlay!");
+            JEIButtons.logInfo("MoreOverlays is loaded. Disabling Lightlevel and Chunk Overlay!");
         }
     }
 

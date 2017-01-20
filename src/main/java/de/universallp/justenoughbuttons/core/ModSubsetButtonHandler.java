@@ -2,11 +2,13 @@ package de.universallp.justenoughbuttons.core;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
+import de.universallp.justenoughbuttons.client.Localization;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.Loader;
@@ -23,6 +25,7 @@ import java.util.List;
  * github.com/UniversalLP/JustEnoughButtons
  */
 public class ModSubsetButtonHandler {
+    public static boolean ENABLE_SUBSETS = false;
     static boolean isListShown = false;
     private static GuiButton subsetButton = new GuiButton(0, 0, 2, 150, 20, "Mods");
     private static List<String> mod_names; // Contains of all mod_names which add blocks/items
@@ -111,7 +114,7 @@ public class ModSubsetButtonHandler {
             w = f.getStringWidth(longestModName) + 3;
             x = subsetButton.xPosition;
             h = f.FONT_HEIGHT + 2;
-            GuiUtils.drawGradientRect(0, x, y, x + w, y + 2 + h * (maxItems + (itemsLeft > 0 ? 1 : 0)), 0xCC000000, 0xCC000000);
+            GuiUtils.drawGradientRect(0, x, y, x + w, y + 3 + h * ((maxItems < mod_ids.size() ? maxItems : mod_ids.size()) + (itemsLeft > 0 ? 1 : 0)), 0xCC000000, 0xCC000000);
             for (int i = scrollOffset; i < maximumIndex; i++) {
                 mod = mod_names.get(i);
                 y = (23 + subsetButton.yPosition) + h * (i - scrollOffset);
@@ -127,7 +130,7 @@ public class ModSubsetButtonHandler {
             }
 
             if (mod_ids.size() > maxItems && itemsLeft > 0)
-                f.drawString(itemsLeft + " more...", x + 2, y + h + 1, 0xFFFFFF);
+                f.drawString(itemsLeft + I18n.format(Localization.MORE) + "...", x + 2, y + h + 1, 0xFFFFFF);
 
             GlStateManager.enableDepth();
             GlStateManager.enableLighting();

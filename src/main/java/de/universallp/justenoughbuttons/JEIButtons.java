@@ -11,6 +11,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -18,10 +19,9 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.logging.log4j.Level;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by universallp on 09.08.2016 16:07.
@@ -33,7 +33,7 @@ import java.util.List;
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
-    public static final String VERSION = "1.11-1.3";
+    public static final String VERSION = "1.11.2-1.4";
     public static final String MOD_MOREOVERLAYS = "moreoverlays";
     public static boolean isServerSidePresent = false;
     public static boolean isSpongePresent = false;
@@ -160,15 +160,12 @@ public class JEIButtons {
             int mouseY = proxy.getMouseY();
 
             if (isEnabled) {
-                if (canExecuteCommand(getCommand()))
-                    if (mouseX >= xPos && mouseX <= xPos + width && mouseY >= yPos && mouseY <= yPos + height) {
+                if (mouseX >= xPos && mouseX <= xPos + width && mouseY >= yPos && mouseY <= yPos + height) {
                         state = EnumButtonState.HOVERED;
                         hoveredButton = this;
                         isAnyButtonHovered = true;
                     } else
                         state = EnumButtonState.ENABLED;
-                else
-                    state = EnumButtonState.DISABLED;
             } else {
                 if (mouseX >= xPos && mouseX <= xPos + width && mouseY >= yPos && mouseY <= yPos + height) {
                     hoveredButton = this;
@@ -204,7 +201,6 @@ public class JEIButtons {
     private static boolean canExecuteCommand(String c) {
         return ClientProxy.player.canUseCommand(1, c);
     }
-
 
     public static class ConfigHandler {
         public static boolean enableAdventureMode  = true;
@@ -244,7 +240,7 @@ public class JEIButtons {
         public static Configuration config;
 
         static void load() {
-            spongeServers = config.getStringList("spongeServers", CATEGORY_COMPAT, new String[] { "" }, "Server adresses with servers that use spongeforge, to adjust the commands so the fit the sponge syntax");
+            spongeServers = config.getStringList("spongeServers", CATEGORY_COMPAT, new String[0], "Server adresses with servers that use spongeforge, to adjust the commands so the fit the sponge syntax");
 
             showButtons = config.getBoolean("showButtons",          CATEGORY, true, "When false no button will be shown");
 
@@ -354,4 +350,9 @@ public class JEIButtons {
         else
             ClientProxy.player.sendChatMessage("/minecraft:" + cmd);
     }
+
+    public static void logInfo(String s, Object ... format) {
+        FMLLog.log(MODID, Level.INFO, s, format);
+    }
+
 }
