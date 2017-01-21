@@ -1,16 +1,21 @@
-package de.universallp.justenoughbuttons.core;
+package de.universallp.justenoughbuttons.client.handlers;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.client.Localization;
 import de.universallp.justenoughbuttons.client.MobOverlayRenderer;
+import de.universallp.justenoughbuttons.core.CommonProxy;
+import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
+import de.universallp.justenoughbuttons.core.network.MessageMagnetMode;
+import de.universallp.justenoughbuttons.core.network.MessageNotifyClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.command.CommandException;
+import net.minecraft.client.renderer.debug.DebugRenderer;
+import net.minecraft.client.renderer.debug.DebugRendererChunkBorder;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Slot;
@@ -20,23 +25,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameType;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.event.CommandEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.config.GuiConfig;
 import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.IEventListener;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import org.apache.logging.log4j.Level;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -284,7 +285,7 @@ public class EventHandlers {
                     stack.setTagCompound(t);
                     ClientProxy.player.inventory.setItemStack(stack);
                 }
-            } else if (Keyboard.isKeyDown(ClientProxy.hideall.getKeyCode()) && !Keyboard.isRepeatEvent()) {
+            } else if (ClientProxy.hideAll.isActiveAndMatches(keyCode) && Keyboard.getEventKeyState()) {
                 ConfigHandler.showButtons = !ConfigHandler.showButtons;
             }
         }
@@ -323,14 +324,22 @@ public class EventHandlers {
     @SubscribeEvent
     public void onKeyPressed(InputEvent.KeyInputEvent event) {
         if (enableOverlays) {
-            if (ClientProxy.mobOverlay.isKeyDown())
-                drawMobOverlay = !drawMobOverlay;
+            int kC = Keyboard.getEventKey();
 
+            if (Keyboard.getEventKeyState()) {
+                if (ClientProxy.mobOverlay.isActiveAndMatches(kC)) {
+                    drawMobOverlay = !drawMobOverlay;
+                    if (!drawMobOverlay) {
+                        MobOverlayRenderer.clearCache();
+                        lastPlayerPos = null;
+                    }
+                }
 
-            if (!drawMobOverlay) {
-                MobOverlayRenderer.clearCache();
-                lastPlayerPos = null;
+                if (ClientProxy.chunkOverlay.isActiveAndMatches(kC)) {
+                    ClientProxy.mc.debugRenderer.toggleDebugScreen();
+                }
             }
+
         }
     }
 

@@ -1,4 +1,4 @@
-package de.universallp.justenoughbuttons.client;
+package de.universallp.justenoughbuttons.client.gui;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import net.minecraft.client.gui.GuiScreen;

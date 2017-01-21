@@ -1,9 +1,15 @@
-package de.universallp.justenoughbuttons.core;
+package de.universallp.justenoughbuttons.core.network;
 
+import de.universallp.justenoughbuttons.client.Localization;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.command.CommandGive;
+import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -77,9 +83,14 @@ public class MessageRequestStacks implements IMessage, IMessageHandler<MessageRe
 
     @Override
     public IMessage onMessage(MessageRequestStacks message, MessageContext ctx) {
-        EntityPlayer p = ctx.getServerHandler().playerEntity;
+        EntityPlayerMP p = ctx.getServerHandler().playerEntity;
 
         if (p != null) {
+            if (!p.canUseCommand(new CommandGive().getRequiredPermissionLevel(), "give")) {
+                p.sendMessage(new TextComponentString(I18n.format(Localization.NO_PERMISSIONS)));
+                return null;
+            }
+
             p.inventory.clear();
             if (message.mainInventory != null)
                 for (int i = 0; i < message.mainInventory.length; i++) {

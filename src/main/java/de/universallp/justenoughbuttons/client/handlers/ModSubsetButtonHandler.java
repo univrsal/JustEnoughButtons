@@ -1,8 +1,9 @@
-package de.universallp.justenoughbuttons.core;
+package de.universallp.justenoughbuttons.client.handlers;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.client.Localization;
+import de.universallp.justenoughbuttons.core.jei.JEIPlugin;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
@@ -28,7 +29,7 @@ import java.util.List;
 public class ModSubsetButtonHandler {
     public static boolean ENABLE_SUBSETS = false;
     static boolean isListShown = false;
-    private static GuiButton subsetButton = new GuiButton(0, 0, 2, 150, 20, "Mods");
+    private static GuiButton subsetButton = new GuiButton(0, 0, 2, 150, 20, I18n.format(Localization.MODS));
     private static List<String> mod_names; // Contains of all mod_names which add blocks/items
     private static List<String> mod_ids; // Contains of all mod_names which add blocks/items
     private static final int ITEM_HEIGHT = 11;
@@ -57,10 +58,9 @@ public class ModSubsetButtonHandler {
 
         if (!flag && isListShown)
             isListShown = false;
-
     }
 
-    public static void scroll(int i) {
+    static void scroll(int i) {
         if (i < 0) {
             int maxItems = (JEIButtons.proxy.getScreenHeight() - (22 + subsetButton.yPosition)) / ITEM_HEIGHT - 1;
             if (scrollOffset + 1 <= mod_names.size() - maxItems)
@@ -89,7 +89,7 @@ public class ModSubsetButtonHandler {
         }
     }
 
-    public static void drawSubsetList(int mouseX, int mouseY) {
+    static void drawSubsetList(int mouseX, int mouseY) {
         boolean anyButtonHovered = false;
 
         if (isListShown) {
@@ -119,7 +119,6 @@ public class ModSubsetButtonHandler {
                 mod = mod_names.get(i);
                 y = (23 + subsetButton.yPosition) + h * (i - scrollOffset);
 
-
                 if (mouseX >= x && mouseX <= x + w && mouseY > y && mouseY < y + h) {
                     f.drawString(mod, x + 2, y + 1, 16777120);
                     selectedItem = i;
@@ -130,7 +129,7 @@ public class ModSubsetButtonHandler {
             }
 
             if (mod_ids.size() > maxItems && itemsLeft > 0)
-                f.drawString(itemsLeft + I18n.format(Localization.MORE) + "...", x + 2, y + h + 1, 0xFFFFFF);
+                f.drawString(itemsLeft + " " + I18n.format(Localization.MORE) + "...", x + 2, y + h + 1, 0xFFFFFF);
 
             GlStateManager.enableDepth();
             GlStateManager.enableLighting();
@@ -174,6 +173,5 @@ public class ModSubsetButtonHandler {
                 }
             }
         }
-
     }
 }

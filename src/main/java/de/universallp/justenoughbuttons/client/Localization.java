@@ -2,8 +2,7 @@ package de.universallp.justenoughbuttons.client;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import de.universallp.justenoughbuttons.JEIButtons;
-import de.universallp.justenoughbuttons.core.EventHandlers;
-import de.universallp.justenoughbuttons.core.MagnetModeHandler;
+import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -22,8 +21,8 @@ public class Localization {
     private static final String PREFIX = JEIButtons.MODID + ".";
 
     public static final String SWITCH_TO = PREFIX + "switchto";
-    public static final String TIME_DAY = PREFIX + "Day";
-    public static final String TIME_NIGHT = PREFIX + "Night";
+    public static final String TIME_DAY = PREFIX + "timeday";
+    public static final String TIME_NIGHT = PREFIX + "timenight";
     public static final String FREEZE_TIME = PREFIX + "freezetime";
     public static final String UNFREEZE_TIME = PREFIX + "unfreezetime";
     public static final String NO_MOBS = PREFIX + "nomobs";
@@ -32,23 +31,23 @@ public class Localization {
     public static final String DRAG_ITEMS_HERE = PREFIX + "dragitemshere";
     public static final String HOLD_SHIFT = PREFIX + "holdshift";
     public static final String CLEAR_INVENTORY = PREFIX + "clearinventory";
-    public static final String KEY_CATEGORY = "key.category." + JEIButtons.MODID;
-    public static final String MAKE_COPY = PREFIX + "key.makekopy";
     public static final String CUSTOM_COMMAND = PREFIX + "customcommand";
-    public static final String MOB_OVERLAY = PREFIX + "key.moboverlay";
-    public static final String CHUNK_OVERLAY = PREFIX + "key.chunkoverlay";
     public static final String SAVE = PREFIX + "save";
     public static final String LOAD = PREFIX + "load";
     public static final String NBT_TOO_LONG = PREFIX + "nbttoolong";
     public static final String MAGNET_ON = PREFIX + "magnet.on";
     public static final String MAGNET_OFF = PREFIX + "magnet.off";
     public static final String MAGNET = PREFIX + "magnetitems";
-    public static final String HIDE_ALL = PREFIX + "key.hideall";
     public static final String MODS = PREFIX + "mods";
+    public static final String NO_PERMISSIONS = "commands.generic.permission";
     public static final String MORE = PREFIX + "more";
     public static final String CMD_NO_RAIN = "commands.weather.clear";
     public static final String CMD_RAIN = "commands.weather.rain";
-
+    public static final String KEY_CATEGORY = "key.category.justenoughbuttons";
+    public static final String KEY_MAKECOPY = "justenoughbuttons.key.makecopy";
+    public static final String KEY_MOBOVERLAY = "justenoughbuttons.key.moboverlay";
+    public static final String KEY_CHUNKOVERLAY = "justenoughbuttons.key.chunkoverlay";
+    public static final String KEY_HIDE_OVERLAY = "justenoughbuttons.key.hideall";
 
     public static List<String> getTooltip(JEIButtons.EnumButtonCommands btn) {
         ArrayList<String> list = new ArrayList<String>();

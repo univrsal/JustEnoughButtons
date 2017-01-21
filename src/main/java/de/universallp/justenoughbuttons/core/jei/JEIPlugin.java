@@ -1,12 +1,10 @@
-package de.universallp.justenoughbuttons.core;
+package de.universallp.justenoughbuttons.core.jei;
 
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
-
-import java.lang.annotation.Annotation;
 
 /**
  * Created by universallp on 19.01.2017.

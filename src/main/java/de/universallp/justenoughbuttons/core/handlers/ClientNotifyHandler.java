@@ -1,5 +1,7 @@
-package de.universallp.justenoughbuttons.core;
+package de.universallp.justenoughbuttons.core.handlers;
 
+import de.universallp.justenoughbuttons.core.CommonProxy;
+import de.universallp.justenoughbuttons.core.network.MessageNotifyClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;

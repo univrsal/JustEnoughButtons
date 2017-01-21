@@ -20,12 +20,12 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.11.2-1.4"
+version = "1.11.2-1.4.1"
 group= "de.universallp.justenoughbuttons" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "justenoughbuttons"
 
 minecraft {
-    version = "1.11.2-13.20.0.2216"
+    version = "1.11.2-13.20.0.2223"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.

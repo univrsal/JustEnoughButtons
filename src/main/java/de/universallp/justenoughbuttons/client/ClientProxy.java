@@ -1,11 +1,14 @@
 package de.universallp.justenoughbuttons.client;
 
 import de.universallp.justenoughbuttons.JEIButtons;
+import de.universallp.justenoughbuttons.client.handlers.EventHandlers;
+import de.universallp.justenoughbuttons.client.handlers.InventorySaveHandler;
+import de.universallp.justenoughbuttons.client.handlers.ModSubsetButtonHandler;
+import de.universallp.justenoughbuttons.client.handlers.SaveFileHandler;
 import de.universallp.justenoughbuttons.core.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -17,14 +20,12 @@ import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
-import org.apache.logging.log4j.Level;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -37,24 +38,18 @@ import java.io.FileNotFoundException;
  * github.com/UniversalLP/JustEnoughButtons
  */
 public class ClientProxy extends CommonProxy {
+    public static KeyBinding makeCopyKey = new KeyBinding(Localization.KEY_MAKECOPY, KeyConflictContext.GUI, Keyboard.KEY_C, Localization.KEY_CATEGORY);
+    public static KeyBinding hideAll = new KeyBinding(Localization.KEY_HIDE_OVERLAY, KeyConflictContext.GUI, KeyModifier.CONTROL, Keyboard.KEY_H, Localization.KEY_CATEGORY);
 
-    private static final String KEY_CATEGORY = "key.category.justenoughbuttons";
-    private static final String KEY_MAKECOPY = "justenoughbuttons.key.makecopy";
-    private static final String KEY_MOBOVERLAY = "justenoughbuttons.key.mobOverlay";
-    private static final String KEY_CHUNKOVERLAY = "justenoughbuttons.key.chunkOverlay";
-    private static final String KEY_HIDE_OVERLAY = "justenoughbuttons.key.hideall";
-
-    public static KeyBinding makeCopyKey = new KeyBinding(KEY_MAKECOPY, Keyboard.KEY_C, KEY_CATEGORY);
-    public static KeyBinding hideall = new KeyBinding(KEY_HIDE_OVERLAY, KeyConflictContext.GUI, KeyModifier.CONTROL, Keyboard.KEY_H, KEY_CATEGORY);
     public static KeyBinding mobOverlay;
     public static KeyBinding chunkOverlay;
+
     public static Minecraft mc;
     public static EntityPlayerSP player;
     public static RenderManager renderManager;
     public static SaveFileHandler saveHandler;
 
     public static final String[] GUI_TOP = new String[] { "r", "field_147009_r", "guiTop" };
-    public static final String[] SERVER_LIST_DATA = new String[] {};
 
     private static void versionCheck() {
         final NBTTagCompound compound = new NBTTagCompound();
@@ -87,7 +82,8 @@ public class ClientProxy extends CommonProxy {
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
-
+        JEIButtons.setUpPositions();
+        ModSubsetButtonHandler.setupModList();
         if (Loader.isModLoaded("jei")) {
             JEIButtons.logInfo("JEI is installed Mod subsets are enabled!");
             ModSubsetButtonHandler.ENABLE_SUBSETS = true;
@@ -127,11 +123,11 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerKeyBind() {
         ClientRegistry.registerKeyBinding(makeCopyKey);
-        ClientRegistry.registerKeyBinding(hideall);
+        ClientRegistry.registerKeyBinding(hideAll);
 
         if (!Loader.isModLoaded(JEIButtons.MOD_MOREOVERLAYS)) {
-            mobOverlay = new KeyBinding(KEY_MOBOVERLAY, Keyboard.KEY_F7, KEY_CATEGORY);
-            chunkOverlay = new KeyBinding(KEY_CHUNKOVERLAY, Keyboard.KEY_F4, KEY_CATEGORY);
+            mobOverlay = new KeyBinding(Localization.KEY_MOBOVERLAY, KeyConflictContext.IN_GAME, Keyboard.KEY_F7, Localization.KEY_CATEGORY);
+            chunkOverlay = new KeyBinding(Localization.KEY_CHUNKOVERLAY, KeyConflictContext.IN_GAME, Keyboard.KEY_F4, Localization.KEY_CATEGORY);
 
             ClientRegistry.registerKeyBinding(chunkOverlay);
             ClientRegistry.registerKeyBinding(mobOverlay);

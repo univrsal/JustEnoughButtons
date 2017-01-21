@@ -1,18 +1,12 @@
-package de.universallp.justenoughbuttons.core;
+package de.universallp.justenoughbuttons.client.handlers;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreenServerList;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.Slot;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.FMLLog;
-import org.apache.logging.log4j.Level;
 
 import java.io.*;
 import java.util.Date;

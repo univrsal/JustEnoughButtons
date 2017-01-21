@@ -1,7 +1,11 @@
 package de.universallp.justenoughbuttons.core;
 
 import de.universallp.justenoughbuttons.JEIButtons;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import de.universallp.justenoughbuttons.core.handlers.ClientNotifyHandler;
+import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
+import de.universallp.justenoughbuttons.core.network.MessageMagnetMode;
+import de.universallp.justenoughbuttons.core.network.MessageNotifyClient;
+import de.universallp.justenoughbuttons.core.network.MessageRequestStacks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -22,7 +26,7 @@ public class CommonProxy {
     public static final MagnetModeHandler MAGNET_MODE_HANDLER = new MagnetModeHandler();
 
     public void preInit(FMLPreInitializationEvent e) {
-
+        JEIButtons.ConfigHandler.loadConfig(e.getSuggestedConfigurationFile());
     }
 
     public void init(FMLInitializationEvent e) {
@@ -37,7 +41,9 @@ public class CommonProxy {
         }
     }
 
-    public void postInit(FMLPostInitializationEvent e) { }
+    public void postInit(FMLPostInitializationEvent e) {
+        JEIButtons.ConfigHandler.loadPostInit();
+    }
 
     public int getMouseX() { return 0;}
 

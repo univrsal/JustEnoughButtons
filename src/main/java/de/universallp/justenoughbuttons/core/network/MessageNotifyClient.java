@@ -1,15 +1,11 @@
-package de.universallp.justenoughbuttons.core;
+package de.universallp.justenoughbuttons.core.network;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiScreenServerList;
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import org.apache.logging.log4j.Level;
 
 /**
  * Created by universallp on 16.09.16 16:17.
@@ -19,7 +15,19 @@ import org.apache.logging.log4j.Level;
  */
 public class MessageNotifyClient implements IMessage, IMessageHandler<MessageNotifyClient, IMessage> {
 
-    public MessageNotifyClient() { }
+    private boolean isSpongePresent;
+
+    private boolean canDoAll; // Permission flags for the client to know which buttons to disable
+    private boolean canSetTime;
+    private boolean canKillEntities;
+    private boolean canClearInventory;
+    private boolean canSetWeather;
+    private boolean canSetGamemode;
+
+    public MessageNotifyClient() {
+        isSpongePresent = Loader.isModLoaded("sponge");
+
+    }
 
     @Override
     public void fromBytes(ByteBuf buf) {
@@ -34,6 +42,9 @@ public class MessageNotifyClient implements IMessage, IMessageHandler<MessageNot
     @Override
     public IMessage onMessage(MessageNotifyClient message, MessageContext ctx) {
         JEIButtons.isServerSidePresent = true;
+        if (message.isSpongePresent)
+            JEIButtons.logInfo("Sponge support is enabled for this server!");
+        JEIButtons.isSpongePresent = message.isSpongePresent;
         JEIButtons.logInfo("JustEnoughButtons is present on server side. Allowing inventory snapshot whith complex NBT");
         return null;
     }

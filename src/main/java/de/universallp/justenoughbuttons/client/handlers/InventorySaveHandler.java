@@ -1,7 +1,10 @@
-package de.universallp.justenoughbuttons.core;
+package de.universallp.justenoughbuttons.client.handlers;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
+import de.universallp.justenoughbuttons.client.Localization;
+import de.universallp.justenoughbuttons.core.CommonProxy;
+import de.universallp.justenoughbuttons.core.network.MessageRequestStacks;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
@@ -24,8 +27,8 @@ public class InventorySaveHandler {
     private static final String replaceCommand = "replaceitem entity @p %s %s %s %s %s";
 
     public static void init() {
-        String load = I18n.format("justenoughbuttons.load") + " ";
-        String save = I18n.format("justenoughbuttons.save") + " ";
+        String load = I18n.format(Localization.LOAD) + " ";
+        String save = I18n.format(Localization.SAVE) + " ";
 
         for (int i = 0; i < saveButtons.length; i++) {
             saveButtons[i] = new GuiButton(i, JEIButtons.ConfigHandler.xOffset, 110 + JEIButtons.ConfigHandler.yOffset + 22 * i, 50, 20, (saves[i] == null ? save : load) + (i + 1));
@@ -40,7 +43,7 @@ public class InventorySaveHandler {
 
                     if (saves[i] == null) {
                         saves[i] = new InventorySnapshot(ClientProxy.player.inventory);
-                        String load = I18n.format("justenoughbuttons.load") + " ";
+                        String load = I18n.format(Localization.LOAD) + " ";
                         saveButtons[i].displayString = load + (i + 1);
                     } else {
                         if (!ClientProxy.player.inventory.getItemStack().isEmpty()) {
@@ -56,7 +59,7 @@ public class InventorySaveHandler {
                 if (saveButtons[i].mousePressed(ClientProxy.mc, mouseX, mouseY)) {
                     JEIButtons.proxy.playClick();
                     saves[i] = null;
-                    String save = I18n.format("justenoughbuttons.save") + " ";
+                    String save = I18n.format(Localization.SAVE) + " ";
                     saveButtons[i].displayString = save + (i + 1);
 
                     break;
@@ -71,11 +74,6 @@ public class InventorySaveHandler {
             return;
 
         for (GuiButton s : saveButtons) {
-            if (!ClientProxy.player.canUseCommand(1, ""))
-                s.enabled = false;
-            else
-                s.enabled = true;
-
             s.drawButton(ClientProxy.mc, mouseX, mouseY);
 
             if (s.isMouseOver()) {
@@ -88,7 +86,6 @@ public class InventorySaveHandler {
                 RenderHelper.enableGUIStandardItemLighting();
                 ClientProxy.mc.getRenderItem().renderItemAndEffectIntoGUI(saves[s.id].icon, s.xPosition + s.width + 2, s.yPosition + 2);
                 RenderHelper.disableStandardItemLighting();
-
             }
         }
 
@@ -179,7 +176,7 @@ public class InventorySaveHandler {
 
         boolean checkCommandLength(String cmd) {
             if (cmd.length() > 100) {
-                ClientProxy.player.sendMessage(new TextComponentString(I18n.format("justenoughbuttons.nbttoolong")));
+                ClientProxy.player.sendMessage(new TextComponentString(I18n.format(Localization.NBT_TOO_LONG)));
                 return false;
             }
             return true;

@@ -1,4 +1,4 @@
-package de.universallp.justenoughbuttons.core;
+package de.universallp.justenoughbuttons.core.handlers;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import net.minecraft.entity.item.EntityItem;
