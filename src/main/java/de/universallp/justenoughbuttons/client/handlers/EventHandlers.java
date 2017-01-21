@@ -125,15 +125,15 @@ public class EventHandlers {
             JEIButtons.isAnyButtonHovered = false;
 
             {
-                btnGameMode.draw(g);
-                btnTrash.draw(g);
-                btnSun.draw(g);
-                btnRain.draw(g);
-                btnDay.draw(g);
-                btnNight.draw(g);
-                btnNoMobs.draw(g);
-                btnFreeze.draw(g);
-                btnMagnet.draw(g);
+                btnGameMode.draw();
+                btnTrash.draw();
+                btnSun.draw();
+                btnRain.draw();
+                btnDay.draw();
+                btnNight.draw();
+                btnNoMobs.draw();
+                btnFreeze.draw();
+                btnMagnet.draw();
             }
 
             if (JEIButtons.ConfigHandler.enableSaves)
@@ -143,7 +143,7 @@ public class EventHandlers {
                 ModSubsetButtonHandler.drawButtons(mouseX, mouseY, ClientProxy.getGuiTop((GuiContainer) e.getGui()));
 
             for (EnumButtonCommands btn : btnCustom)
-                btn.draw(g);
+                btn.draw();
 
             adjustGamemode();
 

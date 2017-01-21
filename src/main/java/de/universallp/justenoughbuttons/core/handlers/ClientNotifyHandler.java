@@ -5,6 +5,7 @@ import de.universallp.justenoughbuttons.core.network.MessageNotifyClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
@@ -20,7 +21,7 @@ public class ClientNotifyHandler {
     public void onWorldJoin(EntityJoinWorldEvent e) {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
             if (e.getEntity() != null && e.getEntity() instanceof EntityPlayerMP)
-                CommonProxy.INSTANCE.sendTo(new MessageNotifyClient(), (EntityPlayerMP) e.getEntity());
+                CommonProxy.INSTANCE.sendTo(new MessageNotifyClient(Loader.isModLoaded("Sponge")), (EntityPlayerMP) e.getEntity());
         }
     }
 }

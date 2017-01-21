@@ -6,9 +6,12 @@ import de.universallp.justenoughbuttons.client.handlers.InventorySaveHandler;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
@@ -32,7 +35,7 @@ import java.io.File;
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
-    public static final String VERSION = "1.11.2-1.4.1";
+    static final String VERSION = "1.11.2-1.4.1";
     public static final String MOD_MOREOVERLAYS = "moreoverlays";
     public static boolean isServerSidePresent = false;
     public static boolean isSpongePresent = false;
@@ -148,9 +151,10 @@ public class JEIButtons {
                 return this; // Other buttons don't cycle
         }
 
-        public void draw(GuiContainer parent) {
+        public void draw() {
             if (!isVisible || getCommand().equals(""))
                 return;
+
             int mouseX = proxy.getMouseX();
             int mouseY = proxy.getMouseY();
 
@@ -168,12 +172,10 @@ public class JEIButtons {
                 }
                 state = EnumButtonState.DISABLED;
             }
-
-            parent.mc.renderEngine.bindTexture(icons);
+            ClientProxy.mc.renderEngine.bindTexture(icons);
             GlStateManager.color(1.0F, 1.0F, 1.0F);
-            parent.drawTexturedModalRect(xPos, yPos, width * iconID(), height * state.ordinal(), width, height);
+            GuiUtils.drawTexturedModalRect(xPos, yPos, width * iconID(), height * state.ordinal(), width, height, 1);
             RenderHelper.disableStandardItemLighting();
-
         }
 
         public String getCommand() {
@@ -221,7 +223,7 @@ public class JEIButtons {
         static final String CATEGORY = "buttons";
         public static final String CATEGORY_CUSTOM = "custombuttons";
         public static final String CATEGORY_POSITION = "position";
-        public static final String CATEGORY_COMPAT = "compat";
+        static final String CATEGORY_COMPAT = "compat";
 
         public static int yOffset;
         public static int xOffset;

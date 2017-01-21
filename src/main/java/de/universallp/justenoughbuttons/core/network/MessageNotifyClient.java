@@ -17,26 +17,20 @@ public class MessageNotifyClient implements IMessage, IMessageHandler<MessageNot
 
     private boolean isSpongePresent;
 
-    private boolean canDoAll; // Permission flags for the client to know which buttons to disable
-    private boolean canSetTime;
-    private boolean canKillEntities;
-    private boolean canClearInventory;
-    private boolean canSetWeather;
-    private boolean canSetGamemode;
+    public MessageNotifyClient() { }
 
-    public MessageNotifyClient() {
-        isSpongePresent = Loader.isModLoaded("sponge");
-
+    public MessageNotifyClient(boolean isSpongePresent) {
+        this.isSpongePresent = isSpongePresent;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
-
+        isSpongePresent = buf.readBoolean();
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
-
+        buf.writeBoolean(isSpongePresent);
     }
 
     @Override

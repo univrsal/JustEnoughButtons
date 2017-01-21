@@ -23,7 +23,7 @@ import net.minecraft.util.text.TextComponentString;
 public class InventorySaveHandler {
 
     private static GuiButton[] saveButtons = new GuiButton[4];
-    public static InventorySnapshot[] saves = new InventorySnapshot[4];
+    static InventorySnapshot[] saves = new InventorySnapshot[4];
     private static final String replaceCommand = "replaceitem entity @p %s %s %s %s %s";
 
     public static void init() {
@@ -93,13 +93,13 @@ public class InventorySaveHandler {
             EventHandlers.skipSaveClickCount = 0;
     }
 
-    public static class InventorySnapshot {
-        public ItemStack icon;
+    static class InventorySnapshot {
+        ItemStack icon;
         NBTTagCompound[] mainInventory;
         NBTTagCompound[] armorInventory;
         NBTTagCompound offHandInventory;
 
-        public InventorySnapshot(NBTTagCompound icon, NBTTagCompound[] mainInventory, NBTTagCompound[] armorInventory, NBTTagCompound offHandInventory) {
+        InventorySnapshot(NBTTagCompound icon, NBTTagCompound[] mainInventory, NBTTagCompound[] armorInventory, NBTTagCompound offHandInventory) {
             this.icon = new ItemStack(icon);
             this.mainInventory = mainInventory;
             this.armorInventory = armorInventory;
@@ -133,13 +133,17 @@ public class InventorySaveHandler {
         void giveToPlayer() {
             if (!JEIButtons.isServerSidePresent) {
                 JEIButtons.sendCommand("clear");
-                String nbt = "";
-                String cmd = "";
+                String nbt;
+                String cmd;
 
                 for (int i = 0; i < mainInventory.length; i++) {
                     if (mainInventory[i] == null)
                         continue;
                     ItemStack s = new ItemStack(mainInventory[i]);
+
+                    if (s.isEmpty())
+                        continue;
+
                     nbt = s.getTagCompound() != null  ? s.getTagCompound().toString() : "";
                     if (i < 9)
                         cmd = String.format(replaceCommand, "slot.hotbar." + i,  s.getItem().getRegistryName(), s.getCount(), s.getItemDamage(), nbt);
@@ -153,6 +157,10 @@ public class InventorySaveHandler {
                     if (armorInventory[i] == null)
                         continue;
                     ItemStack s = new ItemStack(armorInventory[i]);
+
+                    if (s.isEmpty())
+                        continue;
+
                     nbt = s.getTagCompound() != null ? s.getTagCompound().toString() : "";
                     cmd = String.format(replaceCommand, "slot.armor." + idToSlot(i),  s.getItem().getRegistryName(), s.getCount(), s.getItemDamage(), nbt);
                     if (checkCommandLength(cmd))
@@ -161,11 +169,13 @@ public class InventorySaveHandler {
 
                 if (offHandInventory != null) {
                     ItemStack s = new ItemStack(offHandInventory);
-                    nbt = s.getTagCompound() != null ? s.getTagCompound().toString() : "";
-                    cmd = String.format(replaceCommand, "slot.weapon.offhand",  s.getItem().getRegistryName(), s.getCount(), s.getItemDamage(), nbt);
-                    if (checkCommandLength(cmd))
-                        JEIButtons.sendCommand(cmd);
 
+                    if (!s.isEmpty()) {
+                        nbt = s.getTagCompound() != null ? s.getTagCompound().toString() : "";
+                        cmd = String.format(replaceCommand, "slot.weapon.offhand",  s.getItem().getRegistryName(), s.getCount(), s.getItemDamage(), nbt);
+                        if (checkCommandLength(cmd))
+                            JEIButtons.sendCommand(cmd);
+                    }
                 }
             } else {
                 CommonProxy.INSTANCE.sendToServer(new MessageRequestStacks(mainInventory, armorInventory, offHandInventory));
