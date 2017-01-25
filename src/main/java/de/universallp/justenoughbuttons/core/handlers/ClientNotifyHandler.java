@@ -21,7 +21,7 @@ public class ClientNotifyHandler {
     public void onWorldJoin(EntityJoinWorldEvent e) {
         if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
             if (e.getEntity() != null && e.getEntity() instanceof EntityPlayerMP)
-                CommonProxy.INSTANCE.sendTo(new MessageNotifyClient(Loader.isModLoaded("Sponge")), (EntityPlayerMP) e.getEntity());
+                CommonProxy.INSTANCE.sendTo(new MessageNotifyClient(Loader.isModLoaded("sponge")), (EntityPlayerMP) e.getEntity());
         }
     }
 }

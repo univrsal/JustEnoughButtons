@@ -18,10 +18,9 @@ import java.util.List;
  * github.com/UniversalLP/JEI Buttons
  */
 public class MagnetModeHandler {
+
     public static boolean state = false;
-
     private List<EntityPlayerMP> players = new ArrayList<EntityPlayerMP>();
-
     private int r;
 
     public MagnetModeHandler() {

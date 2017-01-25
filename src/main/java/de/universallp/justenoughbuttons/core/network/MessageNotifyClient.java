@@ -25,7 +25,7 @@ public class MessageNotifyClient implements IMessage, IMessageHandler<MessageNot
 
     @Override
     public void fromBytes(ByteBuf buf) {
-        isSpongePresent = buf.readBoolean();
+        this.isSpongePresent = buf.readBoolean();
     }
 
     @Override

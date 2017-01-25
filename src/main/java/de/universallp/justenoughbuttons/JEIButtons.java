@@ -1,6 +1,7 @@
 package de.universallp.justenoughbuttons;
 
 import de.universallp.justenoughbuttons.client.ClientProxy;
+import de.universallp.justenoughbuttons.client.Localization;
 import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.client.handlers.InventorySaveHandler;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -9,11 +10,13 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -337,9 +340,14 @@ public class JEIButtons {
 
     public static void sendCommand(String cmd) {
         if (!isSpongePresent)
-            ClientProxy.player.sendChatMessage("/" + cmd);
+            cmd = "/" + cmd;
         else
-            ClientProxy.player.sendChatMessage("/minecraft:" + cmd);
+           cmd = "/minecraft:" + cmd;
+
+        if (cmd.length()  <= 256)
+            ClientProxy.player.sendChatMessage(cmd);
+        else
+            ClientProxy.mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentString(Localization.NBT_TOO_LONG));
     }
 
     public static void logInfo(String s, Object ... format) {

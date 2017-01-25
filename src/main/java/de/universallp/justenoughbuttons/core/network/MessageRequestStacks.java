@@ -1,11 +1,10 @@
 package de.universallp.justenoughbuttons.core.network;
 
+import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.Localization;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.command.CommandGive;
-import net.minecraft.command.server.CommandTeleport;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,9 +22,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  */
 public class MessageRequestStacks implements IMessage, IMessageHandler<MessageRequestStacks, IMessage> {
 
-    public NBTTagCompound[] mainInventory;
-    public NBTTagCompound[] armorInventory;
-    public NBTTagCompound offHand;
+    private static final int MAX_REQUEST_SIZE = 32767;
+    private NBTTagCompound[] mainInventory;
+    private NBTTagCompound[] armorInventory;
+    private NBTTagCompound offHand;
 
 
     public MessageRequestStacks() { }
@@ -61,8 +61,14 @@ public class MessageRequestStacks implements IMessage, IMessageHandler<MessageRe
 
         if (flag) {
             buf.writeByte(mainInventory.length);
-            for (NBTTagCompound tag : mainInventory)
-                ByteBufUtils.writeTag(buf, tag);
+            for (NBTTagCompound tag : mainInventory) {
+                if (tag.toString().getBytes().length < MAX_REQUEST_SIZE)
+                    ByteBufUtils.writeTag(buf, tag);
+                else {
+                    JEIButtons.logInfo("That NBT tag was just too long.");
+                    ByteBufUtils.writeTag(buf, null);
+                }
+            }
         }
 
         flag = armorInventory != null && armorInventory.length > 0;
