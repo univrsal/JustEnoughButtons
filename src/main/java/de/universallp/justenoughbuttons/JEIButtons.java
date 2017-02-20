@@ -2,13 +2,10 @@ package de.universallp.justenoughbuttons;
 
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.client.Localization;
-import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.client.handlers.InventorySaveHandler;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import de.universallp.justenoughbuttons.core.CommonProxy;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
@@ -16,7 +13,6 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.config.GuiUtils;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -38,7 +34,7 @@ import java.io.File;
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
-    static final String VERSION = "1.11.2-1.4.1";
+    static final String VERSION = "1.11.2-1.4.2";
     public static final String MOD_MOREOVERLAYS = "moreoverlays";
     public static boolean isServerSidePresent = false;
     public static boolean isSpongePresent = false;

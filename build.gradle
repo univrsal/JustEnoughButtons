@@ -20,12 +20,12 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "1.11.2-1.4.1"
+version = "1.11.2-1.4.2"
 group= "de.universallp.justenoughbuttons" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "justenoughbuttons"
 
 minecraft {
-    version = "1.11.2-13.20.0.2223"
+    version = "1.11.2-13.20.0.2232"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -46,9 +46,9 @@ repositories {
 
 dependencies {
   // compile against the JEI API
-  deobfCompile "mezz.jei:jei_1.11.2:4.2.3.223:api"
+  deobfCompile "mezz.jei:jei_1.11.2:4.2.7.240:api"
   // at runtime, use the full JEI jar
-  runtime "mezz.jei:jei_1.11.2:4.2.3.223"
+  runtime "mezz.jei:jei_1.11.2:4.2.7.240"
 }
 
 processResources
