@@ -2,13 +2,11 @@ package de.universallp.justenoughbuttons.client.handlers;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
-import de.universallp.justenoughbuttons.core.network.MessageRequestStacks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
-import sun.plugin2.message.Message;
 
 import java.io.*;
 import java.util.Date;

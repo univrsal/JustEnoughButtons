@@ -83,10 +83,10 @@ public class ClientProxy extends CommonProxy {
             e1.printStackTrace();
         }
         JEIButtons.setUpPositions();
-        ModSubsetButtonHandler.setupModList();
-        if (Loader.isModLoaded("jei")) {
+        if (Loader.isModLoaded(JEIButtons.MOD_JEI) || Loader.isModLoaded(JEIButtons.MOD_JEI.toUpperCase())) {
             JEIButtons.logInfo("JEI is installed Mod subsets are enabled!");
             ModSubsetButtonHandler.ENABLE_SUBSETS = true;
+            ModSubsetButtonHandler.setupModList();
         }
     }
 
