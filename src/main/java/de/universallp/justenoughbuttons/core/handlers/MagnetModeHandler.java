@@ -37,20 +37,24 @@ public class MagnetModeHandler {
 
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent e) {
-        for (EntityPlayerMP p : players) {
-            double x = p.posX;
-            double y = p.posY + 1.5;
-            double z = p.posZ;
+        if (System.currentTimeMillis() % 5 == 0 && players.size() > 0) {
+            for (EntityPlayerMP p : players) {
+                double x = p.posX;
+                double y = p.posY + 1.5;
+                double z = p.posZ;
 
-            List<EntityItem> items = p.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(x - r, y - r, z - r, x + r, y + r, z + r));
+                List<EntityItem> items = p.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(x - r, y - r, z - r, x + r, y + r, z + r));
 
-            int pulled = 0;
+                int pulled = 0;
 
-            for(EntityItem i : items) {
-                i.setPosition(x, y, z);
-                if(pulled > 200)
-                    break;
-                pulled++;
+                for(EntityItem i : items) {
+                    i.setPosition(x, y, z);
+
+                    if(pulled > 200)
+                        break;
+
+                    pulled++;
+                }
             }
         }
     }

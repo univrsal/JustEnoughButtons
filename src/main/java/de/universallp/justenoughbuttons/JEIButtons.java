@@ -34,7 +34,7 @@ import java.io.File;
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
-    static final String VERSION = "1.11.2-1.4.2";
+    static final String VERSION = "1.11.2-1.4.3";
     public static final String MOD_MOREOVERLAYS = "moreoverlays";
     public static final String MOD_JEI = "jei";
     public static boolean isServerSidePresent = false;
