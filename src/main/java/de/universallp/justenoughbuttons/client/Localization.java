@@ -39,7 +39,7 @@ public class Localization {
     public static final String MAGNET_OFF = PREFIX + "magnet.off";
     public static final String MAGNET = PREFIX + "magnetitems";
     public static final String MODS = PREFIX + "mods";
-    public static final String NO_PERMISSIONS = "commands.generic.permission";
+    public static final String NO_PERMISSIONS = "I'm sorry %s, I'm afraid I can't let you do that.";
     public static final String MORE = PREFIX + "more";
     public static final String CMD_NO_RAIN = "commands.weather.clear";
     public static final String CMD_RAIN = "commands.weather.rain";

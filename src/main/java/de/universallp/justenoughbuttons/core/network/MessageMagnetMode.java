@@ -3,15 +3,12 @@ package de.universallp.justenoughbuttons.core.network;
 import de.universallp.justenoughbuttons.client.Localization;
 import de.universallp.justenoughbuttons.core.CommonProxy;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.command.CommandGive;
 import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.server.FMLServerHandler;
 
 /**
  * Created by universallp on 20.09.2016 14:31.
@@ -44,7 +41,7 @@ public class MessageMagnetMode implements IMessage, IMessageHandler<MessageMagne
         EntityPlayerMP p = ctx.getServerHandler().playerEntity;
 
         if (!p.canUseCommand(new CommandTeleport().getRequiredPermissionLevel(), "tp")) {
-            p.sendMessage(new TextComponentString(I18n.format(Localization.NO_PERMISSIONS)));
+            p.sendMessage(new TextComponentString(String.format(Localization.NO_PERMISSIONS, p.getDisplayNameString())));
             return null;
         }
 

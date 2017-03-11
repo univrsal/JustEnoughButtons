@@ -2,7 +2,6 @@ package de.universallp.justenoughbuttons.core.network;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import io.netty.buffer.ByteBuf;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
