@@ -1,6 +1,7 @@
 package de.universallp.justenoughbuttons.client;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
+import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
 import net.minecraft.client.gui.GuiScreen;
@@ -39,7 +40,7 @@ public class Localization {
     public static final String MAGNET_OFF = PREFIX + "magnet.off";
     public static final String MAGNET = PREFIX + "magnetitems";
     public static final String MODS = PREFIX + "mods";
-    public static final String NO_PERMISSIONS = "I'm sorry %s, I'm afraid I can't let you do that.";
+    public static final String NO_PERMISSIONS = "commands.generic.permission";
     public static final String MORE = PREFIX + "more";
     public static final String CMD_NO_RAIN = "commands.weather.clear";
     public static final String CMD_RAIN = "commands.weather.rain";
@@ -49,7 +50,7 @@ public class Localization {
     public static final String KEY_CHUNKOVERLAY = "justenoughbuttons.key.chunkoverlay";
     public static final String KEY_HIDE_OVERLAY = "justenoughbuttons.key.hideall";
 
-    public static List<String> getTooltip(JEIButtons.EnumButtonCommands btn) {
+    public static List<String> getTooltip(EnumButtonCommands btn) {
         ArrayList<String> list = new ArrayList<String>();
         if (btn == null)
             return null;
@@ -82,7 +83,7 @@ public class Localization {
                 } else {
                     list.add(I18n.format(Localization.DRAG_ITEMS_HERE));
                     list.add(ChatFormatting.GRAY + I18n.format(Localization.HOLD_SHIFT));
-                    if (JEIButtons.ConfigHandler.enableClearInventory)
+                    if (ConfigHandler.enableClearInventory)
                         list.add(ChatFormatting.GRAY + I18n.format(Localization.CLEAR_INVENTORY));
                 }
                 break;
@@ -116,10 +117,10 @@ public class Localization {
             case CUSTOM2:
             case CUSTOM3:
             case CUSTOM4:
-                if (JEIButtons.ConfigHandler.customName[btn.id].equals(""))
-                    list.add(I18n.format(Localization.CUSTOM_COMMAND, "/" + JEIButtons.ConfigHandler.customCommand[btn.id]));
+                if (ConfigHandler.customName[btn.id].equals(""))
+                    list.add(I18n.format(Localization.CUSTOM_COMMAND, "/" + ConfigHandler.customCommand[btn.id]));
                 else
-                    list.add(JEIButtons.ConfigHandler.customName[btn.id]);
+                    list.add(ConfigHandler.customName[btn.id]);
                 break;
         }
 

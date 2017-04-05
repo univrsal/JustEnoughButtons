@@ -2,10 +2,11 @@ package de.universallp.justenoughbuttons.core.network;
 
 import de.universallp.justenoughbuttons.client.Localization;
 import de.universallp.justenoughbuttons.core.CommonProxy;
+import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -40,10 +41,11 @@ public class MessageMagnetMode implements IMessage, IMessageHandler<MessageMagne
     public IMessage onMessage(MessageMagnetMode message, MessageContext ctx) {
         EntityPlayerMP p = ctx.getServerHandler().playerEntity;
 
-        if (!p.canUseCommand(new CommandTeleport().getRequiredPermissionLevel(), "tp")) {
-            p.sendMessage(new TextComponentString(String.format(Localization.NO_PERMISSIONS, p.getDisplayNameString())));
-            return null;
-        }
+        if (!ConfigHandler.spNoCheats)
+            if (!p.canUseCommand(new CommandTeleport().getRequiredPermissionLevel(), "tp") && ConfigHandler.magnetRequiresOP) {
+                p.sendMessage(new TextComponentTranslation(Localization.NO_PERMISSIONS));
+                return null;
+            }
 
         if (message.removePlayer)
             CommonProxy.MAGNET_MODE_HANDLER.removePlayer(ctx.getServerHandler().playerEntity);

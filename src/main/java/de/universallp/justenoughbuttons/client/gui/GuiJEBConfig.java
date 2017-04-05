@@ -1,5 +1,6 @@
 package de.universallp.justenoughbuttons.client.gui;
 
+import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import de.universallp.justenoughbuttons.JEIButtons;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
@@ -20,7 +21,7 @@ public class GuiJEBConfig extends GuiConfig {
     private static final List buttonorder = new ArrayList();
 
     public GuiJEBConfig(GuiScreen parentScreen) {
-        super(parentScreen, getElements(), JEIButtons.MODID, false, false, GuiConfig.getAbridgedConfigPath(JEIButtons.ConfigHandler.config.toString()));
+        super(parentScreen, getElements(), JEIButtons.MODID, false, false, GuiConfig.getAbridgedConfigPath(ConfigHandler.config.toString()));
     }
 
     public static List<IConfigElement> getElements() {
@@ -33,11 +34,11 @@ public class GuiJEBConfig extends GuiConfig {
 
         List<IConfigElement> entries = new ArrayList<IConfigElement>();
 
-        for (String name : JEIButtons.ConfigHandler.config.getCategoryNames())
-            if (name.equals(JEIButtons.ConfigHandler.CATEGORY_CUSTOM))
-                entries.add(new ConfigElement(JEIButtons.ConfigHandler.config.getCategory(name).setPropertyOrder(buttonorder)));
+        for (String name : ConfigHandler.config.getCategoryNames())
+            if (name.equals(ConfigHandler.CATEGORY_CUSTOM))
+                entries.add(new ConfigElement(ConfigHandler.config.getCategory(name).setPropertyOrder(buttonorder)));
             else
-                entries.add(new ConfigElement(JEIButtons.ConfigHandler.config.getCategory(name)));
+                entries.add(new ConfigElement(ConfigHandler.config.getCategory(name)));
 
 
         return entries;

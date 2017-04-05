@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 import java.io.*;
 import java.util.Date;
@@ -117,7 +118,12 @@ public class SaveFileHandler {
     }
 
     public void saveForPlayer() throws FileNotFoundException, UnsupportedEncodingException {
-        UUID uuid = EntityPlayer.getUUID(ClientProxy.player.getGameProfile());
+        if (FMLClientHandler.instance().getClientPlayerEntity() == null) {
+            JEIButtons.logInfo("Error when saving inventory saves player instance is null!");
+            return;
+        }
+
+        UUID uuid = EntityPlayer.getUUID(FMLClientHandler.instance().getClientPlayerEntity().getGameProfile());
         File oldFile = new File(savePath + "/" + uuid + ".jebs");
 
         if (oldFile.exists() && !oldFile.delete()) {

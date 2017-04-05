@@ -1,8 +1,10 @@
 package de.universallp.justenoughbuttons.core;
 
+import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.core.handlers.ClientNotifyHandler;
 import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
+import de.universallp.justenoughbuttons.core.network.MessageExecuteButton;
 import de.universallp.justenoughbuttons.core.network.MessageMagnetMode;
 import de.universallp.justenoughbuttons.core.network.MessageNotifyClient;
 import de.universallp.justenoughbuttons.core.network.MessageRequestStacks;
@@ -26,14 +28,14 @@ public class CommonProxy {
     public static final MagnetModeHandler MAGNET_MODE_HANDLER = new MagnetModeHandler();
 
     public void preInit(FMLPreInitializationEvent e) {
-        JEIButtons.ConfigHandler.loadConfig(e.getSuggestedConfigurationFile());
+        ConfigHandler.loadConfig(e.getSuggestedConfigurationFile());
     }
 
     public void init(FMLInitializationEvent e) {
         INSTANCE.registerMessage(MessageNotifyClient.class, MessageNotifyClient.class, 0, Side.CLIENT);
         INSTANCE.registerMessage(MessageRequestStacks.class, MessageRequestStacks.class, 1, Side.SERVER);
         INSTANCE.registerMessage(MessageMagnetMode.class, MessageMagnetMode.class, 2, Side.SERVER);
-
+        INSTANCE.registerMessage(MessageExecuteButton.class, MessageExecuteButton.class, 3, Side.SERVER);
         MinecraftForge.EVENT_BUS.register(MAGNET_MODE_HANDLER);
         if (FMLCommonHandler.instance().getSide() == Side.SERVER) {
             MinecraftForge.EVENT_BUS.register(new ClientNotifyHandler());
@@ -42,7 +44,7 @@ public class CommonProxy {
     }
 
     public void postInit(FMLPostInitializationEvent e) {
-        JEIButtons.ConfigHandler.loadPostInit();
+        ConfigHandler.loadPostInit();
     }
 
     public int getMouseX() { return 0;}

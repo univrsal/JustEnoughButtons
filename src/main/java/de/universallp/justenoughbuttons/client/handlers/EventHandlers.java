@@ -1,11 +1,14 @@
 package de.universallp.justenoughbuttons.client.handlers;
 
+import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
+import de.universallp.justenoughbuttons.client.EnumButtonCommands;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.client.Localization;
 import de.universallp.justenoughbuttons.client.MobOverlayRenderer;
 import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
+import de.universallp.justenoughbuttons.core.network.MessageExecuteButton;
 import de.universallp.justenoughbuttons.core.network.MessageMagnetMode;
 import de.universallp.justenoughbuttons.core.network.MessageNotifyClient;
 import net.minecraft.client.Minecraft;
@@ -14,8 +17,6 @@ import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.debug.DebugRenderer;
-import net.minecraft.client.renderer.debug.DebugRendererChunkBorder;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Slot;
@@ -136,7 +137,7 @@ public class EventHandlers {
                 btnMagnet.draw();
             }
 
-            if (JEIButtons.ConfigHandler.enableSaves)
+            if (ConfigHandler.enableSaves)
                 InventorySaveHandler.drawButtons(mouseX, mouseY);
 
             if (ModSubsetButtonHandler.ENABLE_SUBSETS && ConfigHandler.enableSubsets)
@@ -155,8 +156,13 @@ public class EventHandlers {
 
                     switch (JEIButtons.hoveredButton) {
                         case FREEZETIME:
-                            boolean gameRuleDayCycle = ClientProxy.mc.world.getGameRules().getBoolean("doDaylightCycle");
-                            command += " " + (gameRuleDayCycle ? "false" : "true");
+                            if (ConfigHandler.spNoCheats) {
+                                ClientProxy.INSTANCE.sendToServer(new MessageExecuteButton(MessageExecuteButton.FREEZE, null));
+                                command = null;
+                            } else {
+                                boolean gameRuleDayCycle = ClientProxy.mc.world.getGameRules().getBoolean("doDaylightCycle");
+                                command += " " + (gameRuleDayCycle ? "false" : "true");
+                            }
                             break;
                         case DELETE:
                             ItemStack draggedStack = pl.inventory.getItemStack();
@@ -201,7 +207,7 @@ public class EventHandlers {
 
                     JEIButtons.proxy.playClick();
                 } else { // Save buttons & Mod subsets
-                    if (JEIButtons.ConfigHandler.enableSaves)
+                    if (ConfigHandler.enableSaves)
                         InventorySaveHandler.click(mouseX, mouseY, false);
 
                     ModSubsetButtonHandler.click(mouseX, mouseY);

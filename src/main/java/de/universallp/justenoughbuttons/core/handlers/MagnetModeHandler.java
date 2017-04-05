@@ -1,6 +1,5 @@
 package de.universallp.justenoughbuttons.core.handlers;
 
-import de.universallp.justenoughbuttons.JEIButtons;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -24,7 +23,7 @@ public class MagnetModeHandler {
     private int r;
 
     public MagnetModeHandler() {
-        r = JEIButtons.ConfigHandler.magnetRadius;
+        r = ConfigHandler.magnetRadius;
     }
 
     public void addPlayer(EntityPlayerMP p) {

@@ -1,5 +1,6 @@
 package de.universallp.justenoughbuttons.client.handlers;
 
+import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.client.Localization;
@@ -12,6 +13,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.fml.client.FMLClientHandler;
 
 
 /**
@@ -31,7 +33,7 @@ public class InventorySaveHandler {
         String save = I18n.format(Localization.SAVE) + " ";
 
         for (int i = 0; i < saveButtons.length; i++) {
-            saveButtons[i] = new GuiButton(i, JEIButtons.ConfigHandler.xOffset, 110 + JEIButtons.ConfigHandler.yOffset + 22 * i, 50, 20, (saves[i] == null ? save : load) + (i + 1));
+            saveButtons[i] = new GuiButton(i, ConfigHandler.xOffset, 110 + ConfigHandler.yOffset + 22 * i, 50, 20, (saves[i] == null ? save : load) + (i + 1));
         }
     }
 
