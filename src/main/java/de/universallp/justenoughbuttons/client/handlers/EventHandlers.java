@@ -7,9 +7,6 @@ import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.client.Localization;
 import de.universallp.justenoughbuttons.client.MobOverlayRenderer;
 import de.universallp.justenoughbuttons.core.CommonProxy;
-import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
-import de.universallp.justenoughbuttons.core.network.MessageExecuteButton;
-import de.universallp.justenoughbuttons.core.network.MessageMagnetMode;
 import de.universallp.justenoughbuttons.core.network.MessageNotifyClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -152,59 +149,7 @@ public class EventHandlers {
                 isLMBDown = true;
 
                 if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton.isEnabled) { // Utility Buttons
-                    String command = JEIButtons.hoveredButton.getCommand();
-
-                    switch (JEIButtons.hoveredButton) {
-                        case FREEZETIME:
-                            if (ConfigHandler.spNoCheats) {
-                                ClientProxy.INSTANCE.sendToServer(new MessageExecuteButton(MessageExecuteButton.FREEZE, null));
-                                command = null;
-                            } else {
-                                boolean gameRuleDayCycle = ClientProxy.mc.world.getGameRules().getBoolean("doDaylightCycle");
-                                command += " " + (gameRuleDayCycle ? "false" : "true");
-                            }
-                            break;
-                        case DELETE:
-                            ItemStack draggedStack = pl.inventory.getItemStack();
-                            if (draggedStack.isEmpty()) {
-                                if (GuiScreen.isShiftKeyDown() && ConfigHandler.enableClearInventory)
-                                    command = "clear";
-                                else
-                                    command = null;
-                            } else {
-                                String name  = draggedStack.getItem().getRegistryName().toString();
-
-                                command += pl.getDisplayName().getUnformattedText() + " " + name;
-
-                                if (!GuiScreen.isShiftKeyDown()) {
-                                    int data = draggedStack.getItemDamage();
-                                    command += " " + data;
-                                }
-                                boolean ghost = draggedStack.hasTagCompound() && draggedStack.getTagCompound().getBoolean("JEI_Ghost");
-                                if (ghost)
-                                    pl.inventory.setItemStack(ItemStack.EMPTY);
-                            }
-                            break;
-
-                        case MAGNET:
-                            if (JEIButtons.isServerSidePresent) {
-                                command = null;
-                                CommonProxy.INSTANCE.sendToServer(new MessageMagnetMode(MagnetModeHandler.state));
-                                MagnetModeHandler.state = !MagnetModeHandler.state;
-                            } else
-                                command = "tp @e[type=Item,r=" + ConfigHandler.magnetRadius + "] @p";
-                            break;
-                        case ADVENTURE:
-                        case CREATIVE:
-                        case SPECTATE:
-                        case SURVIVAL:
-                            JEIButtons.btnGameMode = hoveredButton.cycle();
-                            break;
-                    }
-
-                    if (command != null)
-                        JEIButtons.sendCommand(command);
-
+                    CommandHelper.handleClick(JEIButtons.hoveredButton);
                     JEIButtons.proxy.playClick();
                 } else { // Save buttons & Mod subsets
                     if (ConfigHandler.enableSaves)

@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.server.FMLServerHandler;
 
 /**
  * Class to allow JEB to use command buttons without cheats
@@ -39,6 +38,7 @@ public class MessageExecuteButton  implements IMessage, IMessageHandler<MessageE
     public static final byte NIGHT   = 8;
     public static final byte FREEZE       = 9;
     public static final byte KILL         = 10;
+    public static final byte MAGNET       = 11;
 
     private int commandOrdinal;
     private String[] cmd;

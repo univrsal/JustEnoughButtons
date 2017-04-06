@@ -2,6 +2,7 @@ package de.universallp.justenoughbuttons.core.handlers;
 
 import de.universallp.justenoughbuttons.client.EnumButtonCommands;
 import de.universallp.justenoughbuttons.JEIButtons;
+import de.universallp.justenoughbuttons.client.handlers.CommandHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -49,8 +50,6 @@ public class ConfigHandler {
     public static boolean magnetRequiresOP = true;
     public static boolean saveRequireOP = true;
 
-    public static boolean spNoCheats = false;
-
     public static int yOffset;
     public static int xOffset;
 
@@ -95,7 +94,7 @@ public class ConfigHandler {
         magnetRequiresOP = config.getBoolean("magnetRequiresOP", CATEGORY_PERMISSIONS, true, "When false the magnet mode can be used on servers without op (When JEB is installed on the server)");
         saveRequireOP = config.getBoolean("savesRequireOP", CATEGORY_PERMISSIONS, true, "When false the inventory saves can be used on servers without op (When JEB is installed on the server");
 
-        spNoCheats = config.getBoolean("spNoCheats", CATEGORY_PERMISSIONS, false, "When true JEB will work without cheats enabled in singleplayer");
+        CommandHelper.useCheats = config.getBoolean("useCheats", CATEGORY_PERMISSIONS, true, "When false JEB will work without cheats enabled in singleplayer");
 
         EnumButtonCommands.ADVENTURE.setEnabled(enableAdventureMode);
         EnumButtonCommands.SPECTATE.setEnabled(enableSpectatoreMode);

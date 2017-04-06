@@ -1,6 +1,7 @@
 package de.universallp.justenoughbuttons.core.network;
 
 import de.universallp.justenoughbuttons.client.Localization;
+import de.universallp.justenoughbuttons.client.handlers.CommandHelper;
 import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import io.netty.buffer.ByteBuf;
@@ -41,7 +42,7 @@ public class MessageMagnetMode implements IMessage, IMessageHandler<MessageMagne
     public IMessage onMessage(MessageMagnetMode message, MessageContext ctx) {
         EntityPlayerMP p = ctx.getServerHandler().playerEntity;
 
-        if (!ConfigHandler.spNoCheats)
+        if (CommandHelper.useCheats)
             if (!p.canUseCommand(new CommandTeleport().getRequiredPermissionLevel(), "tp") && ConfigHandler.magnetRequiresOP) {
                 p.sendMessage(new TextComponentTranslation(Localization.NO_PERMISSIONS));
                 return null;

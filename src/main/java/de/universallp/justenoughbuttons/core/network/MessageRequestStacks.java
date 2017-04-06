@@ -2,6 +2,7 @@ package de.universallp.justenoughbuttons.core.network;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.Localization;
+import de.universallp.justenoughbuttons.client.handlers.CommandHelper;
 import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.command.CommandGive;
@@ -92,7 +93,7 @@ public class MessageRequestStacks implements IMessage, IMessageHandler<MessageRe
         EntityPlayerMP p = ctx.getServerHandler().playerEntity;
 
         if (p != null) {
-            if (!ConfigHandler.spNoCheats)
+            if (CommandHelper.useCheats)
                 if (ConfigHandler.saveRequireOP && !p.canUseCommand(new CommandGive().getRequiredPermissionLevel(), "give")) {
                     p.sendMessage(new TextComponentTranslation(Localization.NO_PERMISSIONS));
                     return null;
