@@ -215,6 +215,7 @@ public class EventHandlers {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+        JEIButtons.isServerSidePresent = false;
     }
 
     @SubscribeEvent
@@ -223,6 +224,11 @@ public class EventHandlers {
 
         if (gui != null && gui instanceof GuiContainer) {
             int keyCode = Keyboard.getEventKey();
+
+            if (Keyboard.KEY_ESCAPE == keyCode) {
+                skipModClickCount = 0;
+                skipSaveClickCount = 0;
+            }
 
             if (ClientProxy.makeCopyKey.isActiveAndMatches(keyCode)) {
                 Slot hovered = ((GuiContainer) gui).getSlotUnderMouse();

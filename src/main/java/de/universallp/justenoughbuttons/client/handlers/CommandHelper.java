@@ -3,7 +3,6 @@ package de.universallp.justenoughbuttons.client.handlers;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.client.EnumButtonCommands;
-import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
 import de.universallp.justenoughbuttons.core.network.MessageExecuteButton;
@@ -47,14 +46,24 @@ public class CommandHelper {
 
                     if (!GuiScreen.isShiftKeyDown()) {
                         int data = draggedStack.getItemDamage();
-                        command = new String[] { ClientProxy.player.getDisplayName().getUnformattedText(), name, String.valueOf(data) };
+                        command = new String[] { "clear", ClientProxy.player.getDisplayName().getUnformattedText(), name, String.valueOf(data) };
                     } else
-                        command = new String[] { ClientProxy.player.getDisplayName().getUnformattedText(), name };
+                        command = new String[] { "clear", ClientProxy.player.getDisplayName().getUnformattedText(), name };
                     boolean ghost = draggedStack.hasTagCompound() && draggedStack.getTagCompound().getBoolean("JEI_Ghost");
                     if (ghost)
                         ClientProxy.player.inventory.setItemStack(ItemStack.EMPTY);
                 }
-                handleButton(MessageExecuteButton.DELETE, command);
+
+                if (JEIButtons.isServerSidePresent) {
+                    ClientProxy.player.inventory.setItemStack(ItemStack.EMPTY);
+                    if (GuiScreen.isShiftKeyDown() && ConfigHandler.enableClearInventory)
+                        ClientProxy.player.inventory.clear();
+                }
+
+                if (GuiScreen.isShiftKeyDown() && ConfigHandler.enableClearInventory)
+                    handleButton(MessageExecuteButton.DELETE_ALL, command);
+                else if (!draggedStack.equals(ItemStack.EMPTY))
+                    handleButton(MessageExecuteButton.DELETE, command);
                 break;
             case RAIN:
                 handleButton(MessageExecuteButton.RAIN, btn.getCommand().split(" "));
@@ -100,9 +109,7 @@ public class CommandHelper {
     }
 
     private static void handleButton(int msgId, String[] args) {
-        boolean isSPWorld = FMLClientHandler.instance().getWorldClient().isRemote;
-
-        if (isSPWorld && !useCheats || !isSPWorld && JEIButtons.isServerSidePresent) { // Use direct server-client connection when enabled
+        if (JEIButtons.isServerSidePresent && !useCheats) { // Use direct server-client connection when enabled
             if (msgId != MessageExecuteButton.MAGNET)
                 ClientProxy.INSTANCE.sendToServer(new MessageExecuteButton(msgId, args));
             else

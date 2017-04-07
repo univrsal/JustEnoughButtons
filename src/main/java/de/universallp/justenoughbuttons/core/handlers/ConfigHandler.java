@@ -31,7 +31,7 @@ public class ConfigHandler {
     static boolean enableTime = true;
     static boolean enableWeather = true;
     static boolean enableKillMobs = true;
-    static boolean enableDayCycle = true;
+    static boolean enableTimeFreeze = true;
     static boolean enableMagnet = true;
 
     static boolean[] enableCustom = new boolean[]{false, false, false, false};
@@ -45,10 +45,16 @@ public class ConfigHandler {
     public static final String CATEGORY_CUSTOM = "custombuttons";
     public static final String CATEGORY_POSITION = "position";
     public static final String CATEGORY_COMPAT = "compat";
-    public static final String CATEGORY_PERMISSIONS = "permissions";
+    public static final String CATEGORY_SERVER_PERMISSIONS = "server_permissions";
 
     public static boolean magnetRequiresOP = true;
     public static boolean saveRequireOP = true;
+    public static boolean timeRequiresOP = true;
+    public static boolean gamemodeRequiresOP = true;
+    public static boolean weatherRequiresOP = true;
+    public static boolean killMobsRequiresOP = true;
+    public static boolean timeFreezeRequiresOP = true;
+    public static boolean deleteRequiresOP  = true;
 
     public static int yOffset;
     public static int xOffset;
@@ -69,7 +75,7 @@ public class ConfigHandler {
         enableWeather = config.getBoolean("enableWeather", CATEGORY, true, "When false the weather buttons will be disabled");
         enableTime = config.getBoolean("enableTime", CATEGORY, true, "When false the time buttons will be disabled");
         enableKillMobs = config.getBoolean("enableKillMobs", CATEGORY, true, "When false the kill entities button will be disabled");
-        enableDayCycle = config.getBoolean("enableDayCycle", CATEGORY, true, "When false the freeze time button will be disabled");
+        enableTimeFreeze = config.getBoolean("enableTimeFreeze", CATEGORY, true, "When false the freeze time button will be disabled");
         enableMagnet = config.getBoolean("enableMagnet", CATEGORY, true, "When false the magnet mode button will be disabled");
         enableSubsets = config.getBoolean("enableSubsets", CATEGORY, true, "When true the subsets button will be shown to get quick access to all items from all mods (Requires JEI)");
 
@@ -91,10 +97,16 @@ public class ConfigHandler {
         }
 
         // Permissions
-        magnetRequiresOP = config.getBoolean("magnetRequiresOP", CATEGORY_PERMISSIONS, true, "When false the magnet mode can be used on servers without op (When JEB is installed on the server)");
-        saveRequireOP = config.getBoolean("savesRequireOP", CATEGORY_PERMISSIONS, true, "When false the inventory saves can be used on servers without op (When JEB is installed on the server");
+        magnetRequiresOP = config.getBoolean("magnetRequiresOP", CATEGORY_SERVER_PERMISSIONS, true, "When false the magnet mode can be used on servers without op (When JEB is installed on the server)");
+        saveRequireOP = config.getBoolean("savesRequireOP", CATEGORY_SERVER_PERMISSIONS, true, "When false the inventory saves can be used on servers without op (When JEB is installed on the server)");
+        weatherRequiresOP = config.getBoolean("weatherRequiresOP", CATEGORY_SERVER_PERMISSIONS, true, "When false weather buttons can be used on servers without op (When JEB is installed on the server)");
+        killMobsRequiresOP = config.getBoolean("killMobsRequiresOP", CATEGORY_SERVER_PERMISSIONS, true, "When false the kill mobs button can be used on servers without op (When JEB is installed on the server)");
+        timeFreezeRequiresOP = config.getBoolean("timeFreezeRequiresOP", CATEGORY_SERVER_PERMISSIONS, true, "When false the time can be (un)frozen on servers without op (When JEB is installed on the server)");
+        deleteRequiresOP = config.getBoolean("deleteRequiresOP", CATEGORY_SERVER_PERMISSIONS, true, "When false delete button can be used on servers without op (When JEB is installed on the server)");
+        timeRequiresOP = config.getBoolean("timeRequiresOP", CATEGORY_SERVER_PERMISSIONS, true, "When false the time can be (un)frozen on servers without op (When JEB is installed on the server)");
+        gamemodeRequiresOP = config.getBoolean("gamemodeRequiresOP", CATEGORY_SERVER_PERMISSIONS, true, "When false game mode button can be used on servers without op (When JEB is installed on the server)");
 
-        CommandHelper.useCheats = config.getBoolean("useCheats", CATEGORY_PERMISSIONS, true, "When false JEB will work without cheats enabled in singleplayer");
+        CommandHelper.useCheats = config.getBoolean("useCheats", CATEGORY_CUSTOM, false, "When true JEB will require cheats to be enabled in singleplayer");
 
         EnumButtonCommands.ADVENTURE.setEnabled(enableAdventureMode);
         EnumButtonCommands.SPECTATE.setEnabled(enableSpectatoreMode);
@@ -104,7 +116,7 @@ public class ConfigHandler {
         JEIButtons.btnNight.setVisible(enableTime);
         JEIButtons.btnTrash.setVisible(enableDelete);
         JEIButtons.btnNoMobs.setVisible(enableKillMobs);
-        JEIButtons.btnFreeze.setVisible(enableDayCycle);
+        JEIButtons.btnFreeze.setVisible(enableTimeFreeze);
         JEIButtons.btnRain.setVisible(enableWeather);
         JEIButtons.btnSun.setVisible(enableWeather);
         JEIButtons.btnMagnet.setVisible(enableMagnet);

@@ -7,6 +7,7 @@ import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import scala.tools.nsc.backend.icode.Members;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class Localization {
     public static final String UNFREEZE_TIME = PREFIX + "unfreezetime";
     public static final String NO_MOBS = PREFIX + "nomobs";
     public static final String DELETE_ALL = PREFIX + "deleteall";
+    public static final String DELETE_SINGLE = PREFIX + "deletesingle";
     public static final String IGNORE_META = PREFIX + "ignoringmeta";
     public static final String DRAG_ITEMS_HERE = PREFIX + "dragitemshere";
     public static final String HOLD_SHIFT = PREFIX + "holdshift";
@@ -77,12 +79,18 @@ public class Localization {
             case DELETE:
                 ItemStack draggedStack = ClientProxy.player.inventory.getItemStack();
                 if (!draggedStack.isEmpty()) {
-                    list.add(I18n.format(Localization.DELETE_ALL, I18n.format(draggedStack.getUnlocalizedName() + ".name")));
-                    if (GuiScreen.isShiftKeyDown())
-                        list.add(ChatFormatting.GRAY + I18n.format(Localization.IGNORE_META));
+                    if (JEIButtons.isServerSidePresent) {
+                        list.add(I18n.format(Localization.DELETE_SINGLE, I18n.format(draggedStack.getUnlocalizedName() + ".name")));
+                    } else {
+                        list.add(I18n.format(Localization.DELETE_ALL, I18n.format(draggedStack.getUnlocalizedName() + ".name")));
+                        if (GuiScreen.isShiftKeyDown())
+                            list.add(ChatFormatting.GRAY + I18n.format(Localization.IGNORE_META));
+                    }
+
                 } else {
                     list.add(I18n.format(Localization.DRAG_ITEMS_HERE));
-                    list.add(ChatFormatting.GRAY + I18n.format(Localization.HOLD_SHIFT));
+                    if (!JEIButtons.isServerSidePresent)
+                        list.add(ChatFormatting.GRAY + I18n.format(Localization.HOLD_SHIFT));
                     if (ConfigHandler.enableClearInventory)
                         list.add(ChatFormatting.GRAY + I18n.format(Localization.CLEAR_INVENTORY));
                 }

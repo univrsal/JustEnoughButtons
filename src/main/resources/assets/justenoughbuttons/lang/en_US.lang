@@ -5,6 +5,7 @@ justenoughbuttons.freezetime=Freeze time
 justenoughbuttons.unfreezetime=Unfreeze time
 justenoughbuttons.nomobs=Kill all entities
 justenoughbuttons.deleteall=Delete ALL %s!
+justenoughbuttons.deletesingle=Delete %s
 justenoughbuttons.ignoringmeta=And sub items
 justenoughbuttons.dragitemshere=Drag items here to delete them
 justenoughbuttons.holdshift=Hold Shift to ignore meta data
