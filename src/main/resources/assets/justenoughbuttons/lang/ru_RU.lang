@@ -5,6 +5,7 @@ justenoughbuttons.freezetime=Заморозить время
 justenoughbuttons.unfreezetime=Разморозить время
 justenoughbuttons.nomobs=Убить всех существ
 justenoughbuttons.deleteall=Удалить все %s!
+justenoughbuttons.deletesingle=Удалить %s
 justenoughbuttons.ignoringmeta=И подпредметы
 justenoughbuttons.dragitemshere=Перетащите сюда предметы, чтобы их удалить
 justenoughbuttons.holdshift=Удерживайте Shift для игнорирования метаданных
