@@ -25,7 +25,7 @@ group= "de.universallp.justenoughbuttons" // http://maven.apache.org/guides/mini
 archivesBaseName = "justenoughbuttons"
 
 minecraft {
-    version = "1.11.2-13.20.0.2232"
+    version = "1.11.2-13.20.0.2228"
     runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
@@ -46,9 +46,9 @@ repositories {
 
 dependencies {
   // compile against the JEI API
-  deobfCompile "mezz.jei:jei_1.11.2:4.2.7.240:api"
+  deobfCompile "mezz.jei:jei_1.11.2:4.4.1.285:api"
   // at runtime, use the full JEI jar
-  runtime "mezz.jei:jei_1.11.2:4.2.7.240"
+  runtime "mezz.jei:jei_1.11.2:4.4.1.285"
 }
 
 processResources

@@ -8,15 +8,21 @@ package de.universallp.justenoughbuttons.core.network;
  */
 
 import de.universallp.justenoughbuttons.client.EnumButtonCommands;
+import de.universallp.justenoughbuttons.client.Localization;
 import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.command.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.gui.MinecraftServerGui;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
@@ -27,6 +33,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -75,7 +82,7 @@ public class MessageExecuteButton  implements IMessage, IMessageHandler<MessageE
             ByteBufUtils.writeUTF8String(buf, cmd[i] != null ? cmd[i] : "");
     }
 
-    private static boolean checkPermissions(EntityPlayer player, MinecraftServer server) {
+    public static boolean checkPermissions(EntityPlayer player, MinecraftServer server) {
         if (server.isSinglePlayer())
             return true;
 
@@ -93,46 +100,60 @@ public class MessageExecuteButton  implements IMessage, IMessageHandler<MessageE
         if (p == null)
             return null;
         MinecraftServer s = ctx.getServerHandler().playerEntity.mcServer;
-        World world = s.worlds[0];
+        World world = s.worldServerForDimension(p.dimension);
+
         WorldInfo worldinfo = world.getWorldInfo();
         boolean isOP = checkPermissions(p, s);
+        boolean error = true;
 
         switch (message.commandOrdinal) {
             case GM_ADVENTURE:
                 if (!isOP && ConfigHandler.gamemodeRequiresOP)
                     break;
 
+                error = false;
                 p.setGameType(GameType.ADVENTURE);
                 break;
             case GM_CREATIVE:
                 if (!isOP && ConfigHandler.gamemodeRequiresOP)
                     break;
+
+                error = false;
                 p.setGameType(GameType.CREATIVE);
                 break;
             case GM_SURVIVAL:
                 if (!isOP && ConfigHandler.gamemodeRequiresOP)
                     break;
+
+                error = false;
                 p.setGameType(GameType.SURVIVAL);
                 break;
             case GM_SPECTATE:
                 if (!isOP && ConfigHandler.gamemodeRequiresOP)
                     break;
+
+                error = false;
                 p.setGameType(GameType.SPECTATOR);
                 break;
             case DELETE_ALL:
                 if (!isOP && ConfigHandler.deleteRequiresOP)
                     break;
 
+                error = false;
                 p.inventory.clear();
                 break;
             case DELETE:
                 if (!isOP && ConfigHandler.deleteRequiresOP)
                     break;
+
+                error = false;
                 p.inventory.setItemStack(ItemStack.EMPTY);
                 break;
             case SUN:
                 if (!isOP && ConfigHandler.weatherRequiresOP)
                     break;
+
+                error = false;
                 worldinfo.setCleanWeatherTime(1000000);
                 worldinfo.setRainTime(0);
                 worldinfo.setThunderTime(0);
@@ -142,6 +163,8 @@ public class MessageExecuteButton  implements IMessage, IMessageHandler<MessageE
             case RAIN:
                 if (!isOP && ConfigHandler.weatherRequiresOP)
                     break;
+
+                error = false;
                 worldinfo.setCleanWeatherTime(0);
                 worldinfo.setRainTime(1000000);
                 worldinfo.setThunderTime(1000000);
@@ -151,27 +174,45 @@ public class MessageExecuteButton  implements IMessage, IMessageHandler<MessageE
             case DAY:
                 if (!isOP && ConfigHandler.timeRequiresOP)
                     break;
+
+                error = false;
                 worldinfo.setWorldTime(1000);
                 break;
             case NIGHT:
                 if (!isOP && ConfigHandler.timeRequiresOP)
                     break;
+
+                error = false;
                 world.setWorldTime(13000);
                 break;
             case FREEZE:
                 if (!isOP && ConfigHandler.timeFreezeRequiresOP)
                     break;
+
+                error = false;
                 boolean origValue = worldinfo.getGameRulesInstance().getBoolean("doDaylightCycle");
                 worldinfo.getGameRulesInstance().setOrCreateGameRule("doDaylightCycle", origValue ? "false" : "true");
                 break;
             case KILL:
                 if (!isOP && ConfigHandler.killMobsRequiresOP)
                     break;
-                for (Entity e : world.getLoadedEntityList()) {
-                    if (!(e instanceof EntityPlayer))
-                        world.removeEntity(e);
+
+                error = false;
+                for (Iterator<Entity> e = world.loadedEntityList.iterator(); e.hasNext();) {
+                    Entity entity = e.next();
+
+                    if (!(entity instanceof EntityPlayer) && entity instanceof EntityLiving || entity instanceof EntityItem) {
+                        world.removeEntity(entity);
+                    }
                 }
+
                 break;
+        }
+
+        if (error) {
+            ITextComponent msg = new TextComponentTranslation(Localization.NO_PERMISSIONS);
+            msg.setStyle(msg.getStyle().setColor(TextFormatting.RED));
+            p.sendMessage(msg);
         }
         return null;
     }

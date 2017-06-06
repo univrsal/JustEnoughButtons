@@ -61,6 +61,8 @@ public class ConfigHandler {
 
     public static boolean showButtons = true;
 
+    public static boolean registerUtilKeybinds = true;
+
     public static Configuration config;
 
     static void load() {
@@ -87,6 +89,8 @@ public class ConfigHandler {
         magnetRadius = config.getInt("magnetRadius", CATEGORY, 12, 1, 32, "The radius in which the magnet mode attracts items");
 
         enableClearInventory = config.getBoolean("enableClearInventory", CATEGORY, false, "When true shift clicking the delete buttonwill clear your inventory");
+
+        registerUtilKeybinds = config.getBoolean("registerUtilKeybinds", CATEGORY_COMPAT, true, "When false the show light level and chunk boundaries keybinds won't be registered");
 
         // Custom Buttons
 

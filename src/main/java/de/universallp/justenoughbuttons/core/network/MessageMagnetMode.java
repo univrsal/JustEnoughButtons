@@ -7,7 +7,10 @@ import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -41,12 +44,15 @@ public class MessageMagnetMode implements IMessage, IMessageHandler<MessageMagne
     @Override
     public IMessage onMessage(MessageMagnetMode message, MessageContext ctx) {
         EntityPlayerMP p = ctx.getServerHandler().playerEntity;
+        MinecraftServer s = ctx.getServerHandler().playerEntity.mcServer;
+        boolean isOP = MessageExecuteButton.checkPermissions(p, s);
+        ITextComponent msg = new TextComponentTranslation(Localization.NO_PERMISSIONS);
+        msg.setStyle(msg.getStyle().setColor(TextFormatting.RED));
 
-        if (CommandHelper.useCheats)
-            if (!p.canUseCommand(new CommandTeleport().getRequiredPermissionLevel(), "tp") && ConfigHandler.magnetRequiresOP) {
-                p.sendMessage(new TextComponentTranslation(Localization.NO_PERMISSIONS));
-                return null;
-            }
+        if (!isOP && ConfigHandler.magnetRequiresOP) {
+            p.sendMessage(msg);
+            return null;
+        }
 
         if (message.removePlayer)
             CommonProxy.MAGNET_MODE_HANDLER.removePlayer(ctx.getServerHandler().playerEntity);

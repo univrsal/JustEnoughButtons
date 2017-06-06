@@ -88,7 +88,6 @@ public class CommandHelper {
             case MAGNET:
                     command = new String[] { "tp", "@e[type=Item,r=" + ConfigHandler.magnetRadius + "]", "@p" };
                     handleButton(MessageExecuteButton.MAGNET, command);
-                    MagnetModeHandler.state = !MagnetModeHandler.state;
                 break;
             case CUSTOM1:
             case CUSTOM2:
@@ -112,10 +111,14 @@ public class CommandHelper {
         if (JEIButtons.isServerSidePresent && !useCheats) { // Use direct server-client connection when enabled
             if (msgId != MessageExecuteButton.MAGNET)
                 ClientProxy.INSTANCE.sendToServer(new MessageExecuteButton(msgId, args));
-            else
+            else {
                 ClientProxy.INSTANCE.sendToServer(new MessageMagnetMode(MagnetModeHandler.state));
+                MagnetModeHandler.state = !MagnetModeHandler.state;
+            }
         } else { // Otherwise use commands for servers without JEB or SP worlds with cheats
             sendCommand(args);
+            if (msgId == MessageExecuteButton.MAGNET)
+                MagnetModeHandler.state = !MagnetModeHandler.state;
         }
     }
 }

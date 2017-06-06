@@ -6,6 +6,7 @@ import de.universallp.justenoughbuttons.client.handlers.InventorySaveHandler;
 import de.universallp.justenoughbuttons.client.handlers.ModSubsetButtonHandler;
 import de.universallp.justenoughbuttons.client.handlers.SaveFileHandler;
 import de.universallp.justenoughbuttons.core.*;
+import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -125,7 +126,7 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.registerKeyBinding(makeCopyKey);
         ClientRegistry.registerKeyBinding(hideAll);
 
-        if (!Loader.isModLoaded(JEIButtons.MOD_MOREOVERLAYS)) {
+        if (!Loader.isModLoaded(JEIButtons.MOD_MOREOVERLAYS) && !Loader.isModLoaded(JEIButtons.MOD_DYN_SOURROUND) && ConfigHandler.registerUtilKeybinds) {
             mobOverlay = new KeyBinding(Localization.KEY_MOBOVERLAY, KeyConflictContext.IN_GAME, Keyboard.KEY_F7, Localization.KEY_CATEGORY);
             chunkOverlay = new KeyBinding(Localization.KEY_CHUNKOVERLAY, KeyConflictContext.IN_GAME, Keyboard.KEY_F4, Localization.KEY_CATEGORY);
 

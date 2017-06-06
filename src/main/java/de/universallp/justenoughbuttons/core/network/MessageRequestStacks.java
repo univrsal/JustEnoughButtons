@@ -9,7 +9,9 @@ import net.minecraft.command.CommandGive;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -93,11 +95,14 @@ public class MessageRequestStacks implements IMessage, IMessageHandler<MessageRe
         EntityPlayerMP p = ctx.getServerHandler().playerEntity;
 
         if (p != null) {
-            if (CommandHelper.useCheats)
-                if (ConfigHandler.saveRequireOP && !p.canUseCommand(new CommandGive().getRequiredPermissionLevel(), "give")) {
-                    p.sendMessage(new TextComponentTranslation(Localization.NO_PERMISSIONS));
-                    return null;
-                }
+            boolean isOP = MessageExecuteButton.checkPermissions(p, p.mcServer);
+
+            if (ConfigHandler.saveRequireOP && !isOP) {
+                ITextComponent msg = new TextComponentTranslation(Localization.NO_PERMISSIONS);
+                msg.setStyle(msg.getStyle().setColor(TextFormatting.RED));
+                p.sendMessage(msg);
+                return null;
+            }
 
             p.inventory.clear();
             if (message.mainInventory != null)
