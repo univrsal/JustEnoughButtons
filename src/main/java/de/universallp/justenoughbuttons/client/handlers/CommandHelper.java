@@ -12,10 +12,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
 /**
- * Created by universallp on 06.04.2017.
+ * Created by universal on 06.04.2017.
  * This file is part of JEI Buttons which is licenced
  * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
- * github.com/UniversalLP/JEI Buttons
+ * github.com/univrsal/JEI Buttons
  */
 public class CommandHelper {
 

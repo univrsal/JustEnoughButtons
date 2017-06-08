@@ -17,10 +17,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Level;
 
 /**
- * Created by universallp on 09.08.2016 16:07.
+ * Created by universal on 09.08.2016 16:07.
  * This file is part of JustEnoughButtons which is licenced
  * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
- * github.com/UniversalLP/JustEnoughButtons
+ * github.com/univrsal/JustEnoughButtons
  */
 @Mod(modid = JEIButtons.MODID, version = JEIButtons.VERSION, guiFactory = "de.universallp.justenoughbuttons.client.gui.GuiFactory")
 public class JEIButtons {

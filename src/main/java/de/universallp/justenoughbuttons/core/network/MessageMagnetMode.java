@@ -16,10 +16,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
- * Created by universallp on 20.09.2016 14:31.
+ * Created by universal on 20.09.2016 14:31.
  * This file is part of JEI Buttons which is licenced
  * under the MOZILLA PUBLIC LICENSE 2.0 - mozilla.org/en-US/MPL/2.0/
- * github.com/UniversalLP/JEI Buttons
+ * github.com/univrsal/JEI Buttons
  */
 public class MessageMagnetMode implements IMessage, IMessageHandler<MessageMagnetMode, IMessage> {
 

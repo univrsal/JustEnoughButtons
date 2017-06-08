@@ -1,10 +1,10 @@
 package de.universallp.justenoughbuttons.core.network;
 
 /**
- * Created by universallp on 05.04.2017.
+ * Created by universal on 05.04.2017.
  * This file is part of JEI Buttons which is licenced
  * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
- * github.com/UniversalLP/JEI Buttons
+ * github.com/univrsal/JEI Buttons
  */
 
 import de.universallp.justenoughbuttons.client.EnumButtonCommands;

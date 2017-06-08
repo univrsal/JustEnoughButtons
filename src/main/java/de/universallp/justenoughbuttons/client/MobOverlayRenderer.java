@@ -21,10 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by universallp on 28.08.2016 20:24.
+ * Created by universal on 28.08.2016 20:24.
  * This file is part of JEI Buttons which is licenced
  * under the MOZILLA PUBLIC LICENSE 2.0 - mozilla.org/en-US/MPL/2.0/
- * github.com/UniversalLP/JEI Buttons
+ * github.com/univrsal/JEI Buttons
  */
 public class MobOverlayRenderer {
 

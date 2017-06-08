@@ -17,7 +17,7 @@ import java.util.UUID;
  * Created by universal on 17.09.16 15:22.
  * This file is part of JustEnoughButtons which is licenced
  * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
- * github.com/UniversalLP/JustEnoughButtons
+ * github.com/univrsal/JustEnoughButtons
  */
 public class SaveFileHandler {
 
