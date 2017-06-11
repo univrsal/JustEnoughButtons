@@ -1,13 +1,12 @@
 package de.universallp.justenoughbuttons.client;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import de.universallp.justenoughbuttons.JEIButtons;
+import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import scala.tools.nsc.backend.icode.Members;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,10 +2,8 @@ package de.universallp.justenoughbuttons.core.network;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.Localization;
-import de.universallp.justenoughbuttons.client.handlers.CommandHelper;
 import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.command.CommandGive;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

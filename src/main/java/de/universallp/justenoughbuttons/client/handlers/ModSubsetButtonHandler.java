@@ -78,14 +78,14 @@ public class ModSubsetButtonHandler {
             subsetButton.xPosition = JEIButtons.proxy.getScreenWidth() / 2 - 74;
 
             if (guiTop > 21)
-                subsetButton.drawButton(ClientProxy.mc, mouseX, mouseY);
+                subsetButton.func_191745_a(ClientProxy.mc, mouseX, mouseY, 0);
         } else {
             subsetButton.setWidth(150);
             subsetButton.yPosition = 2;
             subsetButton.xPosition = JEIButtons.proxy.getScreenWidth() / 2 - 75;
 
             if (guiTop > 21)
-                subsetButton.drawButton(ClientProxy.mc, mouseX, mouseY);
+                subsetButton.func_191745_a(ClientProxy.mc, mouseX, mouseY, 0);
         }
     }
 

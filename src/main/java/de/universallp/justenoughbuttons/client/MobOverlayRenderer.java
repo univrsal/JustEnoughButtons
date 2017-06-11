@@ -1,8 +1,8 @@
 package de.universallp.justenoughbuttons.client;
 
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -72,7 +72,7 @@ public class MobOverlayRenderer {
         double z1 = z0 + 1;
 
         Tessellator tess = Tessellator.getInstance();
-        VertexBuffer renderer = tess.getBuffer();
+        BufferBuilder renderer = tess.getBuffer();
 
         renderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
         renderer.pos(x0, y, z0).color(r, g, b, 1).endVertex();

@@ -1,11 +1,9 @@
 package de.universallp.justenoughbuttons.core.network;
 
 import de.universallp.justenoughbuttons.client.Localization;
-import de.universallp.justenoughbuttons.client.handlers.CommandHelper;
 import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;

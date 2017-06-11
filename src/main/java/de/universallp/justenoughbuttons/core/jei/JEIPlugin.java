@@ -5,6 +5,7 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ISubtypeRegistry;
 import mezz.jei.api.ingredients.IModIngredientRegistration;
+import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 
 /**
  * Created by universal on 19.01.2017.
@@ -28,6 +29,11 @@ public class JEIPlugin implements IModPlugin {
     }
 
     @Override
+    public void registerCategories(IRecipeCategoryRegistration registry) {
+
+    }
+
+    @Override
     public void register(IModRegistry registry) {
 
     }
@@ -38,6 +44,6 @@ public class JEIPlugin implements IModPlugin {
     }
 
     public static void setJEIText(String text) {
-        runtime.getItemListOverlay().setFilterText(text);
+        runtime.getIngredientFilter().setFilterText(text);
     }
 }

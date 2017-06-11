@@ -9,7 +9,6 @@ import de.universallp.justenoughbuttons.core.network.MessageExecuteButton;
 import de.universallp.justenoughbuttons.core.network.MessageMagnetMode;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 /**
  * Created by universal on 06.04.2017.
