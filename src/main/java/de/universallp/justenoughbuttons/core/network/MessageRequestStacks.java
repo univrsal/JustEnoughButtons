@@ -90,7 +90,7 @@ public class MessageRequestStacks implements IMessage, IMessageHandler<MessageRe
 
     @Override
     public IMessage onMessage(MessageRequestStacks message, MessageContext ctx) {
-        EntityPlayerMP p = ctx.getServerHandler().playerEntity;
+        EntityPlayerMP p = ctx.getServerHandler().player;
 
         if (p != null) {
             boolean isOP = MessageExecuteButton.checkPermissions(p, p.mcServer);

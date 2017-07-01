@@ -89,12 +89,12 @@ public class MessageExecuteButton  implements IMessage, IMessageHandler<MessageE
 
     @Override
     public IMessage onMessage(MessageExecuteButton message, MessageContext ctx) {
-        EntityPlayerMP p = ctx.getServerHandler().playerEntity;
+        EntityPlayerMP p = ctx.getServerHandler().player;
 
         if (p == null)
             return null;
-        MinecraftServer s = ctx.getServerHandler().playerEntity.mcServer;
-        World world = s.worldServerForDimension(p.dimension);
+        MinecraftServer s = ctx.getServerHandler().player.mcServer;
+        World world = s.getWorld(p.dimension);
 
         WorldInfo worldinfo = world.getWorldInfo();
         boolean isOP = checkPermissions(p, s);
