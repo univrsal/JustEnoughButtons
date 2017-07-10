@@ -107,7 +107,6 @@ public class ClientProxy extends CommonProxy {
 
     public static int getGuiTop(GuiContainer g) {
         int i =  ReflectionHelper.getPrivateValue(GuiContainer.class, g, GUI_TOP);
-        System.out.println("TOP " + i);
         return ReflectionHelper.getPrivateValue(GuiContainer.class, g, GUI_TOP);
     }
 
