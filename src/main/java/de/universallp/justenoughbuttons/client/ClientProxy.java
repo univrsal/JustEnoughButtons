@@ -50,7 +50,7 @@ public class ClientProxy extends CommonProxy {
     public static RenderManager renderManager;
     public static SaveFileHandler saveHandler;
 
-    public static final String[] GUI_TOP = new String[] { "r", "field_147009_r", "guiTop" };
+    public static final String[] GUI_TOP = new String[] { "s", "field_147009_r", "guiTop" };
 
     private static void versionCheck() {
         final NBTTagCompound compound = new NBTTagCompound();
@@ -106,6 +106,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     public static int getGuiTop(GuiContainer g) {
+        int i =  ReflectionHelper.getPrivateValue(GuiContainer.class, g, GUI_TOP);
         return ReflectionHelper.getPrivateValue(GuiContainer.class, g, GUI_TOP);
     }
 

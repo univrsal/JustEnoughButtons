@@ -2,10 +2,8 @@ package de.universallp.justenoughbuttons.core.network;
 
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.Localization;
-import de.universallp.justenoughbuttons.client.handlers.CommandHelper;
 import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.command.CommandGive;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -92,7 +90,7 @@ public class MessageRequestStacks implements IMessage, IMessageHandler<MessageRe
 
     @Override
     public IMessage onMessage(MessageRequestStacks message, MessageContext ctx) {
-        EntityPlayerMP p = ctx.getServerHandler().playerEntity;
+        EntityPlayerMP p = ctx.getServerHandler().player;
 
         if (p != null) {
             boolean isOP = MessageExecuteButton.checkPermissions(p, p.mcServer);

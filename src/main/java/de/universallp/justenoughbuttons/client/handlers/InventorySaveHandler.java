@@ -1,10 +1,10 @@
 package de.universallp.justenoughbuttons.client.handlers;
 
-import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import de.universallp.justenoughbuttons.JEIButtons;
 import de.universallp.justenoughbuttons.client.ClientProxy;
 import de.universallp.justenoughbuttons.client.Localization;
 import de.universallp.justenoughbuttons.core.CommonProxy;
+import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import de.universallp.justenoughbuttons.core.network.MessageRequestStacks;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
@@ -13,7 +13,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.client.FMLClientHandler;
 
 
 /**
@@ -76,7 +75,7 @@ public class InventorySaveHandler {
             return;
 
         for (GuiButton s : saveButtons) {
-            s.drawButton(ClientProxy.mc, mouseX, mouseY);
+            s.drawButton(ClientProxy.mc, mouseX, mouseY, 0);
 
             if (s.isMouseOver()) {
                 EventHandlers.skipSaveClickCount = 2;
@@ -86,7 +85,7 @@ public class InventorySaveHandler {
             if (saves[s.id] != null && saves[s.id].icon != null) {
                 RenderHelper.enableStandardItemLighting();
                 RenderHelper.enableGUIStandardItemLighting();
-                ClientProxy.mc.getRenderItem().renderItemAndEffectIntoGUI(saves[s.id].icon, s.xPosition + s.width + 2, s.yPosition + 2);
+                ClientProxy.mc.getRenderItem().renderItemAndEffectIntoGUI(saves[s.id].icon, s.x + s.width + 2, s.y + 2);
                 RenderHelper.disableStandardItemLighting();
             }
         }

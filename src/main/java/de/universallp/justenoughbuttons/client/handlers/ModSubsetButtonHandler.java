@@ -62,7 +62,7 @@ public class ModSubsetButtonHandler {
 
     static void scroll(int i) {
         if (i < 0) {
-            int maxItems = (JEIButtons.proxy.getScreenHeight() - (22 + subsetButton.yPosition)) / ITEM_HEIGHT - 1;
+            int maxItems = (JEIButtons.proxy.getScreenHeight() - (22 + subsetButton.y)) / ITEM_HEIGHT - 1;
             if (scrollOffset + 1 <= mod_names.size() - maxItems)
                 scrollOffset++;
         } else if (i > 0) {
@@ -74,18 +74,18 @@ public class ModSubsetButtonHandler {
     static void drawButtons(int mouseX, int mouseY, int guiTop) {
         if (CreativeTabs.CREATIVE_TAB_ARRAY.length > 12 && guiTop < 72 && ClientProxy.mc.currentScreen instanceof GuiContainerCreative) {
             subsetButton.setWidth(45);
-            subsetButton.yPosition = guiTop - 50;
-            subsetButton.xPosition = JEIButtons.proxy.getScreenWidth() / 2 - 74;
+            subsetButton.y = guiTop - 50;
+            subsetButton.x = JEIButtons.proxy.getScreenWidth() / 2 - 74;
 
             if (guiTop > 21)
-                subsetButton.drawButton(ClientProxy.mc, mouseX, mouseY);
+                subsetButton.drawButton(ClientProxy.mc, mouseX, mouseY, 0);
         } else {
             subsetButton.setWidth(150);
-            subsetButton.yPosition = 2;
-            subsetButton.xPosition = JEIButtons.proxy.getScreenWidth() / 2 - 75;
+            subsetButton.y = 2;
+            subsetButton.x = JEIButtons.proxy.getScreenWidth() / 2 - 75;
 
             if (guiTop > 21)
-                subsetButton.drawButton(ClientProxy.mc, mouseX, mouseY);
+                subsetButton.drawButton(ClientProxy.mc, mouseX, mouseY, 0);
         }
     }
 
@@ -94,16 +94,16 @@ public class ModSubsetButtonHandler {
 
         if (isListShown) {
 
-            FontRenderer f = ClientProxy.mc.fontRendererObj;
+            FontRenderer f = ClientProxy.mc.fontRenderer;
 
-            int maxItems = (JEIButtons.proxy.getScreenHeight() - (22 + subsetButton.yPosition)) / ITEM_HEIGHT - 1;
+            int maxItems = (JEIButtons.proxy.getScreenHeight() - (22 + subsetButton.y)) / ITEM_HEIGHT - 1;
             int maximumIndex = Math.min(maxItems + scrollOffset, mod_names.size());
 
             if (scrollOffset > mod_names.size() - maxItems)
                 scrollOffset = mod_names.size() - maximumIndex;
 
             String mod;
-            int x, y = (20 + subsetButton.yPosition), w, h;
+            int x, y = (20 + subsetButton.y), w, h;
             int itemsLeft = mod_ids.size() - scrollOffset - maxItems;
 
             RenderHelper.enableGUIStandardItemLighting();
@@ -112,12 +112,12 @@ public class ModSubsetButtonHandler {
             GlStateManager.disableDepth();
 
             w = f.getStringWidth(longestModName) + 3;
-            x = subsetButton.xPosition;
+            x = subsetButton.x;
             h = f.FONT_HEIGHT + 2;
             GuiUtils.drawGradientRect(0, x, y, x + w, y + 3 + h * ((maxItems < mod_ids.size() ? maxItems : mod_ids.size()) + (itemsLeft > 0 ? 1 : 0)), 0xCC000000, 0xCC000000);
             for (int i = scrollOffset; i < maximumIndex; i++) {
                 mod = mod_names.get(i);
-                y = (23 + subsetButton.yPosition) + h * (i - scrollOffset);
+                y = (23 + subsetButton.y) + h * (i - scrollOffset);
 
                 if (mouseX >= x && mouseX <= x + w && mouseY > y && mouseY < y + h) {
                     f.drawString(mod, x + 2, y + 1, 16777120);

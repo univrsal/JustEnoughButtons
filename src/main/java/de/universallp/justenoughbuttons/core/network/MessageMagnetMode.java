@@ -1,11 +1,9 @@
 package de.universallp.justenoughbuttons.core.network;
 
 import de.universallp.justenoughbuttons.client.Localization;
-import de.universallp.justenoughbuttons.client.handlers.CommandHelper;
 import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.command.server.CommandTeleport;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
@@ -43,8 +41,8 @@ public class MessageMagnetMode implements IMessage, IMessageHandler<MessageMagne
 
     @Override
     public IMessage onMessage(MessageMagnetMode message, MessageContext ctx) {
-        EntityPlayerMP p = ctx.getServerHandler().playerEntity;
-        MinecraftServer s = ctx.getServerHandler().playerEntity.mcServer;
+        EntityPlayerMP p = ctx.getServerHandler().player;
+        MinecraftServer s = ctx.getServerHandler().player.mcServer;
         boolean isOP = MessageExecuteButton.checkPermissions(p, s);
         ITextComponent msg = new TextComponentTranslation(Localization.NO_PERMISSIONS);
         msg.setStyle(msg.getStyle().setColor(TextFormatting.RED));
@@ -55,9 +53,9 @@ public class MessageMagnetMode implements IMessage, IMessageHandler<MessageMagne
         }
 
         if (message.removePlayer)
-            CommonProxy.MAGNET_MODE_HANDLER.removePlayer(ctx.getServerHandler().playerEntity);
+            CommonProxy.MAGNET_MODE_HANDLER.removePlayer(ctx.getServerHandler().player);
         else
-            CommonProxy.MAGNET_MODE_HANDLER.addPlayer(ctx.getServerHandler().playerEntity);
+            CommonProxy.MAGNET_MODE_HANDLER.addPlayer(ctx.getServerHandler().player);
 
         return null;
     }

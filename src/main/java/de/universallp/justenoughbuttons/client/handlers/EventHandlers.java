@@ -71,7 +71,7 @@ public class EventHandlers {
             if (JEIButtons.isAnyButtonHovered) {
                List<String> tip = Localization.getTooltip(JEIButtons.hoveredButton);
                 if (tip != null) {
-                    GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRendererObj);
+                    GuiUtils.drawHoveringText(tip, mouseX, mouseY < 17 ? 17 : mouseY, ClientProxy.mc.displayWidth, ClientProxy.mc.displayHeight, -1, ClientProxy.mc.fontRenderer);
                     RenderHelper.disableStandardItemLighting();
                 }
             }
@@ -89,7 +89,7 @@ public class EventHandlers {
                 int y = getInt(1, eL);
                 int x = getInt(0, eL);
                 GuiUtils.drawGradientRect(10, x, y, x + 75, y + 75, 0x77888888, 0x77888888);
-                ClientProxy.mc.fontRendererObj.drawString("[Buttons]", x + 14, y + 10, 0xFFFFFF);
+                ClientProxy.mc.fontRenderer.drawString("[Buttons]", x + 14, y + 10, 0xFFFFFF);
             }
         }
     }
@@ -293,7 +293,7 @@ public class EventHandlers {
                 }
 
                 if (ClientProxy.chunkOverlay.isActiveAndMatches(kC)) {
-                    ClientProxy.mc.debugRenderer.toggleDebugScreen();
+                    ClientProxy.mc.debugRenderer.toggleChunkBorders();
                 }
             }
 
