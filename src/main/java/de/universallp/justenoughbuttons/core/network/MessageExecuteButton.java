@@ -10,6 +10,10 @@ package de.universallp.justenoughbuttons.core.network;
 import de.universallp.justenoughbuttons.client.Localization;
 import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.BlockCommandBlock;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
@@ -17,6 +21,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.CommandBlockBaseLogic;
+import net.minecraft.util.ReportedException;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -48,6 +54,8 @@ public class MessageExecuteButton  implements IMessage, IMessageHandler<MessageE
     public static final byte KILL         = 10;
     public static final byte MAGNET       = 11;
     public static final byte DELETE_ALL   = 12;
+    public static final byte CUSTOM_CMD   = 13;
+
     private int commandOrdinal;
     private String[] cmd;
 
@@ -56,6 +64,11 @@ public class MessageExecuteButton  implements IMessage, IMessageHandler<MessageE
     public MessageExecuteButton(int cmdId, String[] cmd) {
         this.commandOrdinal = cmdId;
         this.cmd = cmd != null ? cmd : new String[] { "" };
+    }
+
+    public MessageExecuteButton(String custom_cmd) {
+        this.commandOrdinal = CUSTOM_CMD;
+        this.cmd = new String[] { custom_cmd };
     }
 
     @Override
@@ -199,8 +212,25 @@ public class MessageExecuteButton  implements IMessage, IMessageHandler<MessageE
                         world.removeEntity(entity);
                     }
                 }
-
                 break;
+            case CUSTOM_CMD:
+                if (message.cmd != null && message.cmd.length > 0 && message.cmd[0] != null)
+                {
+                    try
+                    {
+                        s.getCommandManager().executeCommand(p, message.cmd[0]);
+                    }
+                    catch (Throwable throwable)
+                    {
+                        CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Executing command over JEB");
+                        CrashReportCategory crashreportcategory = crashreport.makeCategory("Command to be executed");
+                        crashreportcategory.addDetail("Command", () -> message.cmd[0]);
+                        crashreportcategory.addDetail("Name", () -> message.cmd[0]);
+                        throw new ReportedException(crashreport);
+                    }
+                    break;
+                }
+
         }
 
         if (error) {

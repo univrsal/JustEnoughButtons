@@ -7,6 +7,7 @@ import de.universallp.justenoughbuttons.client.handlers.InventorySaveHandler;
 import de.universallp.justenoughbuttons.core.CommonProxy;
 import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -110,15 +111,15 @@ public class JEIButtons {
     }
 
     public static void sendCommand(String cmd) {
-        if (!isSpongePresent)
-            cmd = "/" + cmd;
+        if (isSpongePresent)
+            cmd = "/minecraft:" + cmd;
         else
-           cmd = "/minecraft:" + cmd;
+            cmd = "/" + cmd;
 
         if (cmd.length()  <= 256)
             ClientProxy.player.sendChatMessage(cmd);
         else
-            ClientProxy.mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentString(Localization.NBT_TOO_LONG));
+            ClientProxy.mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation(Localization.NBT_TOO_LONG));
     }
 
     public static void logInfo(String s, Object ... format) {

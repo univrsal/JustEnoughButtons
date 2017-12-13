@@ -10,6 +10,7 @@ justenoughbuttons.ignoringmeta=And sub items
 justenoughbuttons.dragitemshere=Drag items here to delete them
 justenoughbuttons.holdshift=Hold Shift to ignore meta data
 justenoughbuttons.clearinventory=Or shift click to clear inventory
+justenoughbuttons.clearinventory2=Delete ENTIRE inventory
 key.category.justenoughbuttons=Just Enough Buttons
 justenoughbuttons.key.makecopy=Make ghost Copy
 justenoughbuttons.customcommand=Execute %s

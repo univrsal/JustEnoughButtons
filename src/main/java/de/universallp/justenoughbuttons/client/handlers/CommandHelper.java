@@ -7,8 +7,13 @@ import de.universallp.justenoughbuttons.core.handlers.ConfigHandler;
 import de.universallp.justenoughbuttons.core.handlers.MagnetModeHandler;
 import de.universallp.justenoughbuttons.core.network.MessageExecuteButton;
 import de.universallp.justenoughbuttons.core.network.MessageMagnetMode;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiCommandBlock;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 /**
  * Created by universal on 06.04.2017.
@@ -92,7 +97,13 @@ public class CommandHelper {
             case CUSTOM2:
             case CUSTOM3:
             case CUSTOM4:
-                JEIButtons.sendCommand(btn.getCommand());
+                if (!JEIButtons.isServerSidePresent)
+                    JEIButtons.sendCommand(btn.getCommand());
+                else
+                {
+                    FMLCommonHandler.instance().getMinecraftServerInstance().commandManager.executeCommand(FMLClientHandler.instance().getClientPlayerEntity(), btn.getCommand());
+                }
+                //ClientProxy.INSTANCE.sendToServer(new MessageExecuteButton(btn.getCommand()));
                 break;
         }
     }

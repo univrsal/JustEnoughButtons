@@ -50,6 +50,7 @@ public class Localization {
     public static final String KEY_MOBOVERLAY = "justenoughbuttons.key.moboverlay";
     public static final String KEY_CHUNKOVERLAY = "justenoughbuttons.key.chunkoverlay";
     public static final String KEY_HIDE_OVERLAY = "justenoughbuttons.key.hideall";
+    public static final String CLEAR_INVENTORY2 = "justenoughbuttons.clearinventory2";
 
     public static List<String> getTooltip(EnumButtonCommands btn) {
         ArrayList<String> list = new ArrayList<String>();
@@ -87,11 +88,14 @@ public class Localization {
                     }
 
                 } else {
-                    list.add(I18n.format(Localization.DRAG_ITEMS_HERE));
-                    if (!JEIButtons.isServerSidePresent)
-                        list.add(ChatFormatting.GRAY + I18n.format(Localization.HOLD_SHIFT));
-                    if (ConfigHandler.enableClearInventory)
-                        list.add(ChatFormatting.GRAY + I18n.format(Localization.CLEAR_INVENTORY));
+                    if (JEIButtons.isServerSidePresent) {
+                        list.add(I18n.format(Localization.DRAG_ITEMS_HERE));
+                        if (ConfigHandler.enableClearInventory)
+                            list.add(ChatFormatting.GRAY + I18n.format(Localization.CLEAR_INVENTORY));
+                    }
+                    else {
+                        list.add(I18n.format(Localization.CLEAR_INVENTORY2));
+                    }
                 }
                 break;
             case FREEZETIME:
