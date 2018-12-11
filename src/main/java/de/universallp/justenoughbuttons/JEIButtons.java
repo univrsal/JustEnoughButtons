@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Level;
  * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
  * github.com/univrsal/JustEnoughButtons
  */
-@Mod(modid = JEIButtons.MODID, version = JEIButtons.VERSION, guiFactory = "de.universallp.justenoughbuttons.client.gui.GuiFactory")
+@Mod(modid = JEIButtons.MODID, version = JEIButtons.VERSION, guiFactory = "de.universallp.justenoughbuttons.client.gui.GuiFactory", acceptableRemoteVersions = "*")
 public class JEIButtons {
 
     public static final String MODID = "justenoughbuttons";
