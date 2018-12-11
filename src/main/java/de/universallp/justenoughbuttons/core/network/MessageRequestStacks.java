@@ -93,7 +93,7 @@ public class MessageRequestStacks implements IMessage, IMessageHandler<MessageRe
         EntityPlayerMP p = ctx.getServerHandler().player;
 
         if (p != null) {
-            boolean isOP = MessageExecuteButton.checkPermissions(p, p.mcServer);
+            boolean isOP = MessageExecuteButton.checkPermissions(p, p.server);
 
             if (ConfigHandler.saveRequireOP && !isOP) {
                 ITextComponent msg = new TextComponentTranslation(Localization.NO_PERMISSIONS);

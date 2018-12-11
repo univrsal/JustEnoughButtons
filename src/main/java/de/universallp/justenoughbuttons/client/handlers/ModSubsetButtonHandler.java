@@ -150,14 +150,14 @@ public class ModSubsetButtonHandler {
         List<String> tempMods = new ArrayList<String>();
 
         for (ResourceLocation l : ForgeRegistries.ITEMS.getKeys()) {
-            if (!tempMods.contains(l.getResourceDomain())) {
-                tempMods.add(l.getResourceDomain());
+            if (!tempMods.contains(l.getNamespace())) {
+                tempMods.add(l.getNamespace());
             }
         }
 
         for (ResourceLocation l : ForgeRegistries.BLOCKS.getKeys()) {
-            if (!tempMods.contains(l.getResourceDomain())) {
-                tempMods.add(l.getResourceDomain());
+            if (!tempMods.contains(l.getNamespace())) {
+                tempMods.add(l.getNamespace());
             }
         }
 

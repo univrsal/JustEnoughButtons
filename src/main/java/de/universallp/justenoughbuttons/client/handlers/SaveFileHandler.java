@@ -26,7 +26,7 @@ public class SaveFileHandler {
     private static String savePath;
 
     public SaveFileHandler init() {
-        savePath = ClientProxy.mc.mcDataDir.toString() + "/mods/JustEnoughButtons";
+        savePath = ClientProxy.mc.gameDir.toString() + "/mods/JustEnoughButtons";
 
         File saveFolder = new File(savePath);
 
@@ -159,11 +159,11 @@ public class SaveFileHandler {
                 if (snapshot.icon != null) {
                     NBTTagCompound icon = new NBTTagCompound();
                     snapshot.icon.writeToNBT(icon);
-                    if (!icon.hasNoTags())
+                    if (!icon.isEmpty())
                         writer.println("IconSta:" + icon.toString());
                 }
 
-                if (snapshot.offHandInventory != null && !snapshot.offHandInventory.hasNoTags())
+                if (snapshot.offHandInventory != null && !snapshot.offHandInventory.isEmpty())
                     writer.println("OffHand:" + snapshot.offHandInventory.toString());
                 writer.println("END SAVE");
             } else

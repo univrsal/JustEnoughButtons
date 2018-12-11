@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class GuiJEBConfig extends GuiConfig {
 
-    private static final List buttonorder = new ArrayList();
+    private static final List<String> buttonorder = new ArrayList<>();
 
     public GuiJEBConfig(GuiScreen parentScreen) {
         super(parentScreen, getElements(), JEIButtons.MODID, false, false, GuiConfig.getAbridgedConfigPath(ConfigHandler.config.toString()));

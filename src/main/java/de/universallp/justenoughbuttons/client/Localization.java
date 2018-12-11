@@ -79,9 +79,9 @@ public class Localization {
                 ItemStack draggedStack = ClientProxy.player.inventory.getItemStack();
                 if (!draggedStack.isEmpty()) {
                     if (JEIButtons.isServerSidePresent) {
-                        list.add(I18n.format(Localization.DELETE_SINGLE, I18n.format(draggedStack.getUnlocalizedName() + ".name")));
+                        list.add(I18n.format(Localization.DELETE_SINGLE, I18n.format(draggedStack.getTranslationKey() + ".name")));
                     } else {
-                        list.add(I18n.format(Localization.DELETE_ALL, I18n.format(draggedStack.getUnlocalizedName() + ".name")));
+                        list.add(I18n.format(Localization.DELETE_ALL, I18n.format(draggedStack.getTranslationKey() + ".name")));
                         if (GuiScreen.isShiftKeyDown())
                             list.add(ChatFormatting.GRAY + I18n.format(Localization.IGNORE_META));
                     }

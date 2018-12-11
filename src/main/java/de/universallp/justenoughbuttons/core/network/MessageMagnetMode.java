@@ -42,7 +42,7 @@ public class MessageMagnetMode implements IMessage, IMessageHandler<MessageMagne
     @Override
     public IMessage onMessage(MessageMagnetMode message, MessageContext ctx) {
         EntityPlayerMP p = ctx.getServerHandler().player;
-        MinecraftServer s = ctx.getServerHandler().player.mcServer;
+        MinecraftServer s = ctx.getServerHandler().player.server;
         boolean isOP = MessageExecuteButton.checkPermissions(p, s);
         ITextComponent msg = new TextComponentTranslation(Localization.NO_PERMISSIONS);
         msg.setStyle(msg.getStyle().setColor(TextFormatting.RED));
