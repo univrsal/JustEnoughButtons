@@ -94,7 +94,7 @@ public class MobOverlayRenderer {
         for (int x = entX - 16; x <= entX + 16; x++) {
             for (int z = entZ - 16; z <= entZ + 16; z++) {
                 BlockPos pos = new BlockPos(x, entY, z);
-                Chunk chunk = world.getChunkFromBlockCoords(pos);
+                Chunk chunk = world.getChunk(pos);
                 Biome biome = world.getBiome(pos);
 
                 if (biome.getSpawnableList(EnumCreatureType.MONSTER).isEmpty() || biome.getSpawningChance() <= 0)

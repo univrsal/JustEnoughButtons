@@ -93,7 +93,7 @@ public class MessageExecuteButton  implements IMessage, IMessageHandler<MessageE
 
         if (p == null)
             return null;
-        MinecraftServer s = ctx.getServerHandler().player.mcServer;
+        MinecraftServer s = ctx.getServerHandler().player.server;
         World world = s.getWorld(p.dimension);
 
         WorldInfo worldinfo = world.getWorldInfo();
