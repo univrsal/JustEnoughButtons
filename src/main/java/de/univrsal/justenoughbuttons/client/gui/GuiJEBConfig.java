@@ -1,10 +1,9 @@
 package de.univrsal.justenoughbuttons.client.gui;
 
-import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
 import de.univrsal.justenoughbuttons.JEIButtons;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.config.IConfigElement;
-import net.minecraftforge.fml.client.gui.GuiModList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +14,12 @@ import java.util.List;
  * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
  * github.com/univrsal/JustEnoughButtons
  */
-public class GuiJEBConfig extends GuiScreen {
+public class GuiJEBConfig extends Screen {
 
     private static final List<String> buttonorder = new ArrayList<>();
 
-    public GuiJEBConfig(GuiScreen parentScreen) {
-
+    protected GuiJEBConfig(ITextComponent p_i51108_1_) {
+        super(p_i51108_1_);
     }
 
     public static List<IConfigElement> getElements() {

@@ -1,8 +1,8 @@
 package de.univrsal.justenoughbuttons.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import de.univrsal.justenoughbuttons.JEIButtons;
 import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiUtils;
@@ -14,17 +14,17 @@ import net.minecraftforge.fml.client.config.GuiUtils;
  * github.com/univrsal/JEI Buttons
  */
 public enum EnumButtonCommands {
-    CREATIVE("gamemode 1", 5, 5),
-    ADVENTURE("gamemode 2", 5, 5),
-    SURVIVAL("gamemode 0", 5, 5),
-    SPECTATE("gamemode 3", 5, 5),
+    CREATIVE("gamemode creative", 5, 5),
+    ADVENTURE("gamemode adventure", 5, 5),
+    SURVIVAL("gamemode survival", 5, 5),
+    SPECTATE("gamemode spectator", 5, 5),
     DELETE("clear ", 65, 5),
     RAIN("weather rain", 25, 5),
     SUN("weather clear", 45, 5),
     DAY("time set day", 5, 26),
     NIGHT("time set night", 25, 26),
     FREEZETIME("gamerule doDaylightCycle", 25, 47),
-    NOMOBS("kill @e[type=!Player]", 5, 47),
+    NOMOBS("kill @e[type=!minecraft:player]", 5, 47),
     MAGNET("tp", 25, 47),
     CUSTOM1("", 5, 68, 0),
     CUSTOM2("", 25, 68, 1),

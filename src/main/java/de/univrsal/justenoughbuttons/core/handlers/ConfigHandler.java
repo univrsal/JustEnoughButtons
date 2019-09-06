@@ -1,11 +1,5 @@
 package de.univrsal.justenoughbuttons.core.handlers;
 
-import de.univrsal.justenoughbuttons.client.EnumButtonCommands;
-import de.univrsal.justenoughbuttons.JEIButtons;
-import de.univrsal.justenoughbuttons.client.handlers.CommandHelper;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-
 import java.io.File;
 
 /**
@@ -54,8 +48,8 @@ public class ConfigHandler {
     public static boolean timeFreezeRequiresOP = true;
     public static boolean deleteRequiresOP  = true;
 
-    public static int yOffset;
-    public static int xOffset;
+    public static int yOffset = 5;
+    public static int xOffset = 5;
 
     public static boolean showButtons = true;
 

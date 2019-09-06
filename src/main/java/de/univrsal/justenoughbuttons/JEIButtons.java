@@ -8,7 +8,7 @@ import de.univrsal.justenoughbuttons.client.handlers.InventorySaveHandler;
 import de.univrsal.justenoughbuttons.core.CommonProxy;
 import de.univrsal.justenoughbuttons.core.IProxy;
 import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,7 +24,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by universal on 09.08.2016 16:07.
@@ -129,9 +128,9 @@ public class JEIButtons {
             cmd = "/minecraft:" + cmd;
 
         if (cmd.length() <= 256)
-            ClientProxy.player.sendChatMessage(cmd);
+            ClientProxy.mc.player.sendChatMessage(cmd);
         else
-            ClientProxy.mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentString(Localization.NBT_TOO_LONG));
+            ClientProxy.mc.ingameGUI.getChatGUI().printChatMessage(new TranslationTextComponent(Localization.NBT_TOO_LONG));
     }
 
     public static void logInfo(String s, Object... format) {

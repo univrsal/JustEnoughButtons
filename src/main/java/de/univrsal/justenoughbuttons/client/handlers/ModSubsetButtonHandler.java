@@ -1,14 +1,12 @@
 package de.univrsal.justenoughbuttons.client.handlers;
 
-import de.univrsal.justenoughbuttons.JEIButtons;
+import com.mojang.blaze3d.platform.GlStateManager;
 import de.univrsal.justenoughbuttons.client.ClientProxy;
 import de.univrsal.justenoughbuttons.client.ClientUtil;
 import de.univrsal.justenoughbuttons.client.Localization;
 import de.univrsal.justenoughbuttons.client.gui.GuiButtonJEB;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.inventory.CreativeScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemGroup;
@@ -30,7 +28,7 @@ import java.util.List;
 public class ModSubsetButtonHandler {
     public static boolean ENABLE_SUBSETS = false;
     static boolean isListShown = false;
-    private static GuiButton subsetButton = new GuiButtonJEB(0, 0, 2, 150, 20, I18n.format(Localization.MODS));
+    private static GuiButtonJEB subsetButton = new GuiButtonJEB(0, 2, 150, 20, I18n.format(Localization.MODS));
     private static List<String> mod_names; // Contains of all mod_names which add blocks/items
     private static List<String> mod_ids; // Contains of all mod_names which add blocks/items
     private static final int ITEM_HEIGHT = 11;
@@ -74,20 +72,20 @@ public class ModSubsetButtonHandler {
 
     static void drawButtons(int mouseX, int mouseY, int guiTop) {
 
-        if (ItemGroup.GROUPS.length > 12 && guiTop < 72 && ClientProxy.mc.currentScreen instanceof GuiContainerCreative) {
+        if (ItemGroup.GROUPS.length > 12 && guiTop < 72 && ClientProxy.mc.currentScreen instanceof CreativeScreen) {
             subsetButton.setWidth(45);
             subsetButton.y = guiTop - 50;
             subsetButton.x = ClientUtil.getScreenWidth() / 2 - 74;
 
             if (guiTop > 21)
-                subsetButton.drawButtonForegroundLayer(mouseX, mouseY);
+                subsetButton.renderButton(mouseX, mouseY, 0.f);
         } else {
             subsetButton.setWidth(150);
             subsetButton.y = 2;
             subsetButton.x = ClientUtil.getScreenWidth() / 2 - 75;
 
             if (guiTop > 21)
-                subsetButton.drawButtonForegroundLayer(mouseX, mouseY);
+                subsetButton.renderButton(mouseX, mouseY, 0.f);
         }
     }
 

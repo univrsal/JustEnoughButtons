@@ -1,47 +1,43 @@
 package de.univrsal.justenoughbuttons.client.handlers;
 
-import de.univrsal.justenoughbuttons.client.*;
-import de.univrsal.justenoughbuttons.client.gui.GuiJEBConfig;
-import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
 import de.univrsal.justenoughbuttons.JEIButtons;
+import de.univrsal.justenoughbuttons.client.*;
 import de.univrsal.justenoughbuttons.core.CommonProxy;
+import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
 import de.univrsal.justenoughbuttons.core.network.MessageNotifyClient;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.MouseHelper;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.screen.MainMenuScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.util.InputMappings;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Slot;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.FMLClientConfig;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
-
-import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static de.univrsal.justenoughbuttons.JEIButtons.*;
+
+;
 
 /**
  * Created by universal on 11.08.2016 16:07.
@@ -50,9 +46,6 @@ import static de.univrsal.justenoughbuttons.JEIButtons.*;
  * github.com/univrsal/JustEnoughButtons
  */
 public class EventHandlers {
-
-    private boolean isLMBDown = false;
-    private boolean isRMBDown = false;
     private static BlockPos lastPlayerPos = null;
 
     private boolean drawMobOverlay   = false;
@@ -62,9 +55,10 @@ public class EventHandlers {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawScreen(GuiScreenEvent.DrawScreenEvent e) {
-        if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
-            int mouseY = ClientUtil.getMouseY();
-            int mouseX = ClientUtil.getMouseX();
+        if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof ContainerScreen) {
+            int mouseY = e.getMouseY();
+            int mouseX = e.getMouseX();
+
 
             if (JEIButtons.isAnyButtonHovered) {
                List<String> tip = Localization.getTooltip(JEIButtons.hoveredButton);
@@ -99,6 +93,26 @@ public class EventHandlers {
 //        return -1;
 //    }
 
+    @SubscribeEvent
+    public void onMousedown(GuiScreenEvent.MouseClickedEvent e) {
+        int mouseY = ClientUtil.getMouseY();
+        int mouseX = ClientUtil.getMouseX();
+
+        if (e.getButton() == 0) {
+            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton.isEnabled) { // Utility Buttons
+                CommandHelper.handleClick(JEIButtons.hoveredButton);
+                ClientUtil.playClick();
+            } else { // Save buttons & Mod subsets
+                if (ConfigHandler.enableSaves)
+                    InventorySaveHandler.click(mouseX, mouseY, false);
+
+                ModSubsetButtonHandler.click(mouseX, mouseY);
+            }
+        } else if (e.getButton() == 1) {
+            InventorySaveHandler.click(mouseX, mouseY, true);
+        }
+    }
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawBackgroundEventPost(GuiScreenEvent.BackgroundDrawnEvent e) {
         if (JEIButtons.configHasChanged) {
@@ -106,20 +120,21 @@ public class EventHandlers {
             setUpPositions();
         }
 
-        if (JEIButtons.isServerSidePresent && e.getGui() instanceof GuiMainMenu) {
+        if (JEIButtons.isServerSidePresent && e.getGui() instanceof MainMenuScreen) {
             JEIButtons.isServerSidePresent = false;
             JEIButtons.isSpongePresent = false;
-        } else if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof GuiContainer) {
+        } else if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof ContainerScreen) {
             int mouseY = ClientUtil.getMouseY();
             int mouseX = ClientUtil.getMouseX();
-            GuiContainer g = (GuiContainer) e.getGui();
-            EntityPlayerSP pl = ClientProxy.player;
+            ContainerScreen g = (ContainerScreen) e.getGui();
+            PlayerEntity pl = ClientProxy.player;
 
-            if (btnGameMode == EnumButtonCommands.SPECTATE && !ConfigHandler.enableSpectatoreMode || btnGameMode == EnumButtonCommands.ADVENTURE && !ConfigHandler.enableAdventureMode)
+            if (btnGameMode == EnumButtonCommands.SPECTATE && !ConfigHandler.enableSpectatoreMode ||
+                    btnGameMode == EnumButtonCommands.ADVENTURE && !ConfigHandler.enableAdventureMode) {
                 btnGameMode = btnGameMode.cycle();
+            }
 
             JEIButtons.isAnyButtonHovered = false;
-
             {
                 btnGameMode.draw();
                 btnTrash.draw();
@@ -136,34 +151,12 @@ public class EventHandlers {
                 InventorySaveHandler.drawButtons(mouseX, mouseY);
 
             if (ModSubsetButtonHandler.ENABLE_SUBSETS && ConfigHandler.enableSubsets)
-                ModSubsetButtonHandler.drawButtons(mouseX, mouseY, ClientUtil.getGuiTop((GuiContainer) e.getGui()));
+                ModSubsetButtonHandler.drawButtons(mouseX, mouseY, ((ContainerScreen) e.getGui()).getGuiTop());
 
             for (EnumButtonCommands btn : btnCustom)
                 btn.draw();
 
             adjustGamemode();
-
-            if (ClientUtil.lmbDown() && !isLMBDown) {
-                isLMBDown = true;
-
-                if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton.isEnabled) { // Utility Buttons
-                    CommandHelper.handleClick(JEIButtons.hoveredButton);
-                    ClientUtil.playClick();
-                } else { // Save buttons & Mod subsets
-                    if (ConfigHandler.enableSaves)
-                        InventorySaveHandler.click(mouseX, mouseY, false);
-
-                    ModSubsetButtonHandler.click(mouseX, mouseY);
-                }
-            } else if (!ClientUtil.lmbDown()) {
-                isLMBDown = false;
-            }
-
-            if (ClientUtil.rmbDown() && !isRMBDown) {
-                isRMBDown = true;
-                InventorySaveHandler.click(mouseX, mouseY, true);
-            } else if (!ClientUtil.rmbDown())
-                isRMBDown = false;
         }
     }
 
@@ -189,18 +182,17 @@ public class EventHandlers {
     public void onWorldJoin(EntityJoinWorldEvent e) {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             InventorySaveHandler.init();
-            if (e.getEntity() instanceof EntityPlayer) {
+            if (e.getEntity() instanceof PlayerEntity) {
                 ClientProxy.player = Minecraft.getInstance().player;
-                if (((EntityPlayer) e.getEntity()).isCreative()) {
+                if (((PlayerEntity) e.getEntity()).isCreative()) {
                     JEIButtons.btnGameMode = btnGameMode.cycle();
                 } else {
                     JEIButtons.btnGameMode = EnumButtonCommands.CREATIVE;
                 }
             }
         } else {
-            // TODO network
-//            if (e.getEntity() != null && e.getEntity() instanceof EntityPlayerMP)
-//                CommonProxy.INSTANCE.sendTo(new MessageNotifyClient(), (EntityPlayerMP) e.getEntity());
+            if (e.getEntity() != null && e.getEntity() instanceof ServerPlayerEntity)
+                CommonProxy.network.sendToPlayer(new MessageNotifyClient(), (ServerPlayerEntity) e.getEntity());
         }
     }
 
@@ -216,9 +208,9 @@ public class EventHandlers {
     }
     @SubscribeEvent
     public void handleKeyInputEvent(GuiScreenEvent.KeyboardKeyPressedEvent.Post e) {
-        GuiScreen gui = ClientProxy.mc.currentScreen;
+        Screen gui = ClientProxy.mc.currentScreen;
 
-        if (gui != null && gui instanceof GuiContainer) {
+        if (gui instanceof ContainerScreen) {
             int keyCode = e.getKeyCode();
 
             if (InputMappings.getInputByName("key.keyboard.escape").getKeyCode() == keyCode) {
@@ -227,14 +219,14 @@ public class EventHandlers {
             }
 
             if (ClientProxy.makeCopyKey.isActiveAndMatches(InputMappings.getInputByCode(e.getKeyCode(),e.getScanCode()))) {
-                Slot hovered = ((GuiContainer) gui).getSlotUnderMouse();
+                Slot hovered = ((ContainerScreen) gui).getSlotUnderMouse();
 
                 if (hovered != null && ClientProxy.player.inventory.getItemStack().isEmpty() && !hovered.getStack().isEmpty() && hovered.getHasStack()) {
 
                     ItemStack stack = hovered.getStack().copy();
                     stack.setCount(1);
-                    NBTTagCompound t = stack.hasTag() ? stack.getTag() : new NBTTagCompound();
-                    t.setBoolean("JEI_Ghost", true);
+                    CompoundNBT t = stack.hasTag() ? stack.getTag() : new CompoundNBT();
+                    t.putBoolean("JEI_Ghost", true);
                     stack.setTag(t);
                     ClientProxy.player.inventory.setItemStack(stack);
                 }

@@ -5,13 +5,13 @@ import de.univrsal.justenoughbuttons.client.handlers.EventHandlers;
 import de.univrsal.justenoughbuttons.client.handlers.InventorySaveHandler;
 import de.univrsal.justenoughbuttons.client.handlers.ModSubsetButtonHandler;
 import de.univrsal.justenoughbuttons.client.handlers.SaveFileHandler;
-import de.univrsal.justenoughbuttons.core.IProxy;
+import de.univrsal.justenoughbuttons.core.CommonProxy;
 import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -30,7 +30,7 @@ import java.io.FileNotFoundException;
  * under the MOZILLA PUBLIC LICENCE 2.0 - mozilla.org/en-US/MPL/2.0/
  * github.com/univrsal/JustEnoughButtons
  */
-public class ClientProxy implements IProxy {
+public class ClientProxy extends CommonProxy {
     public static KeyBinding makeCopyKey = new KeyBinding(Localization.KEY_MAKECOPY, KeyConflictContext.GUI,
             InputMappings.getInputByName("key.keyboard.c"), Localization.KEY_CATEGORY);
     public static KeyBinding hideAll = new KeyBinding(Localization.KEY_HIDE_OVERLAY, KeyConflictContext.GUI,
@@ -40,8 +40,8 @@ public class ClientProxy implements IProxy {
     public static KeyBinding chunkOverlay;
 
     public static Minecraft mc;
-    public static EntityPlayerSP player;
-    public static RenderManager renderManager;
+    public static PlayerEntity player;
+    public static EntityRendererManager renderManager;
     public static SaveFileHandler saveHandler;
 
     public static final String[] GUI_TOP = new String[] { "s", "field_147009_r", "guiTop" };

@@ -1,21 +1,22 @@
 package de.univrsal.justenoughbuttons.client;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.EnumLightType;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldEntitySpawner;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.spawner.WorldEntitySpawner;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
@@ -35,8 +36,9 @@ public class MobOverlayRenderer {
         GlStateManager.pushMatrix();
         {
             GlStateManager.disableLighting();
-            GlStateManager.disableTexture2D();
-            GlStateManager.translated(-ClientProxy.renderManager.viewerPosX, -ClientProxy.renderManager.viewerPosY, -ClientProxy.renderManager.viewerPosZ);
+            GlStateManager.disableTexture();
+            GlStateManager.translated(-ClientProxy.renderManager.pointedEntity.posX, -ClientProxy.renderManager.pointedEntity.posY,
+                    -ClientProxy.renderManager.pointedEntity.posZ);
 
             GL11.glLineWidth(1.5F);
             GlStateManager.color3f(1, 0, 0);
@@ -51,7 +53,7 @@ public class MobOverlayRenderer {
             }
 
             GlStateManager.enableLighting();
-            GlStateManager.enableTexture2D();
+            GlStateManager.enableTexture();
         }
         GlStateManager.popMatrix();
     }
@@ -95,16 +97,16 @@ public class MobOverlayRenderer {
         for (int x = entX - 16; x <= entX + 16; x++) {
             for (int z = entZ - 16; z <= entZ + 16; z++) {
                 BlockPos pos = new BlockPos(x, entY, z);
-                Chunk chunk = world.getChunk(pos);
+                IChunk chunk = world.getChunk(pos);
                 Biome biome = world.getBiome(pos);
 
-                if (biome.getSpawns(EnumCreatureType.MONSTER).isEmpty() || biome.getSpawningChance() <= 0)
+                if (biome.getSpawns(EntityClassification.CREATURE.MONSTER).isEmpty() || biome.getSpawningChance() <= 0)
                     continue;
 
                 for (int y = entY - 16; y < entY + 16; y++) {
                     if (!world.isAirBlock(new BlockPos(x, y, z)))
                         continue;
-                    SpawnType spawnType = getSpawnType(chunk, x, y, z);
+                    SpawnType spawnType = getSpawnType(world, chunk, x, y, z);
                     if (spawnType != SpawnType.NEVER)
                         cache.put(new BlockPos(x, y, z), spawnType);
                 }
@@ -112,23 +114,23 @@ public class MobOverlayRenderer {
         }
     }
 
-    private static SpawnType getSpawnType(Chunk chunk, int x, int y, int z) {
-        World world = chunk.getWorld();
+    private static SpawnType getSpawnType(IWorldReader w, IChunk chunk, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
-
-        if (!WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.SpawnPlacementType.ON_GROUND,
-                world, pos, null) || chunk.getLightFor(EnumLightType.BLOCK, pos) >= 8) {
+        World world = (World) w;
+        if (!WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND,
+                w, pos, null) || chunk.getLightValue(pos) >= 8) {
             return SpawnType.NEVER;
         }
 
         BlockPos p = new BlockPos(x, y , z);
         AxisAlignedBB aabb = new AxisAlignedBB(p);
+        VoxelShape vs = VoxelShapes.create(aabb);
 
-        if (!world.checkNoEntityCollision(null, aabb) ||
+        if (!w.checkNoEntityCollision(null, vs) ||
                 !world.getEntitiesWithinAABBExcludingEntity(null, aabb).isEmpty() || world.containsAnyLiquid(aabb))
             return SpawnType.NEVER;
 
-        if (chunk.getLightFor(EnumLightType.BLOCK, pos) >= 8)
+        if (chunk.getLightValue(pos) >= 8)
             return SpawnType.NIGHT_ONLY;
         return SpawnType.ALWAYS;
     }

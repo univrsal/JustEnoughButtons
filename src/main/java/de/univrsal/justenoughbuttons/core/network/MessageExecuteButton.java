@@ -7,10 +7,30 @@ package de.univrsal.justenoughbuttons.core.network;
  * github.com/univrsal/JEI Buttons
  */
 
+import de.univrsal.justenoughbuttons.client.Localization;
+import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.GameRules;
+import net.minecraft.world.GameType;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.WorldInfo;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+import java.util.Iterator;
+
 /**
  * Class to allow JEB to use command buttons without cheats
  */
-public class MessageExecuteButton {// implements IMessage, IMessageHandler<MessageExecuteButton, IMessage> {
+public class MessageExecuteButton implements IMessage {
 
     public static final byte GM_CREATIVE  = 0;
     public static final byte GM_ADVENTURE = 1;
@@ -25,8 +45,8 @@ public class MessageExecuteButton {// implements IMessage, IMessageHandler<Messa
     public static final byte KILL         = 10;
     public static final byte MAGNET       = 11;
     public static final byte DELETE_ALL   = 12;
-    private int commandOrdinal;
-    private String[] cmd;
+    public int commandOrdinal;
+    public String[] cmd;
 
     public MessageExecuteButton() { }
 
@@ -35,156 +55,133 @@ public class MessageExecuteButton {// implements IMessage, IMessageHandler<Messa
         this.cmd = cmd != null ? cmd : new String[] { "" };
     }
 
-//    @Override
-//    public void fromBytes(ByteBuf buf) {
-//        this.commandOrdinal = buf.readByte();
-//        int l = buf.readByte();
-//        this.cmd = new String[l];
-//
-//        for (int i = 0; i < l; i++)
-//            this.cmd[i] = ByteBufUtils.readUTF8String(buf);
-//    }
-//
-//    @Override
-//    public void toBytes(ByteBuf buf) {
-//        buf.writeByte(commandOrdinal);
-//        buf.writeByte(cmd.length);
-//        for (int i = 0; i < cmd.length; i++)
-//            ByteBufUtils.writeUTF8String(buf, cmd[i] != null ? cmd[i] : "");
-//    }
-//
-//    public static boolean checkPermissions(EntityPlayer player, MinecraftServer server) {
-//        if (server.isSinglePlayer())
-//            return true;
-//
-//        for (String pl : server.getPlayerList().getOppedPlayerNames()) {
-//            if (pl.equals(player.getDisplayNameString()))
-//                return true;
-//        }
-//        return false;
-//    }
-//
-//    @Override
-//    public IMessage onMessage(MessageExecuteButton message, MessageContext ctx) {
-//        EntityPlayerMP p = ctx.getServerHandler().player;
-//
-//        if (p == null)
-//            return null;
-//        MinecraftServer s = ctx.getServerHandler().player.server;
-//        World world = s.getWorld(p.dimension);
-//
-//        WorldInfo worldinfo = world.getWorldInfo();
-//        boolean isOP = checkPermissions(p, s);
-//        boolean error = true;
-//
-//        switch (message.commandOrdinal) {
-//            case GM_ADVENTURE:
-//                if (!isOP && ConfigHandler.gamemodeRequiresOP)
-//                    break;
-//
-//                error = false;
-//                p.setGameType(GameType.ADVENTURE);
-//                break;
-//            case GM_CREATIVE:
-//                if (!isOP && ConfigHandler.gamemodeRequiresOP)
-//                    break;
-//
-//                error = false;
-//                p.setGameType(GameType.CREATIVE);
-//                break;
-//            case GM_SURVIVAL:
-//                if (!isOP && ConfigHandler.gamemodeRequiresOP)
-//                    break;
-//
-//                error = false;
-//                p.setGameType(GameType.SURVIVAL);
-//                break;
-//            case GM_SPECTATE:
-//                if (!isOP && ConfigHandler.gamemodeRequiresOP)
-//                    break;
-//
-//                error = false;
-//                p.setGameType(GameType.SPECTATOR);
-//                break;
-//            case DELETE_ALL:
-//                if (!isOP && ConfigHandler.deleteRequiresOP)
-//                    break;
-//
-//                error = false;
-//                p.inventory.clear();
-//                break;
-//            case DELETE:
-//                if (!isOP && ConfigHandler.deleteRequiresOP)
-//                    break;
-//
-//                error = false;
-//                p.inventory.setItemStack(ItemStack.EMPTY);
-//                break;
-//            case SUN:
-//                if (!isOP && ConfigHandler.weatherRequiresOP)
-//                    break;
-//
-//                error = false;
-//                worldinfo.setCleanWeatherTime(1000000);
-//                worldinfo.setRainTime(0);
-//                worldinfo.setThunderTime(0);
-//                worldinfo.setRaining(false);
-//                worldinfo.setThundering(false);
-//                break;
-//            case RAIN:
-//                if (!isOP && ConfigHandler.weatherRequiresOP)
-//                    break;
-//
-//                error = false;
-//                worldinfo.setCleanWeatherTime(0);
-//                worldinfo.setRainTime(1000000);
-//                worldinfo.setThunderTime(1000000);
-//                worldinfo.setRaining(true);
-//                worldinfo.setThundering(false);
-//                break;
-//            case DAY:
-//                if (!isOP && ConfigHandler.timeRequiresOP)
-//                    break;
-//
-//                error = false;
-//                worldinfo.setWorldTime(1000);
-//                break;
-//            case NIGHT:
-//                if (!isOP && ConfigHandler.timeRequiresOP)
-//                    break;
-//
-//                error = false;
-//                world.setWorldTime(13000);
-//                break;
-//            case FREEZE:
-//                if (!isOP && ConfigHandler.timeFreezeRequiresOP)
-//                    break;
-//
-//                error = false;
-//                boolean origValue = worldinfo.getGameRulesInstance().getBoolean("doDaylightCycle");
-//                worldinfo.getGameRulesInstance().setOrCreateGameRule("doDaylightCycle", origValue ? "false" : "true");
-//                break;
-//            case KILL:
-//                if (!isOP && ConfigHandler.killMobsRequiresOP)
-//                    break;
-//
-//                error = false;
-//                for (Iterator<Entity> e = world.loadedEntityList.iterator(); e.hasNext();) {
-//                    Entity entity = e.next();
-//
-//                    if (!(entity instanceof EntityPlayer) && entity instanceof EntityLiving || entity instanceof EntityItem) {
-//                        world.removeEntity(entity);
-//                    }
-//                }
-//
-//                break;
-//        }
-//
-//        if (error) {
-//            ITextComponent msg = new TextComponentTranslation(Localization.NO_PERMISSIONS);
-//            msg.setStyle(msg.getStyle().setColor(TextFormatting.RED));
-//            p.sendMessage(msg);
-//        }
-//        return null;
-//    }
+    public static boolean checkPermissions(ServerPlayerEntity player, MinecraftServer server) {
+        if (server.isSinglePlayer())
+            return true;
+        return server.getOpPermissionLevel() == server.getPermissionLevel(player.getGameProfile());
+    }
+
+    @Override
+    public boolean receive(NetworkEvent.Context context) {
+        ServerPlayerEntity p = context.getSender();
+
+        if (p == null)
+            return false;
+        ServerWorld world = p.getServerWorld();
+        MinecraftServer s = p.server;
+        WorldInfo worldinfo = world.getWorldInfo();
+        boolean isOP = checkPermissions(p, s);
+        boolean error = true;
+
+        switch (commandOrdinal) {
+            case GM_ADVENTURE:
+                if (!isOP && ConfigHandler.gamemodeRequiresOP)
+                    break;
+
+                error = false;
+                p.setGameType(GameType.ADVENTURE);
+                break;
+            case GM_CREATIVE:
+                if (!isOP && ConfigHandler.gamemodeRequiresOP)
+                    break;
+
+                error = false;
+                p.setGameType(GameType.CREATIVE);
+                break;
+            case GM_SURVIVAL:
+                if (!isOP && ConfigHandler.gamemodeRequiresOP)
+                    break;
+
+                error = false;
+                p.setGameType(GameType.SURVIVAL);
+                break;
+            case GM_SPECTATE:
+                if (!isOP && ConfigHandler.gamemodeRequiresOP)
+                    break;
+
+                error = false;
+                p.setGameType(GameType.SPECTATOR);
+                break;
+            case DELETE_ALL:
+                if (!isOP && ConfigHandler.deleteRequiresOP)
+                    break;
+
+                error = false;
+                p.inventory.clear();
+                break;
+            case DELETE:
+                if (!isOP && ConfigHandler.deleteRequiresOP)
+                    break;
+
+                error = false;
+                p.inventory.setItemStack(ItemStack.EMPTY);
+                break;
+            case SUN:
+                if (!isOP && ConfigHandler.weatherRequiresOP)
+                    break;
+
+                error = false;
+                worldinfo.setClearWeatherTime(1000000);
+                worldinfo.setRainTime(0);
+                worldinfo.setThunderTime(0);
+                worldinfo.setRaining(false);
+                worldinfo.setThundering(false);
+                break;
+            case RAIN:
+                if (!isOP && ConfigHandler.weatherRequiresOP)
+                    break;
+
+                error = false;
+                worldinfo.setClearWeatherTime(0);
+                worldinfo.setRainTime(1000000);
+                worldinfo.setThunderTime(1000000);
+                worldinfo.setRaining(true);
+                worldinfo.setThundering(false);
+                break;
+            case DAY:
+                if (!isOP && ConfigHandler.timeRequiresOP)
+                    break;
+
+                error = false;
+                worldinfo.setDayTime(1000);
+                break;
+            case NIGHT:
+                if (!isOP && ConfigHandler.timeRequiresOP)
+                    break;
+
+                error = false;
+                world.setDayTime(13000);
+                break;
+            case FREEZE:
+                if (!isOP && ConfigHandler.timeFreezeRequiresOP)
+                    break;
+
+                error = false;
+                boolean origValue = worldinfo.getGameRulesInstance().getBoolean(GameRules.DO_DAYLIGHT_CYCLE);
+                worldinfo.getGameRulesInstance().get(GameRules.DO_DAYLIGHT_CYCLE).set(!origValue, s);
+                break;
+            case KILL:
+                if (!isOP && ConfigHandler.killMobsRequiresOP)
+                    break;
+
+                error = false;
+                for (Iterator<Entity> e = world.getEntities().iterator(); e.hasNext(); ) {
+                    Entity entity = e.next();
+
+                    if (!(entity instanceof PlayerEntity) && entity instanceof LivingEntity || entity instanceof ItemEntity) {
+                        world.removeEntity(entity);
+                    }
+                }
+
+                break;
+        }
+
+        if (error) {
+            ITextComponent msg = new TranslationTextComponent(Localization.NO_PERMISSIONS);
+            msg.setStyle(msg.getStyle().setColor(TextFormatting.RED));
+            p.sendMessage(msg);
+        }
+        return !error;
+    }
+
 }

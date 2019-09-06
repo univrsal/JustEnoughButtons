@@ -2,19 +2,18 @@ package de.univrsal.justenoughbuttons.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.util.SoundEvents;
 
 public class ClientUtil {
 
     public static Minecraft mc = Minecraft.getInstance();
 
     public static int getMouseX() {
-        return (int) mc.mouseHelper.getMouseX();
+        return (int) (mc.mouseHelper.getMouseX() * (double) mc.mainWindow.getScaledWidth() / (double) mc.mainWindow.getWidth());
     }
 
     public static int getMouseY() {
-        return (int) mc.mouseHelper.getMouseY();
+        return (int) (mc.mouseHelper.getMouseY() * (double) mc.mainWindow.getScaledHeight() / (double) mc.mainWindow.getHeight());
     }
 
     public static boolean lmbDown() {
@@ -27,12 +26,6 @@ public class ClientUtil {
 
     public static int mouseButton() {
         return lmbDown() ? 0 : (rmbDown() ? 1 : -1);
-    }
-
-    public static int getGuiTop(GuiContainer g) {
-//        int i =  ReflectionHelper.getPrivateValue(GuiContainer.class, g, GUI_TOP);
-//        return ReflectionHelper.getPrivateValue(GuiContainer.class, g, GUI_TOP);
-        return 10; /* TODO: reflection */
     }
 
     public static int getScreenWidth() {
@@ -48,6 +41,6 @@ public class ClientUtil {
     }
 
     public static void playClick() {
-        mc.getSoundHandler().play(SimpleSound.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        mc.getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 }

@@ -4,9 +4,10 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import de.univrsal.justenoughbuttons.JEIButtons;
 import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
 import de.univrsal.justenoughbuttons.core.handlers.MagnetModeHandler;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.GameRules;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +42,10 @@ public class Localization {
     public static final String MAGNET_OFF = PREFIX + "magnet.off";
     public static final String MAGNET = PREFIX + "magnetitems";
     public static final String MODS = PREFIX + "mods";
-    public static final String NO_PERMISSIONS = "commands.generic.permission";
+    public static final String NO_PERMISSIONS = "commands.help.failed";
     public static final String MORE = PREFIX + "more";
-    public static final String CMD_NO_RAIN = "commands.weather.clear";
-    public static final String CMD_RAIN = "commands.weather.rain";
+    public static final String CMD_NO_RAIN = "commands.weather.set.clear";
+    public static final String CMD_RAIN = "commands.weather.set.rain";
     public static final String KEY_CATEGORY = "key.category.justenoughbuttons";
     public static final String KEY_MAKECOPY = "justenoughbuttons.key.makecopy";
     public static final String KEY_MOBOVERLAY = "justenoughbuttons.key.moboverlay";
@@ -79,10 +80,10 @@ public class Localization {
                 ItemStack draggedStack = ClientProxy.player.inventory.getItemStack();
                 if (!draggedStack.isEmpty()) {
                     if (JEIButtons.isServerSidePresent) {
-                        list.add(I18n.format(Localization.DELETE_SINGLE, I18n.format(draggedStack.getTranslationKey() + ".name")));
+                        list.add(I18n.format(Localization.DELETE_SINGLE, I18n.format(draggedStack.getTranslationKey())));
                     } else {
-                        list.add(I18n.format(Localization.DELETE_ALL, I18n.format(draggedStack.getTranslationKey() + ".name")));
-                        if (GuiScreen.isShiftKeyDown())
+                        list.add(I18n.format(Localization.DELETE_ALL, I18n.format(draggedStack.getTranslationKey())));
+                        if (Screen.hasShiftDown())
                             list.add(ChatFormatting.GRAY + I18n.format(Localization.IGNORE_META));
                     }
 
@@ -95,7 +96,7 @@ public class Localization {
                 }
                 break;
             case FREEZETIME:
-                boolean gameRuleDayCycle = ClientProxy.mc.world.getGameRules().getBoolean("doDaylightCycle");
+                boolean gameRuleDayCycle = ClientProxy.mc.world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE);
                 if (gameRuleDayCycle)
                     list.add(I18n.format(Localization.FREEZE_TIME));
                 else

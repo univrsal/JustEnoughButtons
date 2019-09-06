@@ -1,5 +1,5 @@
 modLoader="javafml" #mandatory
-loaderVersion="[25,)" #mandatory (24 is current forge version)
+loaderVersion="[14,)" #mandatory (24 is current forge version)
 issueTrackerURL="https://github.com/univrsal/JustEnoughButtons/issues" #optional
 [[mods]] #mandatory
 modId="justenoughbuttons" #mandatory
@@ -11,3 +11,12 @@ authors="univrsal" #optional
 description='''
 Utility buttons for your inventory screen
 '''
+
+[[dependencies.justenoughbuttons]]
+    modId="forge" #mandatory
+    mandatory=false #mandatory
+    versionRange="[26.0.47,)" #mandatory
+    # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
+    ordering="NONE"
+    # Side this dependency is applied on - BOTH, CLIENT or SERVER
+    side="BOTH"

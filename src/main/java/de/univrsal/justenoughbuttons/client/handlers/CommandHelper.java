@@ -7,8 +7,9 @@ import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
 import de.univrsal.justenoughbuttons.core.handlers.MagnetModeHandler;
 import de.univrsal.justenoughbuttons.core.network.MessageExecuteButton;
 import de.univrsal.justenoughbuttons.core.network.MessageMagnetMode;
-import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.GameRules;
 
 /**
  * Created by universal on 06.04.2017.
@@ -38,16 +39,15 @@ public class CommandHelper {
             case DELETE:
                 ItemStack draggedStack = ClientProxy.player.inventory.getItemStack();
                 if (draggedStack.isEmpty()) {
-                    if (GuiScreen.isShiftKeyDown() && ConfigHandler.enableClearInventory)
+                    if (Screen.hasShiftDown() && ConfigHandler.enableClearInventory)
                         command = new String[] { "clear" };
                 } else {
                     String name  = draggedStack.getItem().getRegistryName().toString();
-
-                    if (!GuiScreen.isShiftKeyDown()) {
-                        int data = draggedStack.getDamage();
-                        command = new String[] { "clear", ClientProxy.player.getDisplayName().getUnformattedComponentText(), name, String.valueOf(data) };
-                    } else
-                        command = new String[] { "clear", ClientProxy.player.getDisplayName().getUnformattedComponentText(), name };
+                    int data = draggedStack.getDamage();
+//                    if (!Screen.hasShiftDown()) {
+//                        command = new String[] { "clear", "@p", name, String.valueOf(data) };
+//                    } else
+                    command = new String[]{"clear"};
                     boolean ghost = draggedStack.hasTag() && draggedStack.getTag().getBoolean("JEI_Ghost");
                     if (ghost)
                         ClientProxy.player.inventory.setItemStack(ItemStack.EMPTY);
@@ -55,11 +55,11 @@ public class CommandHelper {
 
                 if (JEIButtons.isServerSidePresent) {
                     ClientProxy.player.inventory.setItemStack(ItemStack.EMPTY);
-                    if (GuiScreen.isShiftKeyDown() && ConfigHandler.enableClearInventory)
+                    if (Screen.hasShiftDown() && ConfigHandler.enableClearInventory)
                         ClientProxy.player.inventory.clear();
                 }
 
-                if (GuiScreen.isShiftKeyDown() && ConfigHandler.enableClearInventory)
+                if (Screen.hasShiftDown() && ConfigHandler.enableClearInventory)
                     handleButton(MessageExecuteButton.DELETE_ALL, command);
                 else if (!draggedStack.equals(ItemStack.EMPTY))
                     handleButton(MessageExecuteButton.DELETE, command);
@@ -77,7 +77,7 @@ public class CommandHelper {
                 handleButton(MessageExecuteButton.NIGHT, btn.getCommand().split(" "));
                 break;
             case FREEZETIME:
-                boolean gameRuleDayCycle = ClientProxy.mc.world.getGameRules().getBoolean("doDaylightCycle");
+                boolean gameRuleDayCycle = ClientProxy.mc.world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE);
                 command = new String[] { "gamerule", "doDaylightCycle", (gameRuleDayCycle ? "false" : "true")};
                 handleButton(MessageExecuteButton.FREEZE, command);
                 break;
@@ -85,7 +85,7 @@ public class CommandHelper {
                 handleButton(MessageExecuteButton.KILL, btn.getCommand().split(" "));
                 break;
             case MAGNET:
-                    command = new String[] { "tp", "@e[type=Item,r=" + ConfigHandler.magnetRadius + "]", "@p" };
+                command = new String[]{"tp", "@e[type=minecraft:item,distance=.." + ConfigHandler.magnetRadius + "]", "@p"};
                     handleButton(MessageExecuteButton.MAGNET, command);
                 break;
             case CUSTOM1:
@@ -108,13 +108,12 @@ public class CommandHelper {
 
     private static void handleButton(int msgId, String[] args) {
         if (JEIButtons.isServerSidePresent && !useCheats) { // Use direct server-client connection when enabled
-            // TODO: Network
-//            if (msgId != MessageExecuteButton.MAGNET)
-//                ClientProxy.INSTANCE.sendToServer(new MessageExecuteButton(msgId, args));
-//            else {
-//                ClientProxy.INSTANCE.sendToServer(new MessageMagnetMode(MagnetModeHandler.state));
-//                MagnetModeHandler.state = !MagnetModeHandler.state;
-//            }
+            if (msgId != MessageExecuteButton.MAGNET)
+                ClientProxy.network.sendToServer(new MessageExecuteButton(msgId, args));
+            else {
+                ClientProxy.network.sendToServer(new MessageMagnetMode(MagnetModeHandler.state));
+                MagnetModeHandler.state = !MagnetModeHandler.state;
+            }
         } else { // Otherwise use commands for servers without JEB or SP worlds with cheats
             sendCommand(args);
             if (msgId == MessageExecuteButton.MAGNET)

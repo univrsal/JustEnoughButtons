@@ -4,9 +4,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.univrsal.justenoughbuttons.JEIButtons;
 import de.univrsal.justenoughbuttons.client.ClientProxy;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTTagCompound;
 
 import java.io.*;
 import java.util.Date;
@@ -45,7 +45,7 @@ public class SaveFileHandler {
             return;
         HAS_LOADED = true;
 
-        UUID uuid = EntityPlayer.getUUID(Minecraft.getInstance().getSession().getProfile());
+        UUID uuid = PlayerEntity.getUUID(Minecraft.getInstance().getSession().getProfile());
         File saveFolder = new File(savePath);
         File saveFile = null;
 
@@ -60,13 +60,14 @@ public class SaveFileHandler {
 
         if (saveFile != null) {
             JEIButtons.logInfo("Found savefile for user!");
+
             try {
                 BufferedReader br = new BufferedReader(new FileReader(saveFile));
-                NBTTagCompound[] mainInventory = new NBTTagCompound[36];
-                NBTTagCompound[] armorInventory = new NBTTagCompound[4];
+                CompoundNBT[] mainInventory = new CompoundNBT[36];
+                CompoundNBT[] armorInventory = new CompoundNBT[4];
 
-                NBTTagCompound offHand = new NBTTagCompound();
-                NBTTagCompound icon = new NBTTagCompound();
+                CompoundNBT offHand = new CompoundNBT();
+                CompoundNBT icon = new CompoundNBT();
 
                 int invIndex = 0;
                 int armorIndex = 0;
@@ -96,11 +97,11 @@ public class SaveFileHandler {
 
                         invIndex = 0;
                         armorIndex = 0;
-                        mainInventory = new NBTTagCompound[36];
-                        armorInventory = new NBTTagCompound[4];
+                        mainInventory = new CompoundNBT[36];
+                        armorInventory = new CompoundNBT[4];
 
-                        offHand = new NBTTagCompound();
-                        icon = new NBTTagCompound();
+                        offHand = new CompoundNBT();
+                        icon = new CompoundNBT();
                     } else if (line.startsWith("EOF")) {
                         break;
                     }
@@ -115,12 +116,12 @@ public class SaveFileHandler {
     }
 
     public void saveForPlayer() throws FileNotFoundException, UnsupportedEncodingException {
-        if (ClientProxy.player== null) {
+        if (ClientProxy.player == null) {
             JEIButtons.logInfo("Error when saving inventory saves player instance is null!");
             return;
         }
 
-        UUID uuid = EntityPlayer.getUUID(ClientProxy.player.getGameProfile());
+        UUID uuid = PlayerEntity.getUUID(ClientProxy.player.getGameProfile());
         File oldFile = new File(savePath + "/" + uuid + ".jebs");
 
         if (oldFile.exists() && !oldFile.delete()) {
@@ -139,14 +140,14 @@ public class SaveFileHandler {
             InventorySaveHandler.InventorySnapshot snapshot = InventorySaveHandler.saves[i];
 
             if (snapshot != null) {
-                for (NBTTagCompound nbt : snapshot.mainInventory) {
+                for (CompoundNBT nbt : snapshot.mainInventory) {
                     if (nbt != null)
                         writer.println("MainInv:" + nbt.toString());
                     else
                         writer.println("NullInv");
                 }
 
-                for (NBTTagCompound c : snapshot.armorInventory) {
+                for (CompoundNBT c : snapshot.armorInventory) {
                     if (c != null)
                         writer.println("ArmoInv:" + c.toString());
                     else
@@ -154,13 +155,13 @@ public class SaveFileHandler {
                 }
 
                 if (snapshot.icon != null) {
-                    NBTTagCompound icon = new NBTTagCompound();
+                    CompoundNBT icon = new CompoundNBT();
                     snapshot.icon.write(icon);
                     if (!icon.isEmpty())
                         writer.println("IconSta:" + icon.toString());
                 }
 
-                if (snapshot.offHandInventory != null && !snapshot.offHandInventory.isEmpty())
+                if (snapshot.offHandInventory != null)
                     writer.println("OffHand:" + snapshot.offHandInventory.toString());
                 writer.println("END SAVE");
             } else
