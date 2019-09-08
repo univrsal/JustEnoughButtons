@@ -1,26 +1,32 @@
 package de.univrsal.justenoughbuttons.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
+import net.minecraft.fluid.IFluidState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IWorldReader;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.IChunk;
-import net.minecraft.world.spawner.WorldEntitySpawner;
+import net.minecraft.world.lighting.IWorldLightListener;
 import org.lwjgl.opengl.GL11;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by universal on 28.08.2016 20:24.
@@ -33,12 +39,16 @@ public class MobOverlayRenderer {
     private static Map<BlockPos, SpawnType> cache = new HashMap<BlockPos, SpawnType>();
 
     public static void renderMobSpawnOverlay() {
+        ActiveRenderInfo ai = Minecraft.getInstance().gameRenderer.getActiveRenderInfo();
+
         GlStateManager.pushMatrix();
         {
+            GlStateManager.disableBlend();
             GlStateManager.disableLighting();
             GlStateManager.disableTexture();
-            GlStateManager.translated(-ClientProxy.renderManager.pointedEntity.posX, -ClientProxy.renderManager.pointedEntity.posY,
-                    -ClientProxy.renderManager.pointedEntity.posZ);
+
+            GlStateManager.translated(-ai.getProjectedView().x, -(ai.getProjectedView().y),
+                    -ai.getProjectedView().z);
 
             GL11.glLineWidth(1.5F);
             GlStateManager.color3f(1, 0, 0);
@@ -54,6 +64,7 @@ public class MobOverlayRenderer {
 
             GlStateManager.enableLighting();
             GlStateManager.enableTexture();
+            GlStateManager.enableBlend();
         }
         GlStateManager.popMatrix();
     }
@@ -90,6 +101,7 @@ public class MobOverlayRenderer {
         cache.clear();
 
         World world = entity.world;
+
         int entX = (int) entity.posX;
         int entY = MathHelper.clamp((int) entity.posY, 16, world.getHeight() - 16);
         int entZ = (int) entity.posZ;
@@ -116,21 +128,27 @@ public class MobOverlayRenderer {
 
     private static SpawnType getSpawnType(IWorldReader w, IChunk chunk, int x, int y, int z) {
         BlockPos pos = new BlockPos(x, y, z);
+        BlockState bs = w.getBlockState(pos);
+        IFluidState fs = w.getFluidState(pos);
+        IWorldLightListener ble = Objects.requireNonNull(chunk.getWorldLightManager()).getLightEngine(LightType.BLOCK);
+        int block_light = ble.getLightFor(pos);
+
         World world = (World) w;
-        if (!WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND,
-                w, pos, null) || chunk.getLightValue(pos) >= 8) {
+        if (!EntitySpawnPlacementRegistry.PlacementType.ON_GROUND.canSpawnAt(w, pos, null)
+                || block_light >= 8) {
             return SpawnType.NEVER;
         }
 
-        BlockPos p = new BlockPos(x, y , z);
-        AxisAlignedBB aabb = new AxisAlignedBB(p);
+        AxisAlignedBB aabb = new AxisAlignedBB(pos);
         VoxelShape vs = VoxelShapes.create(aabb);
 
-        if (!w.checkNoEntityCollision(null, vs) ||
-                !world.getEntitiesWithinAABBExcludingEntity(null, aabb).isEmpty() || world.containsAnyLiquid(aabb))
+        if (!w.checkNoEntityCollision(null, vs) || /* Collision checks */
+                !world.getEntitiesWithinAABBExcludingEntity(null, aabb).isEmpty()
+                || world.containsAnyLiquid(aabb)) {
             return SpawnType.NEVER;
+        }
 
-        if (chunk.getLightValue(pos) >= 8)
+        if (w.canBlockSeeSky(pos))
             return SpawnType.NIGHT_ONLY;
         return SpawnType.ALWAYS;
     }

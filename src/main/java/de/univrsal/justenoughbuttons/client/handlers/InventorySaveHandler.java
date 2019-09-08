@@ -34,15 +34,31 @@ public class InventorySaveHandler {
 
         for (int i = 0; i < saveButtons.length; i++) {
             saveButtons[i] = new SaveButton(i, ConfigHandler.xOffset, 110 + ConfigHandler.yOffset + 22 * i,
-                    50, 20, (saves[i] == null ? save : load) + (i + 1));
+                    50, 20, (saves[i] == null ? save : load) + (i + 1), (btn, mousebtn) -> {
+                if (mousebtn == 0) {
+                    if (saves[btn.id] == null) {
+                        saves[btn.id] = new InventorySnapshot(ClientProxy.player.inventory);
+
+                        saveButtons[btn.id].setMessage(load + (btn.id + 1));
+                    } else {
+                        if (!ClientProxy.player.inventory.getItemStack().isEmpty()) {
+                            saves[btn.id].icon = ClientProxy.player.inventory.getItemStack().copy();
+                        } else {
+                            saves[btn.id].giveToPlayer();
+                        }
+                    }
+                } else {
+                    saves[btn.id] = null;
+                    saveButtons[btn.id].setMessage(save + (btn.id + 1));
+                }
+            });
         }
     }
 
-    static void click(int mouseX, int mouseY, boolean rightMouse) {
-        if (!rightMouse) {
+    static void click(int mouseX, int mouseY, int mousebutton) {
+        if (mousebutton == 0) {
             for (int i = 0; i < saveButtons.length; i++)
-                if (saveButtons[i].mouseClicked(mouseX, mouseY, ClientUtil.mouseButton())) {
-                    ClientUtil.playClick();
+                if (saveButtons[i].mouseClicked(mouseX, mouseY, mousebutton)) {
                     if (saves[i] == null) {
                         saves[i] = new InventorySnapshot(ClientProxy.player.inventory);
                         String load = I18n.format(Localization.LOAD) + " ";
@@ -50,16 +66,16 @@ public class InventorySaveHandler {
                     } else {
                         if (!ClientProxy.player.inventory.getItemStack().isEmpty()) {
                             saves[i].icon = ClientProxy.player.inventory.getItemStack().copy();
+                            EventHandlers.skipSaveClickCount = 1;
                         } else {
                             saves[i].giveToPlayer();
                         }
                     }
                     break;
                 }
-        } else {
+        } else if (mousebutton == 1) {
             for (int i = 0; i < saveButtons.length; i++)
-                if (saveButtons[i].mouseClicked(mouseX, mouseY, ClientUtil.mouseButton())) {
-                    ClientUtil.playClick();
+                if (saveButtons[i].mouseClicked(mouseX, mouseY, mousebutton)) {
                     saves[i] = null;
                     String save = I18n.format(Localization.SAVE) + " ";
                     saveButtons[i].setMessage(save + (i + 1));
@@ -72,12 +88,9 @@ public class InventorySaveHandler {
     static void drawButtons(int mouseX, int mouseY) {
         boolean anyButtonHovered = false;
 
-        if (saves == null || saves.length <= 0)
-            return;
-
         for (SaveButton s : saveButtons) {
-            s.renderButton(mouseX, mouseY, 0.f);
-
+            s.render(mouseX, mouseY, 0.f);
+            s.mouseMoved(ClientUtil.mc.mouseHelper.getMouseX(), ClientUtil.mc.mouseHelper.getMouseY());
             if (s.isMouseOver(mouseX, mouseY)) {
                 EventHandlers.skipSaveClickCount = 2;
                 anyButtonHovered = true;

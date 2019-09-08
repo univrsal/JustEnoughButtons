@@ -94,7 +94,7 @@ public class EventHandlers {
 //    }
 
     @SubscribeEvent
-    public void onMousedown(GuiScreenEvent.MouseClickedEvent e) {
+    public void onMousedown(GuiScreenEvent.MouseClickedEvent.Pre e) {
         int mouseY = ClientUtil.getMouseY();
         int mouseX = ClientUtil.getMouseX();
 
@@ -104,12 +104,11 @@ public class EventHandlers {
                 ClientUtil.playClick();
             } else { // Save buttons & Mod subsets
                 if (ConfigHandler.enableSaves)
-                    InventorySaveHandler.click(mouseX, mouseY, false);
-
-                ModSubsetButtonHandler.click(mouseX, mouseY);
+                    InventorySaveHandler.click(mouseX, mouseY, e.getButton());
+                ModSubsetButtonHandler.click(mouseX, mouseY, e.getButton());
             }
         } else if (e.getButton() == 1) {
-            InventorySaveHandler.click(mouseX, mouseY, true);
+            InventorySaveHandler.click(mouseX, mouseY, e.getButton());
         }
     }
 
@@ -272,8 +271,7 @@ public class EventHandlers {
     @SubscribeEvent
     public void onKeyPressed(InputEvent.KeyInputEvent event) {
         if (enableOverlays) {
-            InputMappings.Input i = InputMappings.getInputByCode(event.getKey(), event.getScanCode());
-            if (ClientProxy.mobOverlay.isActiveAndMatches(i)) {
+            if (ClientProxy.mobOverlay.isPressed()) {
                 drawMobOverlay = !drawMobOverlay;
                 if (!drawMobOverlay) {
                     MobOverlayRenderer.clearCache();
@@ -281,7 +279,7 @@ public class EventHandlers {
                 }
             }
 
-            if (ClientProxy.chunkOverlay.isActiveAndMatches(i)) {
+            if (ClientProxy.chunkOverlay.isPressed()) {
                 ClientProxy.mc.debugRenderer.toggleChunkBorders();
             }
         }

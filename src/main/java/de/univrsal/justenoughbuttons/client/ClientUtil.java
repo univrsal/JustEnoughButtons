@@ -16,18 +16,6 @@ public class ClientUtil {
         return (int) (mc.mouseHelper.getMouseY() * (double) mc.mainWindow.getScaledHeight() / (double) mc.mainWindow.getHeight());
     }
 
-    public static boolean lmbDown() {
-        return mc.mouseHelper.isLeftDown();
-    }
-
-    public static boolean rmbDown() {
-        return mc.mouseHelper.isRightDown();
-    }
-
-    public static int mouseButton() {
-        return lmbDown() ? 0 : (rmbDown() ? 1 : -1);
-    }
-
     public static int getScreenWidth() {
         if (mc.currentScreen != null)
             return mc.currentScreen.width;

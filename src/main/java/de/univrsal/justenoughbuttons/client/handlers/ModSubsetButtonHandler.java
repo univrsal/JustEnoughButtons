@@ -36,10 +36,10 @@ public class ModSubsetButtonHandler {
     private static int selectedItem = -1;
     private static String longestModName;
 
-    static void click(int mouseX, int mouseY) {
+    static void click(int mouseX, int mouseY, int mousebutton) {
         boolean flag = false;
 
-        if (subsetButton.mouseClicked(mouseX, mouseY, ClientUtil.mouseButton())) {
+        if (subsetButton.mouseClicked(mouseX, mouseY, mousebutton)) {
             //JEIButtons.proxy.playClick();
             isListShown = !isListShown;
             flag = true;

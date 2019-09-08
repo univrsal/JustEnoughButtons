@@ -40,14 +40,11 @@ public class CommandHelper {
                 ItemStack draggedStack = ClientProxy.player.inventory.getItemStack();
                 if (draggedStack.isEmpty()) {
                     if (Screen.hasShiftDown() && ConfigHandler.enableClearInventory)
-                        command = new String[] { "clear" };
+                        command = new String[]{"clear", "@p"};
                 } else {
                     String name  = draggedStack.getItem().getRegistryName().toString();
                     int data = draggedStack.getDamage();
-//                    if (!Screen.hasShiftDown()) {
-//                        command = new String[] { "clear", "@p", name, String.valueOf(data) };
-//                    } else
-                    command = new String[]{"clear"};
+                    command = new String[]{"clear", "@p", name};
                     boolean ghost = draggedStack.hasTag() && draggedStack.getTag().getBoolean("JEI_Ghost");
                     if (ghost)
                         ClientProxy.player.inventory.setItemStack(ItemStack.EMPTY);
