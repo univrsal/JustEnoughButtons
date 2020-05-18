@@ -1,5 +1,6 @@
 package de.univrsal.justenoughbuttons.client.handlers;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import de.univrsal.justenoughbuttons.JEIButtons;
 import de.univrsal.justenoughbuttons.client.ClientProxy;
 import de.univrsal.justenoughbuttons.client.ClientUtil;
@@ -26,14 +27,15 @@ public class InventorySaveHandler {
 
     private static SaveButton[] saveButtons = new SaveButton[4];
     static InventorySnapshot[] saves = new InventorySnapshot[4];
-    private static final String replaceCommand = "replaceitem entity @p %s %s %s %s %s";
+    private static final String replaceCommand = "replaceitem entity @p %s %s%s %s";
 
     public static void init() {
         String load = I18n.format(Localization.LOAD) + " ";
         String save = I18n.format(Localization.SAVE) + " ";
 
         for (int i = 0; i < saveButtons.length; i++) {
-            saveButtons[i] = new SaveButton(i, ConfigHandler.xOffset, 110 + ConfigHandler.yOffset + 22 * i,
+            saveButtons[i] = new SaveButton(i, ConfigHandler.COMMON.xOffset.get(),
+                    110 + ConfigHandler.COMMON.yOffset.get() + 22 * i,
                     50, 20, (saves[i] == null ? save : load) + (i + 1), (btn, mousebtn) -> {
                 if (mousebtn == 0) {
                     if (saves[btn.id] == null) {
@@ -66,7 +68,7 @@ public class InventorySaveHandler {
                     } else {
                         if (!ClientProxy.player.inventory.getItemStack().isEmpty()) {
                             saves[i].icon = ClientProxy.player.inventory.getItemStack().copy();
-                            EventHandlers.skipSaveClickCount = 1;
+
                         } else {
                             saves[i].giveToPlayer();
                         }
@@ -74,38 +76,29 @@ public class InventorySaveHandler {
                     break;
                 }
         } else if (mousebutton == 1) {
-            for (int i = 0; i < saveButtons.length; i++)
+            for (int i = 0; i < saveButtons.length; i++) {
                 if (saveButtons[i].mouseClicked(mouseX, mouseY, mousebutton)) {
                     saves[i] = null;
                     String save = I18n.format(Localization.SAVE) + " ";
                     saveButtons[i].setMessage(save + (i + 1));
-
                     break;
                 }
+            }
         }
     }
 
     static void drawButtons(int mouseX, int mouseY) {
-        boolean anyButtonHovered = false;
-
         for (SaveButton s : saveButtons) {
             s.render(mouseX, mouseY, 0.f);
             s.mouseMoved(ClientUtil.mc.mouseHelper.getMouseX(), ClientUtil.mc.mouseHelper.getMouseY());
-            if (s.isMouseOver(mouseX, mouseY)) {
-                EventHandlers.skipSaveClickCount = 2;
-                anyButtonHovered = true;
-            }
 
             if (saves[s.id] != null && saves[s.id].icon != null) {
-                RenderHelper.enableStandardItemLighting();
-                RenderHelper.enableGUIStandardItemLighting();
+                RenderHelper.func_227780_a_();
+                RenderHelper.func_227783_c_();
                 ClientProxy.mc.getItemRenderer().renderItemAndEffectIntoGUI(saves[s.id].icon, s.x + s.getWidth() + 2, s.y + 2);
-                RenderHelper.disableStandardItemLighting();
+                RenderHelper.func_227784_d_();
             }
         }
-
-        if (!anyButtonHovered)
-            EventHandlers.skipSaveClickCount = 0;
     }
 
     static class InventorySnapshot {
@@ -161,9 +154,9 @@ public class InventorySaveHandler {
 
                     nbt = s.hasTag() ? s.getTag().toString() : "";
                     if (i < 9)
-                        cmd = String.format(replaceCommand, "slot.hotbar." + i,  s.getItem().getRegistryName(), s.getCount(), s.getDamage(), nbt);
+                        cmd = String.format(replaceCommand, "hotbar." + i, s.getItem().getRegistryName(), nbt, s.getCount());
                     else
-                        cmd = String.format(replaceCommand, "slot.inventory." + (i - 9),  s.getItem().getRegistryName(), s.getCount(), s.getDamage(), nbt);
+                        cmd = String.format(replaceCommand, "inventory." + (i - 9), s.getItem().getRegistryName(), nbt, s.getCount());
                     if (checkCommandLength(cmd))
                         JEIButtons.sendCommand(cmd);
                 }
@@ -177,7 +170,7 @@ public class InventorySaveHandler {
                         continue;
 
                     nbt = s.hasTag() ? s.getTag().toString() : "";
-                    cmd = String.format(replaceCommand, "slot.armor." + idToSlot(i),  s.getItem().getRegistryName(), s.getCount(), s.getDamage(), nbt);
+                    cmd = String.format(replaceCommand, "armor." + idToSlot(i), s.getItem().getRegistryName(), nbt, s.getCount());
                     if (checkCommandLength(cmd))
                         JEIButtons.sendCommand(cmd);
                 }
@@ -187,7 +180,7 @@ public class InventorySaveHandler {
 
                     if (!s.isEmpty()) {
                         nbt = s.hasTag() ? s.getTag().toString() : "";
-                        cmd = String.format(replaceCommand, "slot.weapon.offhand",  s.getItem().getRegistryName(), s.getCount(), s.getDamage(), nbt);
+                        cmd = String.format(replaceCommand, "weapon.offhand", s.getItem().getRegistryName(), nbt, s.getCount());
                         if (checkCommandLength(cmd))
                             JEIButtons.sendCommand(cmd);
                     }

@@ -22,7 +22,7 @@ public class MagnetModeHandler {
     private int r;
 
     public MagnetModeHandler() {
-        r = ConfigHandler.magnetRadius;
+        r = ConfigHandler.COMMON.magnetRadius.get();
     }
 
     public void addPlayer(PlayerEntity p) {
@@ -37,9 +37,9 @@ public class MagnetModeHandler {
     public void onServerTick(TickEvent.ServerTickEvent e) {
         if (System.currentTimeMillis() % 5 == 0 && players.size() > 0) {
             for (PlayerEntity p : players) {
-                double x = p.posX;
-                double y = p.posY + 1.5;
-                double z = p.posZ;
+                double x = p.serverPosX;
+                double y = p.serverPosY + 1.5;
+                double z = p.serverPosZ;
 
                 List<ItemEntity> items = p.world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(x - r, y - r, z - r, x + r, y + r, z + r));
 

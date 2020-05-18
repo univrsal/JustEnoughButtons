@@ -3,7 +3,6 @@ package de.univrsal.justenoughbuttons.client.gui;
 import de.univrsal.justenoughbuttons.JEIButtons;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.client.config.IConfigElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +21,15 @@ public class GuiJEBConfig extends Screen {
         super(p_i51108_1_);
     }
 
-    public static List<IConfigElement> getElements() {
-        buttonorder.clear();
-        for (int i = 0; i < JEIButtons.btnCustom.length; i++) {
-            buttonorder.add("enableCustomButton." + i);
-            buttonorder.add("customName." + i);
-            buttonorder.add("customCommand." + i);
-        }
-
-        List<IConfigElement> entries = new ArrayList<IConfigElement>();
+//    public static List<IConfigElement> getElements() {
+//        buttonorder.clear();
+//        for (int i = 0; i < JEIButtons.btnCustom.length; i++) {
+//            buttonorder.add("enableCustomButton." + i);
+//            buttonorder.add("customName." + i);
+//            buttonorder.add("customCommand." + i);
+//        }
+//
+//        List<IConfigElement> entries = new ArrayList<IConfigElement>();
 
 //        for (String name : ConfigHandler.config.getCategoryNames())
 //            if (name.equals(ConfigHandler.CATEGORY_CUSTOM))
@@ -39,6 +38,6 @@ public class GuiJEBConfig extends Screen {
 //                entries.add(new ConfigElement(ConfigHandler.config.getCategory(name)));
 
 
-        return entries;
-    }
+//        return entries;
+//    }
 }

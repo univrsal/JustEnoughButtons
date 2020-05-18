@@ -19,7 +19,7 @@ import net.minecraft.world.GameRules;
  */
 public class CommandHelper {
 
-    public static boolean useCheats = true;
+    public static boolean useCheats = false;
 
     public static void handleClick(EnumButtonCommands btn) {
         String[] command = null;
@@ -39,7 +39,7 @@ public class CommandHelper {
             case DELETE:
                 ItemStack draggedStack = ClientProxy.player.inventory.getItemStack();
                 if (draggedStack.isEmpty()) {
-                    if (Screen.hasShiftDown() && ConfigHandler.enableClearInventory)
+                    if (Screen.hasShiftDown() && ConfigHandler.COMMON.enableClearInventory.get())
                         command = new String[]{"clear", "@p"};
                 } else {
                     String name  = draggedStack.getItem().getRegistryName().toString();
@@ -52,11 +52,11 @@ public class CommandHelper {
 
                 if (JEIButtons.isServerSidePresent) {
                     ClientProxy.player.inventory.setItemStack(ItemStack.EMPTY);
-                    if (Screen.hasShiftDown() && ConfigHandler.enableClearInventory)
+                    if (Screen.hasShiftDown() && ConfigHandler.COMMON.enableClearInventory.get())
                         ClientProxy.player.inventory.clear();
                 }
 
-                if (Screen.hasShiftDown() && ConfigHandler.enableClearInventory)
+                if (Screen.hasShiftDown() && ConfigHandler.COMMON.enableClearInventory.get())
                     handleButton(MessageExecuteButton.DELETE_ALL, command);
                 else if (!draggedStack.equals(ItemStack.EMPTY))
                     handleButton(MessageExecuteButton.DELETE, command);
@@ -82,7 +82,7 @@ public class CommandHelper {
                 handleButton(MessageExecuteButton.KILL, btn.getCommand().split(" "));
                 break;
             case MAGNET:
-                command = new String[]{"tp", "@e[type=minecraft:item,distance=.." + ConfigHandler.magnetRadius + "]", "@p"};
+                command = new String[]{"tp", "@e[type=minecraft:item,distance=.." + ConfigHandler.COMMON.magnetRadius.get() + "]", "@p"};
                     handleButton(MessageExecuteButton.MAGNET, command);
                 break;
             case CUSTOM1:

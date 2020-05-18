@@ -1,11 +1,12 @@
 package de.univrsal.justenoughbuttons.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import de.univrsal.justenoughbuttons.JEIButtons;
 import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.gui.GuiUtils;
 
 /**
  * Created by universal on 05.04.2017.
@@ -107,13 +108,13 @@ public enum EnumButtonCommands {
             state = JEIButtons.EnumButtonState.DISABLED;
         }
         ClientProxy.mc.textureManager.bindTexture(icons);
-        GlStateManager.color3f(1.0F, 1.0F, 1.0F);
+        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
         GuiUtils.drawTexturedModalRect(xPos, yPos, width * iconID(), height * state.ordinal(), width, height, 1);
         RenderHelper.disableStandardItemLighting();
     }
 
     public String getCommand() {
-        return this.ordinal() > MAGNET.ordinal() ? ConfigHandler.customCommand[id] : command;
+        return this.ordinal() > MAGNET.ordinal() ? ConfigHandler.COMMON.customCommand.get().get(id) : command;
     }
 
     public int iconID() {

@@ -19,10 +19,9 @@ import net.minecraftforge.fml.network.NetworkEvent;
 public class MessageRequestStacks implements IMessage {
 
     private static final int MAX_REQUEST_SIZE = 32767;
-    private CompoundNBT[] mainInventory;
-    private CompoundNBT[] armorInventory;
-    private CompoundNBT offHand;
-
+    public CompoundNBT[] mainInventory;
+    public CompoundNBT[] armorInventory;
+    public CompoundNBT offHand;
 
     public MessageRequestStacks() { }
 
@@ -39,7 +38,7 @@ public class MessageRequestStacks implements IMessage {
         if (p != null) {
             boolean isOP = MessageExecuteButton.checkPermissions(p, p.server);
 
-            if (ConfigHandler.saveRequireOP && !isOP) {
+            if (ConfigHandler.COMMON.saveRequireOP.get() && !isOP) {
                 ITextComponent msg = new TranslationTextComponent(Localization.NO_PERMISSIONS);
                 msg.setStyle(msg.getStyle().setColor(TextFormatting.RED));
                 p.sendMessage(msg);

@@ -1,10 +1,12 @@
 package de.univrsal.justenoughbuttons.client;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
@@ -41,17 +43,17 @@ public class MobOverlayRenderer {
     public static void renderMobSpawnOverlay() {
         ActiveRenderInfo ai = Minecraft.getInstance().gameRenderer.getActiveRenderInfo();
 
-        GlStateManager.pushMatrix();
+        RenderSystem.pushMatrix();
         {
-            GlStateManager.disableBlend();
-            GlStateManager.disableLighting();
-            GlStateManager.disableTexture();
+            RenderSystem.disableBlend();
+            RenderSystem.disableLighting();
+            RenderSystem.disableTexture();
 
-            GlStateManager.translated(-ai.getProjectedView().x, -(ai.getProjectedView().y),
+            RenderSystem.translated(-ai.getProjectedView().x, -(ai.getProjectedView().y),
                     -ai.getProjectedView().z);
 
             GL11.glLineWidth(1.5F);
-            GlStateManager.color3f(1, 0, 0);
+            RenderSystem.color3f(1, 0, 0);
 
             for (BlockPos p : cache.keySet()) {
                 SpawnType t = cache.get(p);
@@ -62,11 +64,11 @@ public class MobOverlayRenderer {
                     renderCross(p, 1, 1, 0);
             }
 
-            GlStateManager.enableLighting();
-            GlStateManager.enableTexture();
-            GlStateManager.enableBlend();
+            RenderSystem.enableLighting();
+            RenderSystem.enableTexture();
+            RenderSystem.enableBlend();
         }
-        GlStateManager.popMatrix();
+        RenderSystem.popMatrix();
     }
 
     /**
@@ -89,11 +91,11 @@ public class MobOverlayRenderer {
         BufferBuilder renderer = tess.getBuffer();
 
         renderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-        renderer.pos(x0, y, z0).color(r, g, b, 1).endVertex();
-        renderer.pos(x1, y, z1).color(r, g, b, 1).endVertex();
+        renderer.func_225582_a_(x0, y, z0).func_227885_a_(r, g, b, 1).endVertex();
+        renderer.func_225582_a_(x1, y, z1).func_227885_a_(r, g, b, 1).endVertex();
 
-        renderer.pos(x1, y, z0).color(r, g, b, 1).endVertex();
-        renderer.pos(x0, y, z1).color(r, g, b, 1).endVertex();
+        renderer.func_225582_a_(x1, y, z0).func_227885_a_(r, g, b, 1).endVertex();
+        renderer.func_225582_a_(x0, y, z1).func_227885_a_(r, g, b, 1).endVertex();
         tess.draw();
     }
 
@@ -102,15 +104,15 @@ public class MobOverlayRenderer {
 
         World world = entity.world;
 
-        int entX = (int) entity.posX;
-        int entY = MathHelper.clamp((int) entity.posY, 16, world.getHeight() - 16);
-        int entZ = (int) entity.posZ;
+        int entX = (int) entity.serverPosX;
+        int entY = MathHelper.clamp((int) entity.serverPosY, 16, world.getHeight() - 16);
+        int entZ = (int) entity.serverPosZ;
 
         for (int x = entX - 16; x <= entX + 16; x++) {
             for (int z = entZ - 16; z <= entZ + 16; z++) {
                 BlockPos pos = new BlockPos(x, entY, z);
                 IChunk chunk = world.getChunk(pos);
-                Biome biome = world.getBiome(pos);
+                Biome biome = world.func_226691_t_(pos);
 
                 if (biome.getSpawns(EntityClassification.CREATURE.MONSTER).isEmpty() || biome.getSpawningChance() <= 0)
                     continue;
@@ -130,7 +132,7 @@ public class MobOverlayRenderer {
         BlockPos pos = new BlockPos(x, y, z);
         BlockState bs = w.getBlockState(pos);
         IFluidState fs = w.getFluidState(pos);
-        IWorldLightListener ble = Objects.requireNonNull(chunk.getWorldLightManager()).getLightEngine(LightType.BLOCK);
+        IWorldLightListener ble = Objects.requireNonNull(w.func_225524_e_()).getLightEngine(LightType.BLOCK);
         int block_light = ble.getLightFor(pos);
 
         World world = (World) w;

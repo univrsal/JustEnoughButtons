@@ -9,11 +9,11 @@ public class ClientUtil {
     public static Minecraft mc = Minecraft.getInstance();
 
     public static int getMouseX() {
-        return (int) (mc.mouseHelper.getMouseX() * (double) mc.mainWindow.getScaledWidth() / (double) mc.mainWindow.getWidth());
+        return (int) (mc.mouseHelper.getMouseX() * (double) mc.func_228018_at_().getHeight() / (double) mc.func_228018_at_().getWidth());
     }
 
     public static int getMouseY() {
-        return (int) (mc.mouseHelper.getMouseY() * (double) mc.mainWindow.getScaledHeight() / (double) mc.mainWindow.getHeight());
+        return (int) (mc.mouseHelper.getMouseY() * (double) mc.func_228018_at_().getScaledHeight() / (double) mc.func_228018_at_().getHeight());
     }
 
     public static int getScreenWidth() {

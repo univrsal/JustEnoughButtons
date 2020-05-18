@@ -6,6 +6,7 @@ import de.univrsal.justenoughbuttons.core.CommonProxy;
 import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
 import de.univrsal.justenoughbuttons.core.network.MessageNotifyClient;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -13,6 +14,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -27,7 +29,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
@@ -37,8 +39,6 @@ import java.util.List;
 
 import static de.univrsal.justenoughbuttons.JEIButtons.*;
 
-;
-
 /**
  * Created by universal on 11.08.2016 16:07.
  * This file is part of JustEnoughButtons which is licenced
@@ -47,15 +47,11 @@ import static de.univrsal.justenoughbuttons.JEIButtons.*;
  */
 public class EventHandlers {
     private static BlockPos lastPlayerPos = null;
-
     private boolean drawMobOverlay   = false;
-
-    static int skipSaveClickCount = 0;
-    static int skipModClickCount = 0;
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDrawScreen(GuiScreenEvent.DrawScreenEvent e) {
-        if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof ContainerScreen) {
+        if (ConfigHandler.COMMON.showButtons.get() && e.getGui() != null && e.getGui() instanceof ContainerScreen) {
             int mouseY = e.getMouseY();
             int mouseX = e.getMouseX();
 
@@ -69,7 +65,7 @@ public class EventHandlers {
                 }
             }
 
-            if (ConfigHandler.enableSubsets)
+            if (ConfigHandler.COMMON.enableSubsets.get())
                 ModSubsetButtonHandler.drawSubsetList(mouseX, mouseY);
         }
 
@@ -93,8 +89,11 @@ public class EventHandlers {
 //        return -1;
 //    }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onMousedown(GuiScreenEvent.MouseClickedEvent.Pre e) {
+        if (!(e.getGui() instanceof ContainerScreen))
+            return;
+
         int mouseY = ClientUtil.getMouseY();
         int mouseX = ClientUtil.getMouseX();
 
@@ -103,12 +102,17 @@ public class EventHandlers {
                 CommandHelper.handleClick(JEIButtons.hoveredButton);
                 ClientUtil.playClick();
             } else { // Save buttons & Mod subsets
-                if (ConfigHandler.enableSaves)
+                if (ConfigHandler.COMMON.enableSaves.get())
                     InventorySaveHandler.click(mouseX, mouseY, e.getButton());
                 ModSubsetButtonHandler.click(mouseX, mouseY, e.getButton());
             }
         } else if (e.getButton() == 1) {
             InventorySaveHandler.click(mouseX, mouseY, e.getButton());
+        }
+
+        if (isAnyButtonHovered) {
+            e.setCanceled(true);
+            e.setResult(Event.Result.DENY);
         }
     }
 
@@ -122,14 +126,14 @@ public class EventHandlers {
         if (JEIButtons.isServerSidePresent && e.getGui() instanceof MainMenuScreen) {
             JEIButtons.isServerSidePresent = false;
             JEIButtons.isSpongePresent = false;
-        } else if (ConfigHandler.showButtons && e.getGui() != null && e.getGui() instanceof ContainerScreen) {
+        } else if (ConfigHandler.COMMON.showButtons.get() && e.getGui() != null && e.getGui() instanceof ContainerScreen) {
             int mouseY = ClientUtil.getMouseY();
             int mouseX = ClientUtil.getMouseX();
             ContainerScreen g = (ContainerScreen) e.getGui();
             PlayerEntity pl = ClientProxy.player;
 
-            if (btnGameMode == EnumButtonCommands.SPECTATE && !ConfigHandler.enableSpectatoreMode ||
-                    btnGameMode == EnumButtonCommands.ADVENTURE && !ConfigHandler.enableAdventureMode) {
+            if (btnGameMode == EnumButtonCommands.SPECTATE && !ConfigHandler.COMMON.enableSpectatoreMode.get() ||
+                    btnGameMode == EnumButtonCommands.ADVENTURE && !ConfigHandler.COMMON.enableAdventureMode.get()) {
                 btnGameMode = btnGameMode.cycle();
             }
 
@@ -146,10 +150,10 @@ public class EventHandlers {
                 btnMagnet.draw();
             }
 
-            if (ConfigHandler.enableSaves)
+            if (ConfigHandler.COMMON.enableSaves.get())
                 InventorySaveHandler.drawButtons(mouseX, mouseY);
 
-            if (ModSubsetButtonHandler.ENABLE_SUBSETS && ConfigHandler.enableSubsets)
+            if (ModSubsetButtonHandler.ENABLE_SUBSETS && ConfigHandler.COMMON.enableSubsets.get())
                 ModSubsetButtonHandler.drawButtons(mouseX, mouseY, ((ContainerScreen) e.getGui()).getGuiTop());
 
             for (EnumButtonCommands btn : btnCustom)
@@ -157,6 +161,7 @@ public class EventHandlers {
 
             adjustGamemode();
         }
+
     }
 
     private void adjustGamemode() {
@@ -189,10 +194,9 @@ public class EventHandlers {
                     JEIButtons.btnGameMode = EnumButtonCommands.CREATIVE;
                 }
             }
-        } else {
-            if (e.getEntity() != null && e.getEntity() instanceof ServerPlayerEntity)
-                CommonProxy.network.sendToPlayer(new MessageNotifyClient(), (ServerPlayerEntity) e.getEntity());
         }
+        if (e.getEntity() != null && e.getEntity() instanceof ServerPlayerEntity)
+            CommonProxy.network.sendToPlayer(new MessageNotifyClient(), (ServerPlayerEntity) e.getEntity());
     }
 
     @SubscribeEvent
@@ -212,11 +216,6 @@ public class EventHandlers {
         if (gui instanceof ContainerScreen) {
             int keyCode = e.getKeyCode();
 
-            if (InputMappings.getInputByName("key.keyboard.escape").getKeyCode() == keyCode) {
-                skipModClickCount = 0;
-                skipSaveClickCount = 0;
-            }
-
             if (ClientProxy.makeCopyKey.isActiveAndMatches(InputMappings.getInputByCode(e.getKeyCode(),e.getScanCode()))) {
                 Slot hovered = ((ContainerScreen) gui).getSlotUnderMouse();
 
@@ -230,35 +229,11 @@ public class EventHandlers {
                     ClientProxy.player.inventory.setItemStack(stack);
                 }
             } else if (ClientProxy.hideAll.isActiveAndMatches(InputMappings.getInputByCode(e.getKeyCode(), e.getScanCode()))) {
-                ConfigHandler.showButtons = !ConfigHandler.showButtons;
+                ConfigHandler.COMMON.showButtons.set(!ConfigHandler.COMMON.showButtons.get());
+                ConfigHandler.COMMON.showButtons.save();
             }
         }
 
-    }
-
-    @SubscribeEvent
-    public void onMouseEvent(GuiScreenEvent.MouseClickedEvent event) {
-        if (event.getButton() == 0) {
-            if (JEIButtons.isAnyButtonHovered && JEIButtons.hoveredButton == EnumButtonCommands.DELETE && !ClientProxy.player.inventory.getItemStack().isEmpty()) {
-                event.setResult(Event.Result.DENY);
-                if (event.isCancelable())
-                    event.setCanceled(true);
-            }
-
-            if (skipSaveClickCount > 0) {
-                if (event.isCancelable())
-                    event.setCanceled(true);
-                event.setResult(Event.Result.DENY);
-                skipSaveClickCount--;
-            }
-
-            if (skipModClickCount > 0) {
-                if (event.isCancelable())
-                    event.setCanceled(true);
-                event.setResult(Event.Result.DENY);
-                skipModClickCount--;
-            }
-        }
     }
 
     @SubscribeEvent
@@ -304,8 +279,8 @@ public class EventHandlers {
             MobOverlayRenderer.renderMobSpawnOverlay();
 
         if (ClientProxy.mc.currentScreen == null) {
-            skipSaveClickCount = 0;
             ModSubsetButtonHandler.isListShown = false;
+            isAnyButtonHovered = false;
         }
     }
 

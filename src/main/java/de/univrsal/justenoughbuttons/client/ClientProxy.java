@@ -55,6 +55,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void commonSetup(FMLCommonSetupEvent e) {
+        super.commonSetup(e);
         registerKeyBind();
         MinecraftForge.EVENT_BUS.register(new EventHandlers());
         mc = Minecraft.getInstance();
@@ -85,7 +86,8 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.registerKeyBinding(makeCopyKey);
         ClientRegistry.registerKeyBinding(hideAll);
 
-        if (!JEIButtons.isModLoaded(JEIButtons.MOD_MOREOVERLAYS) && !JEIButtons.isModLoaded(JEIButtons.MOD_DYN_SOURROUND) && ConfigHandler.registerUtilKeybinds) {
+        if (!JEIButtons.isModLoaded(JEIButtons.MOD_MOREOVERLAYS) &&
+                !JEIButtons.isModLoaded(JEIButtons.MOD_DYN_SOURROUND) && ConfigHandler.COMMON.registerUtilKeybinds.get()) {
             mobOverlay = new KeyBinding(Localization.KEY_MOBOVERLAY, KeyConflictContext.IN_GAME,
                     InputMappings.getInputByName("key.keyboard.f7"), Localization.KEY_CATEGORY);
             chunkOverlay = new KeyBinding(Localization.KEY_CHUNKOVERLAY, KeyConflictContext.IN_GAME,

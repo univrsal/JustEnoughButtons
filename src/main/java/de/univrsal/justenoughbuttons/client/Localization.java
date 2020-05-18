@@ -91,7 +91,7 @@ public class Localization {
                     list.add(I18n.format(Localization.DRAG_ITEMS_HERE));
                     if (!JEIButtons.isServerSidePresent)
                         list.add(ChatFormatting.GRAY + I18n.format(Localization.HOLD_SHIFT));
-                    if (ConfigHandler.enableClearInventory)
+                    if (ConfigHandler.COMMON.enableClearInventory.get())
                         list.add(ChatFormatting.GRAY + I18n.format(Localization.CLEAR_INVENTORY));
                 }
                 break;
@@ -125,10 +125,11 @@ public class Localization {
             case CUSTOM2:
             case CUSTOM3:
             case CUSTOM4:
-                if (ConfigHandler.customName[btn.id].equals(""))
-                    list.add(I18n.format(Localization.CUSTOM_COMMAND, "/" + ConfigHandler.customCommand[btn.id]));
+                if (ConfigHandler.COMMON.customName.get().get(btn.id).equals(""))
+                    list.add(I18n.format(Localization.CUSTOM_COMMAND, "/" +
+                            ConfigHandler.COMMON.customCommand.get().get(btn.id)));
                 else
-                    list.add(ConfigHandler.customName[btn.id]);
+                    list.add(ConfigHandler.COMMON.customName.get().get(btn.id));
                 break;
         }
 

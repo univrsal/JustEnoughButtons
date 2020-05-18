@@ -17,7 +17,7 @@ public class SaveButton extends AbstractButton {
 
     @Override
     protected boolean isValidClickButton(int p_isValidClickButton_1_) {
-        return p_isValidClickButton_1_ == 0 || p_isValidClickButton_1_ == -1;
+        return p_isValidClickButton_1_ == 0 || p_isValidClickButton_1_ == 1;
     }
 
     @Override

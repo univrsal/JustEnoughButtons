@@ -1,6 +1,7 @@
 package de.univrsal.justenoughbuttons.client.handlers;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import de.univrsal.justenoughbuttons.client.ClientProxy;
 import de.univrsal.justenoughbuttons.client.ClientUtil;
 import de.univrsal.justenoughbuttons.client.Localization;
@@ -11,7 +12,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.gui.GuiUtils;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModInfo;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -40,19 +41,14 @@ public class ModSubsetButtonHandler {
         boolean flag = false;
 
         if (subsetButton.mouseClicked(mouseX, mouseY, mousebutton)) {
-            //JEIButtons.proxy.playClick();
             isListShown = !isListShown;
             flag = true;
-            if (!isListShown)
-                EventHandlers.skipModClickCount = 0;
         }
 
         if (selectedItem > -1 && selectedItem < mod_names.size()) {
-            //JEIButtons.proxy.playClick();
             isListShown = !isListShown;
             //JEIPlugin.setJEIText("@" + mod_ids.get(selectedItem));
             flag = true;
-            EventHandlers.skipModClickCount = 2;
         }
 
         if (!flag && isListShown)
@@ -106,15 +102,16 @@ public class ModSubsetButtonHandler {
             int x, y = (20 + subsetButton.y), w, h;
             int itemsLeft = mod_ids.size() - scrollOffset - maxItems;
 
-            RenderHelper.enableGUIStandardItemLighting();
-            GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-            GlStateManager.depthMask(false);
+//            RenderHelper.enableGUIStandardItemLightin();
+            RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            RenderSystem.depthMask(false);
 
             w = f.getStringWidth(longestModName) + 3;
             x = subsetButton.x;
             h = f.FONT_HEIGHT + 2;
-            GuiUtils.drawGradientRect(0, x, y, x + w, y + 3 + h * ((maxItems < mod_ids.size() ? maxItems : mod_ids.size()) + (itemsLeft > 0 ? 1 : 0)), 0xCC000000, 0xCC000000);
+            GuiUtils.drawGradientRect(0, x, y, x + w, y + 3 + h * ((Math.min(maxItems, mod_ids.size())) + (itemsLeft > 0 ? 1 : 0)), 0xCC000000, 0xCC000000);
+
             for (int i = scrollOffset; i < maximumIndex; i++) {
                 mod = mod_names.get(i);
                 y = (23 + subsetButton.y) + h * (i - scrollOffset);
@@ -131,10 +128,10 @@ public class ModSubsetButtonHandler {
             if (mod_ids.size() > maxItems && itemsLeft > 0)
                 f.drawString(itemsLeft + " " + I18n.format(Localization.MORE) + "...", x + 2, y + h + 1, 0xFFFFFF);
 
-            GlStateManager.depthMask(true);
-            GlStateManager.enableLighting();
-            RenderHelper.enableStandardItemLighting();
-            GlStateManager.enableRescaleNormal();
+            RenderSystem.depthMask(true);
+            RenderSystem.enableLighting();
+//            RenderSystem.enableStandardItemLighting();
+            RenderSystem.enableRescaleNormal();
             RenderHelper.disableStandardItemLighting();
         }
 

@@ -10,6 +10,7 @@ import de.univrsal.justenoughbuttons.core.IProxy;
 import de.univrsal.justenoughbuttons.core.handlers.ConfigHandler;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -45,7 +46,7 @@ public class JEIButtons {
     public static final Logger LOGGER = LogManager.getLogger();
     public static JEIButtons instance;
 
-    public static IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new CommonProxy());
+    public static IProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
 
     public static EnumButtonCommands btnGameMode = EnumButtonCommands.SURVIVAL;
     public static EnumButtonCommands btnTrash = EnumButtonCommands.DELETE;
@@ -63,13 +64,13 @@ public class JEIButtons {
     public static boolean configHasChanged = false;
 
     public static EnumButtonCommands hoveredButton;
-    public static boolean isAnyButtonHovered;
+    public static boolean isAnyButtonHovered; /* Used to prevent items from being dropped when clicking on a button */
 
     /* Init stuff */
     public JEIButtons() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::setup);
-
+        bus.addListener(EventPriority.LOWEST, this::loadConfig);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
@@ -77,6 +78,10 @@ public class JEIButtons {
         proxy.commonSetup(event);
     }
 
+    public void loadConfig(FMLCommonSetupEvent e)
+    {
+        ConfigHandler.COMMON.load();
+    }
     public void clientSetup(FMLClientSetupEvent event) {
 
     }
@@ -101,7 +106,8 @@ public class JEIButtons {
             if (!b.isVisible)
                 continue;
 
-            b.setPosition((EnumButtonCommands.width + 2) * x + ConfigHandler.xOffset, (EnumButtonCommands.height + 2) * y + ConfigHandler.yOffset);
+            b.setPosition((EnumButtonCommands.width + 2) * x + ConfigHandler.COMMON.xOffset.get(),
+                    (EnumButtonCommands.height + 2) * y + ConfigHandler.COMMON.yOffset.get());
             x++;
 
             if (y == 0 && x == 4) {
@@ -127,8 +133,8 @@ public class JEIButtons {
         else
             cmd = "/minecraft:" + cmd;
 
-        if (cmd.length() <= 256)
-            ClientProxy.mc.player.sendChatMessage(cmd);
+        if (cmd.length() <= 256 && ClientProxy.mc.player != null)
+                ClientProxy.mc.player.sendChatMessage(cmd);
         else
             ClientProxy.mc.ingameGUI.getChatGUI().printChatMessage(new TranslationTextComponent(Localization.NBT_TOO_LONG));
     }

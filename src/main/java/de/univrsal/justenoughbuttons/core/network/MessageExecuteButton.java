@@ -75,49 +75,49 @@ public class MessageExecuteButton implements IMessage {
 
         switch (commandOrdinal) {
             case GM_ADVENTURE:
-                if (!isOP && ConfigHandler.gamemodeRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.gamemodeRequiresOP.get())
                     break;
 
                 error = false;
                 p.setGameType(GameType.ADVENTURE);
                 break;
             case GM_CREATIVE:
-                if (!isOP && ConfigHandler.gamemodeRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.gamemodeRequiresOP.get())
                     break;
 
                 error = false;
                 p.setGameType(GameType.CREATIVE);
                 break;
             case GM_SURVIVAL:
-                if (!isOP && ConfigHandler.gamemodeRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.gamemodeRequiresOP.get())
                     break;
 
                 error = false;
                 p.setGameType(GameType.SURVIVAL);
                 break;
             case GM_SPECTATE:
-                if (!isOP && ConfigHandler.gamemodeRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.gamemodeRequiresOP.get())
                     break;
 
                 error = false;
                 p.setGameType(GameType.SPECTATOR);
                 break;
             case DELETE_ALL:
-                if (!isOP && ConfigHandler.deleteRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.deleteRequiresOP.get())
                     break;
 
                 error = false;
                 p.inventory.clear();
                 break;
             case DELETE:
-                if (!isOP && ConfigHandler.deleteRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.deleteRequiresOP.get())
                     break;
 
                 error = false;
                 p.inventory.setItemStack(ItemStack.EMPTY);
                 break;
             case SUN:
-                if (!isOP && ConfigHandler.weatherRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.weatherRequiresOP.get())
                     break;
 
                 error = false;
@@ -128,7 +128,7 @@ public class MessageExecuteButton implements IMessage {
                 worldinfo.setThundering(false);
                 break;
             case RAIN:
-                if (!isOP && ConfigHandler.weatherRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.weatherRequiresOP.get())
                     break;
 
                 error = false;
@@ -139,21 +139,21 @@ public class MessageExecuteButton implements IMessage {
                 worldinfo.setThundering(false);
                 break;
             case DAY:
-                if (!isOP && ConfigHandler.timeRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.timeRequiresOP.get())
                     break;
 
                 error = false;
                 worldinfo.setDayTime(1000);
                 break;
             case NIGHT:
-                if (!isOP && ConfigHandler.timeRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.timeRequiresOP.get())
                     break;
 
                 error = false;
                 world.setDayTime(13000);
                 break;
             case FREEZE:
-                if (!isOP && ConfigHandler.timeFreezeRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.timeFreezeRequiresOP.get())
                     break;
 
                 error = false;
@@ -161,7 +161,7 @@ public class MessageExecuteButton implements IMessage {
                 worldinfo.getGameRulesInstance().get(GameRules.DO_DAYLIGHT_CYCLE).set(!origValue, s);
                 break;
             case KILL:
-                if (!isOP && ConfigHandler.killMobsRequiresOP)
+                if (!isOP && ConfigHandler.COMMON.killMobsRequiresOP.get())
                     break;
 
                 error = false;

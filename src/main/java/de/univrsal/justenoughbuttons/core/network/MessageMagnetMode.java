@@ -37,7 +37,7 @@ public class MessageMagnetMode implements IMessage {
         ITextComponent msg = new TranslationTextComponent(Localization.NO_PERMISSIONS);
         msg.setStyle(msg.getStyle().setColor(TextFormatting.RED));
 
-        if (!isOP && ConfigHandler.magnetRequiresOP) {
+        if (!isOP && ConfigHandler.COMMON.magnetRequiresOP.get()) {
             p.sendMessage(msg);
             return false;
         }
